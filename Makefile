@@ -15,11 +15,8 @@ bun-new-migration:
 
 clean:
 	@echo cleaning up workspace
-	@rm -Rvf coverage.txt dist gosec.xml feditools
+	@rm -Rvf coverage.txt dist relay
 	@find . -name ".DS_Store" -exec rm -v {} \;
-	@rm -Rvf web/bootstrap/dist
-	@rm -Rvf web/static/css/bootstrap.min.css web/static/css/bootstrap.min.css.map web/static/css/default.min.css web/static/css/error.min.css web/static/css/login.min.css
-	@rm -Rvf web/static/js/bootstrap.bundle.min.js web/static/js/bootstrap.bundle.min.js.map
 
 fmt:
 	@echo formatting
@@ -37,21 +34,6 @@ i18n-translations:
 lint:
 	@echo linting
 	@golint $(shell go list ./... | grep -v /vendor/)
-
-npm-scss:
-	cd web/bootstrap && npm run sass
-
-npm-upgrade:
-	cd web/bootstrap && npm upgrade
-
-stage-static:
-	minify web/static-src/css/default.css > web/static/css/default.min.css
-	minify web/static-src/css/error.css > web/static/css/error.min.css
-	minify web/static-src/css/login.css > web/static/css/login.min.css
-	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css
-	cat web/bootstrap/dist/bootstrap.css.map > web/static/css/bootstrap.min.css.map
-	cat web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js > web/static/js/bootstrap.bundle.min.js
-	cat web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map > web/static/js/bootstrap.bundle.min.js.map
 
 test-docker-restart: test-docker-stop test-docker-start
 
