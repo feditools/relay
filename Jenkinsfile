@@ -4,7 +4,7 @@ pipeline {
     composeFile = "deployments/docker-compose-integration.yaml"
     networkName = "network-${env.BUILD_TAG}"
     registry = 'tyrm/relay'
-    registryCredential = 'docker-io-tyrm'`
+    registryCredential = 'docker-io-tyrm'
     dockerImage = ''
     gitDescribe = ''
   }
