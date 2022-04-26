@@ -1,0 +1,15 @@
+---
+version: '3.5'
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=test
+      - POSTGRES_DB=test
+    networks:
+      - integration
+
+networks:
+  integration:
+    name: ${NETWORK_NAME}
