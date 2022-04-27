@@ -22,6 +22,7 @@ type Module struct {
 	logic *logic.Logic
 
 	appName      string
+	appVersion   string
 	domain       string
 	privateKey   *rsa.PrivateKey
 	publicKey    *rsa.PublicKey
@@ -36,8 +37,9 @@ func New(ctx context.Context, d db.DB, l *logic.Logic) (*Module, error) {
 		db:    d,
 		logic: l,
 
-		appName: viper.GetString(config.Keys.ApplicationName),
-		domain:  viper.GetString(config.Keys.ServerExternalHostname),
+		appName:    viper.GetString(config.Keys.ApplicationName),
+		appVersion: viper.GetString(config.Keys.SoftwareVersion),
+		domain:     viper.GetString(config.Keys.ServerExternalHostname),
 	}
 
 	var instanceSelf *models.Instance

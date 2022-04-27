@@ -22,6 +22,11 @@ func GenInbox(d string) string {
 	return fmt.Sprintf("https://%s/%s", d, PartInbox)
 }
 
+// GenNodeinfo20 returns a url for an nodeinfo 2.0 url
+func GenNodeinfo20(d string) string {
+	return fmt.Sprintf("https://%s/%s/2.0", d, PartNodeinfo)
+}
+
 // GenPublicKey returns a url for an actor's public key
 func GenPublicKey(d string) string {
 	return fmt.Sprintf("%s#%s", GenActor(d), PartPublicKey)

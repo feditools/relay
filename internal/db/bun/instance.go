@@ -71,6 +71,24 @@ func (c *Client) ReadInstanceByDomain(ctx context.Context, domain string) (*mode
 	return instance, nil
 }
 
+// ReadInstancesWhereFollowing returns all federated social instances which are following this relay
+func (c *Client) ReadInstancesWhereFollowing(ctx context.Context) ([]*models.Instance, db.Error) {
+	start := time.Now()
+
+	var instances []*models.Instance
+
+	err := c.newInstancesQ(&instances).Where("followed = true").Scan(ctx)
+	if err != nil {
+		ended := time.Since(start)
+		go c.metrics.DBQuery(ended, "ReadInstancesWhereFollowing", true)
+		return nil, c.bun.ProcessError(err)
+	}
+
+	ended := time.Since(start)
+	go c.metrics.DBQuery(ended, "ReadInstancesWhereFollowing", false)
+	return instances, nil
+}
+
 // UpdateInstance updates the stored federated instance
 func (c *Client) UpdateInstance(ctx context.Context, instance *models.Instance) db.Error {
 	start := time.Now()
@@ -91,4 +109,10 @@ func (c *Client) newInstanceQ(instance *models.Instance) *bun.SelectQuery {
 	return c.bun.
 		NewSelect().
 		Model(instance)
+}
+
+func (c *Client) newInstancesQ(instances *[]*models.Instance) *bun.SelectQuery {
+	return c.bun.
+		NewSelect().
+		Model(instances)
 }
