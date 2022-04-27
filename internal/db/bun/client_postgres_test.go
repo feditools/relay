@@ -6,6 +6,7 @@ import (
 	"context"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
+	"github.com/feditools/relay/internal/mock"
 	"github.com/feditools/relay/internal/models/testdata"
 	"github.com/spf13/viper"
 	"testing"
@@ -30,7 +31,9 @@ func TestNew_Postgres(t *testing.T) {
 	viper.Set(config.Keys.DbTLSMode, dbTLSMode)
 	viper.Set(config.Keys.DbUser, dbUser)
 
-	bun, err := New(context.Background())
+	metricsCollector, _ := mock.NewMetricsCollector()
+
+	bun, err := New(context.Background(), metricsCollector)
 	if err != nil {
 		t.Errorf("unexpected error initializing bun connection: %s", err.Error())
 		return
@@ -83,7 +86,9 @@ func testNewPostresClient() (db.DB, error) {
 	viper.Set(config.Keys.DbUser, "test")
 	viper.Set(config.Keys.DbEncryptionKey, testdata.TestEncryptionKey)
 
-	client, err := New(context.Background())
+	metricsCollector, _ := mock.NewMetricsCollector()
+
+	client, err := New(context.Background(), metricsCollector)
 	if err != nil {
 		return nil, err
 	}

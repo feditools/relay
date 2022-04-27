@@ -8,6 +8,7 @@ import (
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
+	"github.com/feditools/relay/internal/metrics/statsd"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
 	"os"
@@ -21,9 +22,22 @@ var Start action.Action = func(ctx context.Context) error {
 
 	l.Info("starting")
 
+	// create metrics collector
+	metricsCollector, err := statsd.New()
+	if err != nil {
+		l.Errorf("metrics: %s", err.Error())
+		return err
+	}
+	defer func() {
+		err := metricsCollector.Close()
+		if err != nil {
+			l.Errorf("closing metrics: %s", err.Error())
+		}
+	}()
+
 	// create database client
 	l.Debug("creating database client")
-	dbClient, err := bun.New(ctx)
+	dbClient, err := bun.New(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())
 		return err
@@ -37,7 +51,7 @@ var Start action.Action = func(ctx context.Context) error {
 
 	// create http server
 	l.Debug("creating http server")
-	server, err := http.NewServer(ctx)
+	server, err := http.NewServer(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("http server: %s", err.Error())
 		return err
