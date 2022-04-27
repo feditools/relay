@@ -39,6 +39,8 @@ type DB interface {
 	ReadInstanceByID(ctx context.Context, id int64) (instance *models.Instance, err Error)
 	// ReadInstanceByDomain returns one federated social instance
 	ReadInstanceByDomain(ctx context.Context, domain string) (instance *models.Instance, err Error)
+	// ReadInstancesWhereFollowing returns all federated social instances which are following this relay
+	ReadInstancesWhereFollowing(ctx context.Context) (instances []*models.Instance, err Error)
 	// UpdateInstance updates the stored federated instance
 	UpdateInstance(ctx context.Context, instance *models.Instance) (err Error)
 }

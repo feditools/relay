@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"encoding/json"
+	"fmt"
 	rmodels "github.com/feditools/relay/internal/activitypub/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/tyrm/go-util/mimetype"
@@ -9,9 +10,20 @@ import (
 )
 
 func (m *Module) nodeinfo20GetHandler(w http.ResponseWriter, r *http.Request) {
-	l := logger.WithField("func", "actorGetHandler")
+	l := logger.WithField("func", "nodeinfo20GetHandler")
+
+	peers, err := m.logic.GetPeers(r.Context())
+	if err != nil {
+		l.Errorf("get peers: %s", err.Error())
+		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))))
+		return
+	}
 
 	nodeinfo := rmodels.NodeInfo{
+		Metadata: map[string]interface{}{
+			"peers": peers,
+		},
 		OpenRegistrations: true,
 		Protocols:         []string{"activitypub"},
 		Services: rmodels.Services{
@@ -32,7 +44,7 @@ func (m *Module) nodeinfo20GetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", mimetype.ApplicationJSON)
-	err := json.NewEncoder(w).Encode(nodeinfo)
+	err = json.NewEncoder(w).Encode(nodeinfo)
 	if err != nil {
 		l.Errorf("marshaling json: %s", err.Error())
 	}
