@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/feditools/relay/cmd/relay/action"
+	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
 	"os"
 	"os/signal"
@@ -16,6 +17,21 @@ var Start action.Action = func(ctx context.Context) error {
 
 	l.Info("starting")
 
+	// create database client
+	l.Debug("creating database client")
+	dbClient, err := bun.New(ctx)
+	if err != nil {
+		l.Errorf("db: %s", err.Error())
+		return err
+	}
+	defer func() {
+		err := dbClient.Close(ctx)
+		if err != nil {
+			l.Errorf("closing db: %s", err.Error())
+		}
+	}()
+
+	// create http server
 	l.Debug("creating http server")
 	server, err := http.NewServer(ctx)
 	if err != nil {
@@ -31,7 +47,6 @@ var Start action.Action = func(ctx context.Context) error {
 	signal.Notify(stopSigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// start webserver
-
 	go func(s *http.Server, errChan chan error) {
 		l.Debug("starting http server")
 		err := s.Start()
