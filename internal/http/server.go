@@ -2,48 +2,28 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"github.com/feditools/relay/internal/config"
+	"github.com/feditools/relay/internal/metrics"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util/middleware"
+	"github.com/tyrm/go-util/mimetype"
 	"net/http"
 	"time"
 )
 
 // Server is a http 2 web server
 type Server struct {
-	router *mux.Router
-	srv    *http.Server
-}
-
-// HandleFunc attaches a function to a path
-func (r *Server) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
-	return r.router.HandleFunc(path, f)
-}
-
-// PathPrefix attaches a new route url path prefix
-func (r *Server) PathPrefix(path string) *mux.Route {
-	return r.router.PathPrefix(path)
-}
-
-// Start starts the web server
-func (r *Server) Start() error {
-	l := logger.WithField("func", "Start")
-	l.Infof("listening on %s", r.srv.Addr)
-	return r.srv.ListenAndServe()
-}
-
-// Stop shuts down the web server
-func (r *Server) Stop(ctx context.Context) error {
-	return r.srv.Shutdown(ctx)
+	metrics metrics.Collector
+	router  *mux.Router
+	srv     *http.Server
 }
 
 // NewServer creates a new http web server
-func NewServer(_ context.Context) (*Server, error) {
+func NewServer(_ context.Context, m metrics.Collector) (*Server, error) {
 	r := mux.NewRouter()
-	r.Use(handlers.CompressHandler)
-	r.Use(middleware.BlockFlocMux)
 
 	s := &http.Server{
 		Addr:         viper.GetString(config.Keys.ServerHTTPBind),
@@ -52,8 +32,57 @@ func NewServer(_ context.Context) (*Server, error) {
 		ReadTimeout:  60 * time.Second,
 	}
 
-	return &Server{
-		router: r,
-		srv:    s,
-	}, nil
+	server := &Server{
+		metrics: m,
+		router:  r,
+		srv:     s,
+	}
+
+	// add global middlewares
+	r.Use(server.middlewareMetrics)
+	r.Use(handlers.CompressHandler)
+	r.Use(middleware.BlockFlocMux)
+
+	r.NotFoundHandler = server.notFoundHandler()
+	r.MethodNotAllowedHandler = server.methodNotAllowedHandler()
+
+	return server, nil
+}
+
+// HandleFunc attaches a function to a path
+func (s *Server) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
+	return s.router.HandleFunc(path, f)
+}
+
+// PathPrefix attaches a new route url path prefix
+func (s *Server) PathPrefix(path string) *mux.Route {
+	return s.router.PathPrefix(path)
+}
+
+// Start starts the web server
+func (s *Server) Start() error {
+	l := logger.WithField("func", "Start")
+	l.Infof("listening on %s", s.srv.Addr)
+	return s.srv.ListenAndServe()
+}
+
+// Stop shuts down the web server
+func (s *Server) Stop(ctx context.Context) error {
+	return s.srv.Shutdown(ctx)
+}
+
+func (s *Server) methodNotAllowedHandler() http.Handler {
+	// wrap in middleware since middlware isn't run on error pages
+	return s.middlewareMetrics(middleware.BlockFlocMux(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))))
+	})))
+}
+
+func (s *Server) notFoundHandler() http.Handler {
+	// wrap in middleware since middlware isn't run on error pages
+	return s.middlewareMetrics(middleware.BlockFlocMux(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusNotFound, http.StatusText(http.StatusNotFound))))
+	})))
 }
