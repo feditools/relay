@@ -9,6 +9,7 @@ import (
 func (m *Module) Route(s *http.Server) error {
 	s.HandleFunc(path.APActor, m.actorGetHandler).Methods("GET")
 	s.HandleFunc(path.APNodeInfo20, m.nodeinfo20GetHandler).Methods("GET")
-	s.HandleFunc(path.APWellKnownNodeInfo, m.wellknownNodeinfoGetHandler).Methods("GET")
+	s.HandleFunc(path.APWellKnownNodeInfo, m.wellknownNodeInfoGetHandler).Methods("GET")
+	s.HandleFunc(path.APWellKnownWebFinger, m.wellknownWebFingerGetHandler).Methods("GET")
 	return nil
 }

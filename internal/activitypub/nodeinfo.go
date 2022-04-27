@@ -16,6 +16,7 @@ func (m *Module) nodeinfo20GetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		l.Errorf("get peers: %s", err.Error())
 		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))))
 		return
 	}
@@ -50,8 +51,8 @@ func (m *Module) nodeinfo20GetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (m *Module) wellknownNodeinfoGetHandler(w http.ResponseWriter, r *http.Request) {
-	l := logger.WithField("func", "actorGetHandler")
+func (m *Module) wellknownNodeInfoGetHandler(w http.ResponseWriter, r *http.Request) {
+	l := logger.WithField("func", "wellknownNodeInfoGetHandler")
 
 	wellknown := rmodels.NodeInfoWellKnown{
 		Links: []rmodels.Link{
