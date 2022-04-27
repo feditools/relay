@@ -8,6 +8,7 @@ import (
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
+	"github.com/feditools/relay/internal/logic"
 	"github.com/feditools/relay/internal/metrics/statsd"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
@@ -49,6 +50,14 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	// create logic module
+	l.Debug("creating database client")
+	logicMod, err := logic.New(dbClient)
+	if err != nil {
+		l.Errorf("db: %s", err.Error())
+		return err
+	}
+
 	// create http server
 	l.Debug("creating http server")
 	server, err := http.NewServer(ctx, metricsCollector)
@@ -61,7 +70,7 @@ var Start action.Action = func(ctx context.Context) error {
 	var webModules []http.Module
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
 		l.Infof("adding %s module", config.ServerRoleActivityPub)
-		apMod, err := activitypub.New(ctx, dbClient)
+		apMod, err := activitypub.New(ctx, dbClient, logicMod)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleActivityPub, err.Error())
 			return err

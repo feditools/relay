@@ -25,13 +25,13 @@ func (c *Client) CreateInstance(ctx context.Context, instance *models.Instance) 
 	return nil
 }
 
-// ReadInstanceByID returns one federated social instance.
+// ReadInstanceByID returns one federated social instance
 func (c *Client) ReadInstanceByID(ctx context.Context, id int64) (*models.Instance, db.Error) {
 	start := time.Now()
 
 	instance := &models.Instance{}
 
-	err := c.newFediInstanceQ(instance).Where("id = ?", id).Scan(ctx)
+	err := c.newInstanceQ(instance).Where("id = ?", id).Scan(ctx)
 	if err == sql.ErrNoRows {
 		ended := time.Since(start)
 		go c.metrics.DBQuery(ended, "ReadInstanceByID", false)
@@ -48,13 +48,13 @@ func (c *Client) ReadInstanceByID(ctx context.Context, id int64) (*models.Instan
 	return instance, nil
 }
 
-// ReadInstanceByDomain returns one federated social instance.
+// ReadInstanceByDomain returns one federated social instance
 func (c *Client) ReadInstanceByDomain(ctx context.Context, domain string) (*models.Instance, db.Error) {
 	start := time.Now()
 
 	instance := &models.Instance{}
 
-	err := c.newFediInstanceQ(instance).Where("lower(domain) = lower(?)", domain).Scan(ctx)
+	err := c.newInstanceQ(instance).Where("lower(domain) = lower(?)", domain).Scan(ctx)
 	if err == sql.ErrNoRows {
 		ended := time.Since(start)
 		go c.metrics.DBQuery(ended, "ReadInstanceByDomain", false)
@@ -87,7 +87,7 @@ func (c *Client) UpdateInstance(ctx context.Context, instance *models.Instance) 
 	return nil
 }
 
-func (c *Client) newFediInstanceQ(instance *models.Instance) *bun.SelectQuery {
+func (c *Client) newInstanceQ(instance *models.Instance) *bun.SelectQuery {
 	return c.bun.
 		NewSelect().
 		Model(instance)
