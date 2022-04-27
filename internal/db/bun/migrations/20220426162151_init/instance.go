@@ -14,4 +14,6 @@ type Instance struct {
 	PublicKey  *rsa.PublicKey `validate:"-"`
 	PrivateKey []byte         `validate:"-"`
 	InboxIRI   string         `validate:"required,url" bun:",nullzero,notnull,unique"`
+	BlockID    int64          `validate:"-" bun:",nullzero"`
+	Block      *Block         `validate:"-" bun:"rel:belongs-to"`
 }

@@ -9,6 +9,7 @@ import (
 	"encoding/pem"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
+	"github.com/feditools/relay/internal/logic"
 	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/spf13/viper"
@@ -17,7 +18,8 @@ import (
 
 // Module is an http module that handles activity pub activity
 type Module struct {
-	db db.DB
+	db    db.DB
+	logic *logic.Logic
 
 	appName      string
 	domain       string
@@ -27,11 +29,12 @@ type Module struct {
 }
 
 // New creates a new activity pub module
-func New(ctx context.Context, d db.DB) (*Module, error) {
-	l := logger.WithField("func", "New")
+func New(ctx context.Context, d db.DB, l *logic.Logic) (*Module, error) {
+	log := logger.WithField("func", "New")
 
 	module := &Module{
-		db: d,
+		db:    d,
+		logic: l,
 
 		appName: viper.GetString(config.Keys.ApplicationName),
 		domain:  viper.GetString(config.Keys.ServerExternalHostname),
@@ -41,21 +44,21 @@ func New(ctx context.Context, d db.DB) (*Module, error) {
 	var err error
 	instanceSelf, err = d.ReadInstanceByDomain(ctx, module.domain)
 	if err != nil {
-		l.Errorf("db read: %s", err.Error())
+		log.Errorf("db read: %s", err.Error())
 		return nil, err
 	}
 
 	if instanceSelf == nil {
 		instanceSelf, err = module.createInstanceSelf(ctx)
 		if err != nil {
-			l.Errorf("create self: %s", err.Error())
+			log.Errorf("create self: %s", err.Error())
 			return nil, err
 		}
 	}
 
 	privateKey, err := instanceSelf.GetPrivateKey()
 	if err != nil {
-		l.Errorf("decrypting private key: %s", err.Error())
+		log.Errorf("decrypting private key: %s", err.Error())
 		return nil, err
 	}
 
@@ -66,7 +69,7 @@ func New(ctx context.Context, d db.DB) (*Module, error) {
 	// make public key pem
 	publicKeyBytes, err := x509.MarshalPKIXPublicKey(instanceSelf.PublicKey)
 	if err != nil {
-		l.Errorf("marshaling public key: %s", err.Error())
+		log.Errorf("marshaling public key: %s", err.Error())
 		return nil, err
 	}
 	publicKeyBlock := &pem.Block{
@@ -76,12 +79,12 @@ func New(ctx context.Context, d db.DB) (*Module, error) {
 	publicPem := new(bytes.Buffer)
 	err = pem.Encode(publicPem, publicKeyBlock)
 	if err != nil {
-		l.Errorf("encoding pem: %s", err.Error())
+		log.Errorf("encoding pem: %s", err.Error())
 		return nil, err
 	}
 	publicPemBytes, err := io.ReadAll(publicPem)
 	if err != nil {
-		l.Errorf("reading pem: %s", err.Error())
+		log.Errorf("reading pem: %s", err.Error())
 		return nil, err
 	}
 	module.publicKeyPem = string(publicPemBytes)

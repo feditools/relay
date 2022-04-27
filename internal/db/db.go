@@ -20,14 +20,25 @@ type DB interface {
 	// Update updates stored data
 	Update(ctx context.Context, i any) Error
 
+	// Block
+
+	// CreateBlock stores the domain block
+	CreateBlock(ctx context.Context, block *models.Block) (err Error)
+	// ReadBlockByID returns one domain block
+	ReadBlockByID(ctx context.Context, id int64) (block *models.Block, err Error)
+	// ReadBlockByDomain returns one domain block by domain name
+	ReadBlockByDomain(ctx context.Context, domain string) (block *models.Block, err Error)
+	// UpdateBlock updates the stored domain block
+	UpdateBlock(ctx context.Context, block *models.Block) (err Error)
+
 	// Instance
 
-	// CreateInstance stores the federated instance and caches it
+	// CreateInstance stores the federated instance
 	CreateInstance(ctx context.Context, instance *models.Instance) (err Error)
-	// ReadInstanceByID returns one federated social instance.
+	// ReadInstanceByID returns one federated social instance
 	ReadInstanceByID(ctx context.Context, id int64) (instance *models.Instance, err Error)
-	// ReadInstanceByDomain returns one federated social instance.
+	// ReadInstanceByDomain returns one federated social instance
 	ReadInstanceByDomain(ctx context.Context, domain string) (instance *models.Instance, err Error)
-	// UpdateInstance updates the stored federated instance and caches it
+	// UpdateInstance updates the stored federated instance
 	UpdateInstance(ctx context.Context, instance *models.Instance) (err Error)
 }
