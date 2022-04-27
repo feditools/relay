@@ -3,8 +3,12 @@ package metrics
 const (
 	// StatBaseDB is the base state name for database metrics
 	StatBaseDB = "db"
-	// StatDBQuery is the timing for a db query
+	// StatDBQuery is metrics related to db queries
 	StatDBQuery = StatBaseDB + ".query"
+	// StatDBQueryTiming is the timing for a db query
+	StatDBQueryTiming = StatDBQuery + ".timing"
+	// StatDBQueryCount is the counts for db queries
+	StatDBQueryCount = StatDBQuery + ".count"
 
 	// StatBaseHTTP is the base state name for http metrics
 	StatBaseHTTP = "http"

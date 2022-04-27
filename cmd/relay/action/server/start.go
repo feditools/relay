@@ -37,7 +37,7 @@ var Start action.Action = func(ctx context.Context) error {
 
 	// create database client
 	l.Debug("creating database client")
-	dbClient, err := bun.New(ctx)
+	dbClient, err := bun.New(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())
 		return err

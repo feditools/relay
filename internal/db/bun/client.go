@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
+	"github.com/feditools/relay/internal/metrics"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 	"github.com/spf13/viper"
@@ -43,11 +44,12 @@ type Bun struct {
 
 // Client is a DB interface compatible client for Bun
 type Client struct {
-	bun *Bun
+	bun     *Bun
+	metrics metrics.Collector
 }
 
 // New creates a new bun database client
-func New(ctx context.Context) (db.DB, error) {
+func New(ctx context.Context, m metrics.Collector) (db.DB, error) {
 	var newBun *Bun
 	var err error
 	dbType := strings.ToLower(viper.GetString(config.Keys.DbType))
@@ -72,7 +74,8 @@ func New(ctx context.Context) (db.DB, error) {
 	}
 
 	return &Client{
-		bun: newBun,
+		bun:     newBun,
+		metrics: m,
 	}, nil
 }
 

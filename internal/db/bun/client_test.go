@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
+	"github.com/feditools/relay/internal/mock"
 	"github.com/feditools/relay/internal/models/testdata"
 	"github.com/jackc/pgconn"
 	"github.com/spf13/viper"
@@ -255,7 +256,9 @@ func TestNew_Invalid(t *testing.T) {
 
 	viper.Set(config.Keys.DbType, "invalid")
 
-	_, err := New(context.Background())
+	metricsCollector, _ := mock.NewMetricsCollector()
+
+	_, err := New(context.Background(), metricsCollector)
 	errText := "database type invalid not supported for bundb"
 	if err.Error() != errText {
 		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
@@ -269,7 +272,9 @@ func TestNew_Sqlite(t *testing.T) {
 	viper.Set(config.Keys.DbType, "sqlite")
 	viper.Set(config.Keys.DbAddress, ":memory:")
 
-	bun, err := New(context.Background())
+	metricsCollector, _ := mock.NewMetricsCollector()
+
+	bun, err := New(context.Background(), metricsCollector)
 	if err != nil {
 		t.Errorf("unexpected error initializing bun connection: %s", err.Error())
 		return
@@ -374,7 +379,9 @@ func testNewSqliteClient() (db.DB, error) {
 	viper.Set(config.Keys.DbAddress, ":memory:")
 	viper.Set(config.Keys.DbEncryptionKey, testdata.TestEncryptionKey)
 
-	client, err := New(context.Background())
+	metricsCollector, _ := mock.NewMetricsCollector()
+
+	client, err := New(context.Background(), metricsCollector)
 	if err != nil {
 		return nil, err
 	}

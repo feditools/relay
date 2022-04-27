@@ -7,8 +7,8 @@ import (
 
 func (s *Server) middlewareMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		l := logger.WithField("func", "middlewareMetrics")
 		start := time.Now()
+		l := logger.WithField("func", "middlewareMetrics")
 
 		wx := NewResponseWriter(w)
 
