@@ -12,28 +12,31 @@ import (
 	"github.com/feditools/relay/internal/logic"
 	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
+	"github.com/feditools/relay/internal/transport"
+	"github.com/go-fed/activity/pub"
 	"github.com/spf13/viper"
 	"io"
 )
 
 // Module is an http module that handles activity pub activity
 type Module struct {
-	db    db.DB
-	logic *logic.Logic
+	clock     pub.Clock
+	db        db.DB
+	logic     *logic.Logic
+	transport *transport.Transport
 
 	appName      string
 	appVersion   string
 	domain       string
-	privateKey   *rsa.PrivateKey
-	publicKey    *rsa.PublicKey
 	publicKeyPem string
 }
 
 // New creates a new activity pub module
-func New(ctx context.Context, d db.DB, l *logic.Logic) (*Module, error) {
+func New(ctx context.Context, d db.DB, c pub.Clock, l *logic.Logic) (*Module, error) {
 	log := logger.WithField("func", "New")
 
 	module := &Module{
+		clock: c,
 		db:    d,
 		logic: l,
 
@@ -64,9 +67,12 @@ func New(ctx context.Context, d db.DB, l *logic.Logic) (*Module, error) {
 		return nil, err
 	}
 
-	// add keys
-	module.privateKey = privateKey
-	module.publicKey = instanceSelf.PublicKey
+	// generate transport
+	module.transport, err = transport.New(c, path.GenPublicKey(module.domain), privateKey)
+	if err != nil {
+		log.Errorf("creating transport: %s", err.Error())
+		return nil, err
+	}
 
 	// make public key pem
 	publicKeyBytes, err := x509.MarshalPKIXPublicKey(instanceSelf.PublicKey)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/feditools/relay/cmd/relay/action"
 	"github.com/feditools/relay/internal/activitypub"
+	"github.com/feditools/relay/internal/clock"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
@@ -50,6 +51,10 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	// clock
+	l.Debug("creating clock")
+	clockMod := clock.NewClock()
+
 	// create logic module
 	l.Debug("creating database client")
 	logicMod, err := logic.New(dbClient)
@@ -70,7 +75,7 @@ var Start action.Action = func(ctx context.Context) error {
 	var webModules []http.Module
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
 		l.Infof("adding %s module", config.ServerRoleActivityPub)
-		apMod, err := activitypub.New(ctx, dbClient, logicMod)
+		apMod, err := activitypub.New(ctx, dbClient, clockMod, logicMod)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleActivityPub, err.Error())
 			return err
