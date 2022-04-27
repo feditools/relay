@@ -40,12 +40,14 @@ func (m *Module) middlewareCheckHTTPSig(next http.Handler) http.Handler {
 		if err != nil {
 			l.Errorf("is domain blocked: %s", err.Error())
 			w.Header().Set("Content-Type", mimetype.TextPlain)
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("%d %s", http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))))
 			return
 		}
 		if isBlocked {
 			l.Debugf("domain %s is blocked", KeyIDURI.Host)
 			w.Header().Set("Content-Type", mimetype.TextPlain)
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte(fmt.Sprintf("%d %s", http.StatusUnauthorized, http.StatusText(http.StatusUnauthorized))))
 			return
 		}

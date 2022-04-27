@@ -15,6 +15,8 @@ const (
 	PartNodeinfo = "nodeinfo"
 	// PartPublicKey is the noun used in a path for an actor's public key
 	PartPublicKey = "main-key"
+	// PartWebFinger is the noun used in a path for web finger
+	PartWebFinger = "webfinger"
 	// PartWellKnown is the noun used in a well known path
 	PartWellKnown = ".well-known"
 
@@ -26,4 +28,6 @@ const (
 	APNodeInfo20 = "/" + PartNodeinfo + "/2.0"
 	// APWellKnownNodeInfo is the path to the well known node info endpoint
 	APWellKnownNodeInfo = "/" + PartWellKnown + "/" + PartNodeinfo
+	// APWellKnownWebFinger is the path to the well known web finger endpoint
+	APWellKnownWebFinger = "/" + PartWellKnown + "/" + PartWebFinger
 )

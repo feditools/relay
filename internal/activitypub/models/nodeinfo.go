@@ -16,14 +16,6 @@ type NodeInfo struct {
 	Version           string                 `json:"version"`
 }
 
-// Link represents a link
-type Link struct {
-	Href     string `json:"href,omitempty"`
-	Rel      string `json:"rel,omitempty"`
-	Template string `json:"template,omitempty"`
-	Type     string `json:"type,omitempty"`
-}
-
 // Software contains the software and version of the node
 type Software struct {
 	Name    string `json:"name"`
