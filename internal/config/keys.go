@@ -26,6 +26,7 @@ type KeyNames struct {
 	ServerExternalHostname string
 	ServerHTTPBind         string
 	ServerMinifyHTML       string
+	ServerRoles            string
 
 	// metrics
 	MetricsStatsDAddress string
@@ -58,6 +59,7 @@ var Keys = KeyNames{
 	ServerExternalHostname: "external-hostname",
 	ServerHTTPBind:         "http-bind",
 	ServerMinifyHTML:       "minify-html",
+	ServerRoles:            "server-role",
 
 	// metrics
 	MetricsStatsDAddress: "statsd-addr",

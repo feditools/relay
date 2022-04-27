@@ -13,7 +13,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.11.0
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
-	github.com/tyrm/go-util v0.3.0
+	github.com/tyrm/go-util v0.4.0
 	github.com/uptrace/bun v1.1.4
 	github.com/uptrace/bun/dialect/pgdialect v1.1.4
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.4

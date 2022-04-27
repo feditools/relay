@@ -160,9 +160,11 @@ github.com/subosito/gotenv
 # github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 ## explicit
 github.com/tmthrgd/go-hex
-# github.com/tyrm/go-util v0.3.0
+# github.com/tyrm/go-util v0.4.0
 ## explicit; go 1.17
+github.com/tyrm/go-util
 github.com/tyrm/go-util/middleware
+github.com/tyrm/go-util/mimetype
 # github.com/ugorji/go/codec v1.2.7
 ## explicit; go 1.11
 github.com/ugorji/go/codec

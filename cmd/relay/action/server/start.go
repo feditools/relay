@@ -4,8 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/feditools/relay/cmd/relay/action"
+	"github.com/feditools/relay/internal/activitypub"
+	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
+	"github.com/spf13/viper"
+	"github.com/tyrm/go-util"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,6 +41,27 @@ var Start action.Action = func(ctx context.Context) error {
 	if err != nil {
 		l.Errorf("http server: %s", err.Error())
 		return err
+	}
+
+	// create web modules
+	var webModules []http.Module
+	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
+		l.Infof("adding %s module", config.ServerRoleActivityPub)
+		apMod, err := activitypub.New(ctx, dbClient)
+		if err != nil {
+			l.Errorf("%s: %s", config.ServerRoleActivityPub, err.Error())
+			return err
+		}
+		webModules = append(webModules, apMod)
+	}
+
+	// add modules to servers
+	for _, mod := range webModules {
+		err := mod.Route(server)
+		if err != nil {
+			l.Errorf("loading %s module: %s", mod.Name(), err.Error())
+			return err
+		}
 	}
 
 	// ** start application **

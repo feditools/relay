@@ -25,6 +25,7 @@ type Values struct {
 	ServerExternalHostname string
 	ServerHTTPBind         string
 	ServerMinifyHTML       bool
+	ServerRoles            []string
 
 	// metrics
 	MetricsStatsDAddress string
@@ -37,7 +38,7 @@ var Defaults = Values{
 	LogLevel:   "info",
 
 	// application
-	ApplicationName: "relay",
+	ApplicationName: "feditools-relay",
 
 	// database
 	DbType:         "postgres",
@@ -54,6 +55,9 @@ var Defaults = Values{
 	ServerExternalHostname: "localhost",
 	ServerHTTPBind:         ":5000",
 	ServerMinifyHTML:       true,
+	ServerRoles: []string{
+		ServerRoleActivityPub,
+	},
 
 	// metrics
 	MetricsStatsDAddress: "localhost:8125",
