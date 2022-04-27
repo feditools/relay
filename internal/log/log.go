@@ -33,5 +33,5 @@ func Init() error {
 
 // WithPackageField creates a new logrus entry with the package name added as a field.
 func WithPackageField(m interface{}) *logrus.Entry {
-	return logrus.WithField("package", strings.ReplaceAll(strings.TrimPrefix(reflect.TypeOf(m).PkgPath(), "github.com/tyrm/feditools/"), "/", "."))
+	return logrus.WithField("package", strings.ReplaceAll(strings.TrimPrefix(reflect.TypeOf(m).PkgPath(), "github.com/feditools/relay/"), "/", "."))
 }

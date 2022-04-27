@@ -1,8 +1,6 @@
 package config
 
 const (
-	// ServerRoleBootstrap represents the bootstrap test server role
-	ServerRoleBootstrap = "bootstrap"
-	// ServerRoleWebapp represents the webapp server role
-	ServerRoleWebapp = "webapp"
+	// ServerRoleActivityPub represents the activity pub server role
+	ServerRoleActivityPub = "activity-pub"
 )

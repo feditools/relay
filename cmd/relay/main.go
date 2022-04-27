@@ -49,6 +49,7 @@ func main() {
 
 	// add commands
 	rootCmd.AddCommand(serverCommands())
+	rootCmd.AddCommand(databaseCommands())
 
 	err = rootCmd.Execute()
 	if err != nil {
