@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/cactus/go-statsd-client/v5 v5.0.0
 	github.com/go-fed/httpsig v1.1.0
-	github.com/go-playground/validator/v10 v10.10.1
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgconn v1.12.0
