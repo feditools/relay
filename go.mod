@@ -16,10 +16,10 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 	github.com/tyrm/go-util v0.4.2
-	github.com/uptrace/bun v1.1.4
+	github.com/uptrace/bun v1.1.5
 	github.com/uptrace/bun/dialect/pgdialect v1.1.4
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.4
-	github.com/uptrace/bun/extra/bundebug v1.1.4
+	github.com/uptrace/bun/extra/bundebug v1.1.5
 	modernc.org/sqlite v1.17.0
 )
 
