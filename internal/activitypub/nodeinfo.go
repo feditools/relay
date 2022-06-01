@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"encoding/json"
-	"fmt"
 	rmodels "github.com/feditools/relay/internal/activitypub/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/tyrm/go-util/mimetype"
@@ -16,8 +15,7 @@ func (m *Module) nodeinfo20GetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		l.Errorf("get peers: %s", err.Error())
 		w.Header().Set("Content-Type", mimetype.TextPlain)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 

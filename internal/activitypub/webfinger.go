@@ -15,8 +15,7 @@ func (m *Module) wellknownWebFingerGetHandler(w http.ResponseWriter, r *http.Req
 	subject := r.URL.Query().Get("resource")
 	if subject != fmt.Sprintf("acct:relay@%s", m.domain) {
 		w.Header().Set("Content-Type", mimetype.TextPlain)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusNotFound, http.StatusText(http.StatusNotFound))))
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 

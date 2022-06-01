@@ -2,18 +2,18 @@ package models
 
 // Actor represents an activity pub actor
 type Actor struct {
-	Context           string    `json:"@context"`
-	Endpoints         Endpoints `json:"endpoints"`
-	Followers         string    `json:"followers"`
-	Following         string    `json:"following"`
-	Inbox             string    `json:"inbox"`
-	Name              string    `json:"name"`
-	Type              string    `json:"type"`
-	ID                string    `json:"id"`
-	PublicKey         PublicKey `json:"publicKey"`
-	Summary           string    `json:"summary"`
-	PreferredUsername string    `json:"preferredUsername"`
-	URL               string    `json:"url"`
+	Context           interface{} `json:"@context"`
+	Endpoints         Endpoints   `json:"endpoints"`
+	Followers         string      `json:"followers"`
+	Following         string      `json:"following"`
+	Inbox             string      `json:"inbox"`
+	Name              string      `json:"name"`
+	Type              string      `json:"type"`
+	ID                string      `json:"id"`
+	PublicKey         PublicKey   `json:"publicKey"`
+	Summary           string      `json:"summary"`
+	PreferredUsername string      `json:"preferredUsername"`
+	URL               string      `json:"url"`
 }
 
 // Endpoints represents known activity pub endpoints

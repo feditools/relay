@@ -6,17 +6,8 @@ import (
 	"github.com/feditools/relay/internal/http"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/httpsig"
-	"github.com/sirupsen/logrus"
 	nethttp "net/http"
 	"sync"
-)
-
-var (
-	digestAlgo = httpsig.DigestSha256
-	algoPrefs  = []httpsig.Algorithm{httpsig.RSA_SHA256}
-
-	getHeaders  = []string{httpsig.RequestTarget, "host", "date"}
-	postHeaders = []string{httpsig.RequestTarget, "host", "date", "digest"}
 )
 
 // Transport handled signing outgoing requests to federated instances
@@ -33,7 +24,7 @@ type Transport struct {
 
 // New creates a new Transport module
 func New(clock pub.Clock, pubKeyID string, privkey crypto.PrivateKey) (*Transport, error) {
-	l := logrus.WithField("func", "New")
+	l := logger.WithField("func", "New")
 
 	getSigner, _, err := httpsig.NewSigner(algoPrefs, digestAlgo, getHeaders, httpsig.Signature, 120)
 	if err != nil {

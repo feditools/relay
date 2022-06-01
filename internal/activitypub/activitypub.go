@@ -15,6 +15,7 @@ import (
 	"github.com/feditools/relay/internal/transport"
 	"github.com/go-fed/activity/pub"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/singleflight"
 	"io"
 )
 
@@ -24,6 +25,8 @@ type Module struct {
 	db        db.DB
 	logic     *logic.Logic
 	transport *transport.Transport
+
+	outgoingRequestGroup singleflight.Group
 
 	appName      string
 	appVersion   string
