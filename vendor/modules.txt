@@ -174,7 +174,7 @@ github.com/tyrm/go-util/mimetype
 # github.com/ugorji/go/codec v1.2.7
 ## explicit; go 1.11
 github.com/ugorji/go/codec
-# github.com/uptrace/bun v1.1.4
+# github.com/uptrace/bun v1.1.5
 ## explicit; go 1.17
 github.com/uptrace/bun
 github.com/uptrace/bun/dialect
@@ -186,13 +186,13 @@ github.com/uptrace/bun/internal/parser
 github.com/uptrace/bun/internal/tagparser
 github.com/uptrace/bun/migrate
 github.com/uptrace/bun/schema
-# github.com/uptrace/bun/dialect/pgdialect v1.1.4
+# github.com/uptrace/bun/dialect/pgdialect v1.1.5
 ## explicit; go 1.17
 github.com/uptrace/bun/dialect/pgdialect
-# github.com/uptrace/bun/dialect/sqlitedialect v1.1.4
+# github.com/uptrace/bun/dialect/sqlitedialect v1.1.5
 ## explicit; go 1.17
 github.com/uptrace/bun/dialect/sqlitedialect
-# github.com/uptrace/bun/extra/bundebug v1.1.4
+# github.com/uptrace/bun/extra/bundebug v1.1.5
 ## explicit; go 1.17
 github.com/uptrace/bun/extra/bundebug
 # github.com/vmihailenco/msgpack/v5 v5.3.5
