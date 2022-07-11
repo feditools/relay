@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/uptrace/bun/dialect"
+
 	"github.com/uptrace/bun/dialect/feature"
 	"github.com/uptrace/bun/internal"
 	"github.com/uptrace/bun/schema"
@@ -16,6 +18,7 @@ type UpdateQuery struct {
 	returningQuery
 	customValueQuery
 	setQuery
+	idxHintsQuery
 
 	omitZero bool
 }
@@ -204,6 +207,11 @@ func (q *UpdateQuery) AppendQuery(fmter schema.Formatter, b []byte) (_ []byte, e
 		return nil, err
 	}
 
+	b, err = q.appendIndexHints(fmter, b)
+	if err != nil {
+		return nil, err
+	}
+
 	b, err = q.mustAppendSet(fmter, b)
 	if err != nil {
 		return nil, err
@@ -273,6 +281,10 @@ func (q *UpdateQuery) appendSetStruct(
 	isTemplate := fmter.IsNop()
 	pos := len(b)
 	for _, f := range fields {
+		if f.SkipUpdate() {
+			continue
+		}
+
 		app, hasValue := q.modelValues[f.Name]
 
 		if !hasValue && q.omitZero && f.HasZeroValue(model.strct) {
@@ -488,6 +500,15 @@ func (q *UpdateQuery) hasTableAlias(fmter schema.Formatter) bool {
 	return fmter.HasFeature(feature.UpdateMultiTable | feature.UpdateTableAlias)
 }
 
+func (q *UpdateQuery) String() string {
+	buf, err := q.AppendQuery(q.db.Formatter(), nil)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(buf)
+}
+
 //------------------------------------------------------------------------------
 
 func (q *UpdateQuery) QueryBuilder() QueryBuilder {
@@ -538,4 +559,27 @@ func (q *updateQueryBuilder) WherePK(cols ...string) QueryBuilder {
 
 func (q *updateQueryBuilder) Unwrap() interface{} {
 	return q.UpdateQuery
+}
+
+//------------------------------------------------------------------------------
+
+func (q *UpdateQuery) UseIndex(indexes ...string) *UpdateQuery {
+	if q.db.dialect.Name() == dialect.MySQL {
+		q.addUseIndex(indexes...)
+	}
+	return q
+}
+
+func (q *UpdateQuery) IgnoreIndex(indexes ...string) *UpdateQuery {
+	if q.db.dialect.Name() == dialect.MySQL {
+		q.addIgnoreIndex(indexes...)
+	}
+	return q
+}
+
+func (q *UpdateQuery) ForceIndex(indexes ...string) *UpdateQuery {
+	if q.db.dialect.Name() == dialect.MySQL {
+		q.addForceIndex(indexes...)
+	}
+	return q
 }

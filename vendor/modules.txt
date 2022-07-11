@@ -174,7 +174,7 @@ github.com/tyrm/go-util/mimetype
 # github.com/ugorji/go/codec v1.2.7
 ## explicit; go 1.11
 github.com/ugorji/go/codec
-# github.com/uptrace/bun v1.1.5
+# github.com/uptrace/bun v1.1.6
 ## explicit; go 1.17
 github.com/uptrace/bun
 github.com/uptrace/bun/dialect
