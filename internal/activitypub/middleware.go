@@ -9,9 +9,15 @@ import (
 	"net/url"
 )
 
+type CTXVerifier struct {
+	Verifier httpsig.Verifier
+}
+
 func (m *Module) middlewareCheckHTTPSig(next nethttp.Handler) nethttp.Handler {
 	return nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
 		l := logger.WithField("func", "middlewareCheckHTTPSig")
+
+		l.Debugf("running middleware")
 
 		// create verifier
 		verifier, err := httpsig.NewVerifier(r)
@@ -32,6 +38,7 @@ func (m *Module) middlewareCheckHTTPSig(next nethttp.Handler) nethttp.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+
 		ctx := context.WithValue(r.Context(), http.ContextKeyKeyVerifier, verifier)
 
 		// check for domain block

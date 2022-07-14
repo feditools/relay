@@ -64,14 +64,8 @@ func New(ctx context.Context, d db.DB, c pub.Clock, l *logic.Logic) (*Module, er
 		}
 	}
 
-	privateKey, err := instanceSelf.GetPrivateKey()
-	if err != nil {
-		log.Errorf("decrypting private key: %s", err.Error())
-		return nil, err
-	}
-
 	// generate transport
-	module.transport, err = transport.New(c, path.GenPublicKey(module.domain), privateKey)
+	module.transport, err = transport.New(c, path.GenPublicKey(module.domain), instanceSelf.PrivateKey)
 	if err != nil {
 		log.Errorf("creating transport: %s", err.Error())
 		return nil, err
@@ -120,14 +114,8 @@ func (m *Module) createInstanceSelf(ctx context.Context) (*models.Instance, erro
 		Domain:   m.domain,
 		InboxIRI: path.GenInbox(m.domain),
 
-		PublicKey: publickey,
-	}
-
-	// set private key
-	err = newInstance.SetPrivateKey(privatekey)
-	if err != nil {
-		l.Errorf("setting private key: %s", err.Error())
-		return nil, err
+		PublicKey:  publickey,
+		PrivateKey: privatekey,
 	}
 
 	// add to database

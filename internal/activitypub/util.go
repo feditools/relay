@@ -27,7 +27,9 @@ func extractPublicKeyFromActor(actor *apmodels.Actor) (*rsa.PublicKey, error) {
 		l.Debugf(msg)
 		return nil, errors.New(msg)
 	}
-	if actorPem.Type != "BEGIN PUBLIC KEY" {
+
+	l.Debugf("public key type: %s", actorPem.Type)
+	if actorPem.Type != "PUBLIC KEY" {
 		msg := fmt.Sprintf("actor %s has wrong key type", actor.URL)
 		l.Debugf(msg)
 		return nil, errors.New(msg)
@@ -58,14 +60,14 @@ func (m *Module) fetchActor(ctx context.Context, a *url.URL) (*apmodels.Actor, e
 			return nil, err
 		}
 
-		var newActor *apmodels.Actor
-		err = json.Unmarshal(body, newActor)
+		var newActor apmodels.Actor
+		err = json.Unmarshal(body, &newActor)
 		if err != nil {
 			l.Errorf("unmarshal json %s: %s", a.String(), err.Error())
 			return nil, err
 		}
 
-		return newActor, err
+		return &newActor, err
 	})
 
 	if err != nil {
@@ -114,7 +116,7 @@ func (m *Module) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL
 		instance.PublicKey = pubKey
 	}
 
-	return nil, nil
+	return instance, nil
 }
 
 func (m *Module) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
