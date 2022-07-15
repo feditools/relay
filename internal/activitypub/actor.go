@@ -28,6 +28,7 @@ func (m *Module) genRelayActor() *apmodels.Actor {
 		},
 		Followers: path.GenFollowers(m.domain),
 		Following: path.GenFollowing(m.domain),
+		Inbox:     path.GenInbox(m.domain),
 		Name:      m.appName,
 		Type:      "Application",
 		ID:        path.GenActor(m.domain),

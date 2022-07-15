@@ -3,8 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
-	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
 	"github.com/feditools/relay/internal/config"
@@ -17,6 +15,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/sync/singleflight"
 	"io"
+	"sync"
 )
 
 // Module is an http module that handles activity pub activity
@@ -32,6 +31,10 @@ type Module struct {
 	appVersion   string
 	domain       string
 	publicKeyPem string
+
+	inboxChan chan verifiedActivity
+	inboxStop chan struct{}
+	inboxWG   sync.WaitGroup
 }
 
 // New creates a new activity pub module
@@ -45,7 +48,11 @@ func New(ctx context.Context, d db.DB, c pub.Clock, l *logic.Logic) (*Module, er
 
 		appName:    viper.GetString(config.Keys.ApplicationName),
 		appVersion: viper.GetString(config.Keys.SoftwareVersion),
-		domain:     viper.GetString(config.Keys.ServerExternalHostname),
+
+		domain: viper.GetString(config.Keys.ServerExternalHostname),
+
+		inboxChan: make(chan verifiedActivity, viper.GetInt(config.Keys.APInboxQueueSize)),
+		inboxStop: make(chan struct{}),
 	}
 
 	var instanceSelf *models.Instance
@@ -94,38 +101,17 @@ func New(ctx context.Context, d db.DB, c pub.Clock, l *logic.Logic) (*Module, er
 	}
 	module.publicKeyPem = string(publicPemBytes)
 
+	for i := 0; i < viper.GetInt(config.Keys.APInboxWorkers); i++ {
+		module.inboxWG.Add(1)
+		go module.worker(ctx, i, &module.inboxWG, module.inboxChan, module.inboxStop)
+	}
+
 	return module, nil
 }
 
-func (m *Module) createInstanceSelf(ctx context.Context) (*models.Instance, error) {
-	l := logger.WithField("func", "createInstanceSelf")
-
-	// generate key
-	privatekey, err := rsa.GenerateKey(rand.Reader, ActorKeySize)
-	if err != nil {
-		l.Errorf("genrating private key: %s", err.Error())
-		return nil, err
-	}
-
-	publickey := &privatekey.PublicKey
-
-	// create new instance
-	newInstance := &models.Instance{
-		Domain:   m.domain,
-		InboxIRI: path.GenInbox(m.domain),
-
-		PublicKey:  publickey,
-		PrivateKey: privatekey,
-	}
-
-	// add to database
-	err = m.db.CreateInstance(ctx, newInstance)
-	if err != nil {
-		l.Errorf("db create: %s", err.Error())
-		return nil, err
-	}
-
-	return newInstance, nil
+// Close closes the activity pub module
+func (m *Module) Close() {
+	close(m.inboxStop)
 }
 
 // Name return the module name

@@ -10,6 +10,10 @@ type KeyNames struct {
 	SoftwareVersion string
 	TokenSalt       string
 
+	// activity pub
+	APInboxQueueSize string
+	APInboxWorkers   string
+
 	// database
 	DbType          string
 	DbAddress       string
@@ -42,6 +46,10 @@ var Keys = KeyNames{
 	ApplicationName: "application-name",
 	SoftwareVersion: "software-version", // Set at build
 	TokenSalt:       "token-salt",
+
+	// activity pub
+	APInboxQueueSize: "ap-inbox-queue-size",
+	APInboxWorkers:   "ap-inbox-workers",
 
 	// database
 	DbType:          "db-type",

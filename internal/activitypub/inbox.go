@@ -66,6 +66,12 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 		return
 	}
 
+	// enqueue activity
+	m.inboxChan <- verifiedActivity{
+		InstanceID: instance.ID,
+		Activity:   activity,
+	}
+
 	l.Debugf("headers: %+v", r.Header)
 	l.Debugf("body: %s", activity)
 	w.WriteHeader(nethttp.StatusAccepted)

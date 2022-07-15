@@ -15,6 +15,7 @@ type Instance struct {
 	Domain     string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
 	PublicKey  *rsa.PublicKey  `validate:"-"`
 	PrivateKey *rsa.PrivateKey `validate:"-"`
+	ActorIRI   string          `validate:"required,url" bun:",nullzero,notnull,unique"`
 	InboxIRI   string          `validate:"required,url" bun:",nullzero,notnull,unique"`
 	Followed   bool            `validate:"-" bun:",notnull,default:false"`
 	BlockID    int64           `validate:"-" bun:",nullzero"`

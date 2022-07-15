@@ -139,6 +139,7 @@ func (m *Module) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (
 	// create new instance
 	newInstance := &models.Instance{
 		Domain:    actorURI.Host,
+		ActorIRI:  actorURI.String(),
 		InboxIRI:  actor.Endpoints.SharedInbox,
 		PublicKey: pubKey,
 	}

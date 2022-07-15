@@ -9,6 +9,10 @@ type Values struct {
 	ApplicationName string
 	SoftwareVersion string
 
+	// activity pub
+	APInboxQueueSize int
+	APInboxWorkers   int
+
 	// database
 	DbType          string
 	DbAddress       string
@@ -39,6 +43,10 @@ var Defaults = Values{
 
 	// application
 	ApplicationName: "feditools-relay",
+
+	// activity pub
+	APInboxQueueSize: 1024,
+	APInboxWorkers:   2,
 
 	// database
 	DbType:         "postgres",

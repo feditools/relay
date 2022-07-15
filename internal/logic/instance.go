@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// GetPeers returns true if a domain matches a block in the database
+// GetPeers returns a list of peers
 func (l *Logic) GetPeers(ctx context.Context) (*[]string, error) {
 	log := logger.WithField("func", "GetPeers")
 

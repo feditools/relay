@@ -2,55 +2,69 @@ package transport
 
 import (
 	"crypto"
-	"fmt"
 	"github.com/feditools/relay/internal/http"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/httpsig"
 	nethttp "net/http"
 	"sync"
+	"time"
 )
 
 // Transport handled signing outgoing requests to federated instances
 type Transport struct {
-	client        pub.HttpClient
-	clock         pub.Clock
-	sigTransport  *pub.HttpSigTransport
-	getSigner     httpsig.Signer
-	getSignerLock *sync.Mutex
+	client pub.HttpClient
+	clock  pub.Clock
 
 	keyID   string
 	privKey crypto.PrivateKey
+
+	signerExp  time.Time
+	getSigner  httpsig.Signer
+	postSigner httpsig.Signer
+	signerMu   sync.Mutex
 }
 
 // New creates a new Transport module
 func New(clock pub.Clock, pubKeyID string, privkey crypto.PrivateKey) (*Transport, error) {
-	l := logger.WithField("func", "New")
-
-	getSigner, _, err := httpsig.NewSigner(algoPrefs, digestAlgo, getHeaders, httpsig.Signature, 120)
-	if err != nil {
-		l.Debugf("can't make get signer: %s", err.Error())
-		return nil, fmt.Errorf("can't make get signer: %s", err)
-	}
-
-	postSigner, _, err := httpsig.NewSigner(algoPrefs, digestAlgo, postHeaders, httpsig.Signature, 120)
-	if err != nil {
-		l.Debugf("can't make post signer: %s", err.Error())
-		return nil, fmt.Errorf("can't make post signer: %s", err)
-	}
+	//l := logger.WithField("func", "New")
 
 	httpClient := &nethttp.Client{
 		Transport: &http.Transport{},
 	}
-	sigTransport := pub.NewHttpSigTransport(httpClient, http.GetUserAgent(), clock, getSigner, postSigner, pubKeyID, privkey)
 
 	return &Transport{
-		client:        httpClient,
-		clock:         clock,
-		sigTransport:  sigTransport,
-		getSigner:     getSigner,
-		getSignerLock: &sync.Mutex{},
+		client: httpClient,
+		clock:  clock,
 
 		keyID:   pubKeyID,
 		privKey: privkey,
 	}, nil
+}
+
+func (t *Transport) doSign(do func()) {
+	// Perform within mu safety
+	t.signerMu.Lock()
+	defer t.signerMu.Unlock()
+
+	if now := time.Now(); now.After(t.signerExp) {
+		const expiry = 120
+
+		// Signers have expired and require renewal
+		t.getSigner, _ = genGetSigner(expiry)
+		t.postSigner, _ = genPostSigner(expiry)
+		t.signerExp = now.Add(time.Second * expiry)
+	}
+
+	// Perform signing
+	do()
+}
+
+func genGetSigner(expiresIn int64) (httpsig.Signer, error) {
+	sig, _, err := httpsig.NewSigner(algoPrefs, digestAlgo, getHeaders, httpsig.Signature, expiresIn)
+	return sig, err
+}
+
+func genPostSigner(expiresIn int64) (httpsig.Signer, error) {
+	sig, _, err := httpsig.NewSigner(algoPrefs, digestAlgo, postHeaders, httpsig.Signature, expiresIn)
+	return sig, err
 }

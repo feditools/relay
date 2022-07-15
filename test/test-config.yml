@@ -5,7 +5,7 @@
 # String. Log level to use throughout the application.
 # Options: ["trace","debug","info","warn","error","fatal"]
 # Default: "info"
-log-level: "debug"
+log-level: "trace"
 
 ##############
 ## DATABASE ##

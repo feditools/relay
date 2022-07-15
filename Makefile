@@ -18,7 +18,7 @@ clean:
 	@rm -Rvf coverage.txt dist relay
 	@find . -name ".DS_Store" -exec rm -v {} \;
 
-docker-restart: test-docker-stop test-docker-start
+docker-restart: docker-stop docker-start
 
 docker-start:
 	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml up -d
