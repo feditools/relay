@@ -56,7 +56,7 @@ func (m *Module) wellknownNodeInfoGetHandler(w http.ResponseWriter, r *http.Requ
 		Links: []rmodels.Link{
 			{
 				Rel:  "http://nodeinfo.diaspora.software/ns/schema/2.0",
-				Href: path.GenNodeinfo20(m.domain),
+				Href: path.GenNodeinfo20(m.logic.Domain()),
 			},
 		},
 	}

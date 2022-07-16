@@ -11,7 +11,11 @@ func Global(cmd *cobra.Command, values config.Values) {
 	cmd.PersistentFlags().String(config.Keys.LogLevel, values.LogLevel, usage.LogLevel)
 
 	// application
+	cmd.PersistentFlags().Int(config.Keys.ActorKeySize, values.ActorKeySize, usage.ActorKeySize)
 	cmd.PersistentFlags().String(config.Keys.ApplicationName, values.ApplicationName, usage.ApplicationName)
+	cmd.PersistentFlags().Int(config.Keys.CachedActivityLimit, values.CachedActivityLimit, usage.CachedActivityLimit)
+	cmd.PersistentFlags().Int(config.Keys.CachedActorLimit, values.CachedActorLimit, usage.CachedActorLimit)
+	cmd.PersistentFlags().Int(config.Keys.CachedDigestLimit, values.CachedDigestLimit, usage.CachedDigestLimit)
 
 	// database
 	cmd.PersistentFlags().String(config.Keys.DbType, values.DbType, usage.DbType)

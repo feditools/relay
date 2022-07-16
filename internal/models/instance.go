@@ -1,9 +1,14 @@
 package models
 
 import (
+	"bytes"
 	"context"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"github.com/sirupsen/logrus"
 	"github.com/uptrace/bun"
+	"io"
 	"time"
 )
 
@@ -17,7 +22,7 @@ type Instance struct {
 	PrivateKey *rsa.PrivateKey `validate:"-"`
 	ActorIRI   string          `validate:"required,url" bun:",nullzero,notnull,unique"`
 	InboxIRI   string          `validate:"required,url" bun:",nullzero,notnull,unique"`
-	Followed   bool            `validate:"-" bun:",notnull,default:false"`
+	Followed   bool            `validate:"-" bun:",notnull"`
 	BlockID    int64           `validate:"-" bun:",nullzero"`
 	Block      *Block          `validate:"-" bun:"rel:belongs-to"`
 }
@@ -45,4 +50,37 @@ func (i *Instance) BeforeAppendModel(_ context.Context, query bun.Query) error {
 		}
 	}
 	return nil
+}
+
+func (i *Instance) PublicKeyPEM() (string, error) {
+	l := logger.WithFields(logrus.Fields{
+		"func":  "PublicKeyPEM",
+		"model": "Instance",
+	})
+
+	publicKeyBytes, err := x509.MarshalPKIXPublicKey(i.PublicKey)
+	if err != nil {
+		l.Errorf("marshaling public key: %s", err.Error())
+
+		return "", err
+	}
+	publicKeyBlock := &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: publicKeyBytes,
+	}
+	publicPem := new(bytes.Buffer)
+	err = pem.Encode(publicPem, publicKeyBlock)
+	if err != nil {
+		l.Errorf("encoding pem: %s", err.Error())
+
+		return "", err
+	}
+	publicPemBytes, err := io.ReadAll(publicPem)
+	if err != nil {
+		l.Errorf("reading pem: %s", err.Error())
+
+		return "", err
+	}
+
+	return string(publicPemBytes), nil
 }

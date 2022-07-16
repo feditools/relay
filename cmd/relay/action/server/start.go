@@ -11,6 +11,7 @@ import (
 	"github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/logic"
 	"github.com/feditools/relay/internal/metrics/statsd"
+	"github.com/feditools/relay/internal/runner/faktory"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
 	"os"
@@ -19,10 +20,11 @@ import (
 )
 
 // Start starts the server
-var Start action.Action = func(ctx context.Context) error {
+var Start action.Action = func(topCtx context.Context) error {
 	l := logger.WithField("func", "Start")
-
 	l.Info("starting")
+
+	ctx, cancel := context.WithCancel(topCtx)
 
 	// create metrics collector
 	metricsCollector, err := statsd.New()
@@ -51,17 +53,26 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
-	// clock
+	// create clock module
 	l.Debug("creating clock")
 	clockMod := clock.NewClock()
 
 	// create logic module
-	l.Debug("creating database client")
-	logicMod, err := logic.New(dbClient)
+	l.Debug("creating logic module")
+	logicMod, err := logic.New(ctx, clockMod, dbClient)
 	if err != nil {
-		l.Errorf("db: %s", err.Error())
+		l.Errorf("logic: %s", err.Error())
 		return err
 	}
+
+	// create runner
+	runnerMod, err := faktory.New(logicMod)
+	if err != nil {
+		l.Errorf("runner: %s", err.Error())
+		return err
+	}
+	logicMod.SetRunner(runnerMod)
+	runnerMod.Start(ctx)
 
 	// create http server
 	l.Debug("creating http server")
@@ -75,7 +86,7 @@ var Start action.Action = func(ctx context.Context) error {
 	var webModules []http.Module
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
 		l.Infof("adding %s module", config.ServerRoleActivityPub)
-		apMod, err := activitypub.New(ctx, dbClient, clockMod, logicMod)
+		apMod, err := activitypub.New(ctx, logicMod, runnerMod)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleActivityPub, err.Error())
 			return err
@@ -112,8 +123,10 @@ var Start action.Action = func(ctx context.Context) error {
 	select {
 	case sig := <-stopSigChan:
 		l.Infof("got sig: %s", sig)
+		cancel()
 	case err := <-errChan:
 		l.Fatal(err.Error())
+		cancel()
 	}
 
 	l.Infof("done")

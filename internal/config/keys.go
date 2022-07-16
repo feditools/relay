@@ -6,13 +6,12 @@ type KeyNames struct {
 	ConfigPath string
 
 	// application
-	ApplicationName string
-	SoftwareVersion string
-	TokenSalt       string
-
-	// activity pub
-	APInboxQueueSize string
-	APInboxWorkers   string
+	ActorKeySize        string
+	ApplicationName     string
+	CachedActivityLimit string
+	CachedActorLimit    string
+	CachedDigestLimit   string
+	SoftwareVersion     string
 
 	// database
 	DbType          string
@@ -25,6 +24,9 @@ type KeyNames struct {
 	DbTLSCACert     string
 	DbLoadTestData  string
 	DbEncryptionKey string
+
+	// running
+	RunnerConcurrency string
 
 	// server
 	ServerExternalHostname string
@@ -43,13 +45,12 @@ var Keys = KeyNames{
 	LogLevel:   "log-level",
 
 	// application
-	ApplicationName: "application-name",
-	SoftwareVersion: "software-version", // Set at build
-	TokenSalt:       "token-salt",
-
-	// activity pub
-	APInboxQueueSize: "ap-inbox-queue-size",
-	APInboxWorkers:   "ap-inbox-workers",
+	ActorKeySize:        "actor-key-size",
+	ApplicationName:     "application-name",
+	CachedActivityLimit: "cached-activity-limit",
+	CachedActorLimit:    "cached-actor-limit",
+	CachedDigestLimit:   "cached-digest-limit",
+	SoftwareVersion:     "software-version", // Set at build
 
 	// database
 	DbType:          "db-type",
@@ -62,6 +63,9 @@ var Keys = KeyNames{
 	DbTLSCACert:     "db-tls-ca-cert",
 	DbLoadTestData:  "test-data", // CLI only
 	DbEncryptionKey: "db-crypto-key",
+
+	// runner
+	RunnerConcurrency: "runner-concurrency",
 
 	// server
 	ServerExternalHostname: "external-hostname",

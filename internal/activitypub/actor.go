@@ -24,21 +24,21 @@ func (m *Module) genRelayActor() *apmodels.Actor {
 	return &apmodels.Actor{
 		Context: ContextActivityStreams,
 		Endpoints: apmodels.Endpoints{
-			SharedInbox: path.GenInbox(m.domain),
+			SharedInbox: path.GenInbox(m.logic.Domain()),
 		},
-		Followers: path.GenFollowers(m.domain),
-		Following: path.GenFollowing(m.domain),
-		Inbox:     path.GenInbox(m.domain),
+		Followers: path.GenFollowers(m.logic.Domain()),
+		Following: path.GenFollowing(m.logic.Domain()),
+		Inbox:     path.GenInbox(m.logic.Domain()),
 		Name:      m.appName,
 		Type:      "Application",
-		ID:        path.GenActor(m.domain),
+		ID:        path.GenActor(m.logic.Domain()),
 		PublicKey: apmodels.PublicKey{
-			ID:           path.GenPublicKey(m.domain),
-			Owner:        path.GenActor(m.domain),
+			ID:           path.GenPublicKey(m.logic.Domain()),
+			Owner:        path.GenActor(m.logic.Domain()),
 			PublicKeyPEM: m.publicKeyPem,
 		},
 		Summary:           ActorSummary,
 		PreferredUsername: "relay",
-		URL:               path.GenActor(m.domain),
+		URL:               path.GenActor(m.logic.Domain()),
 	}
 }

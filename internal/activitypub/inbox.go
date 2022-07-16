@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"encoding/json"
+	"github.com/feditools/relay/internal/models"
 	nethttp "net/http"
 	"net/url"
 )
@@ -10,7 +11,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	l := logger.WithField("func", "inboxPostHandler")
 
 	// parse activity
-	var activity map[string]interface{}
+	var activity models.Activity
 	err := json.NewDecoder(r.Body).Decode(&activity)
 	if err != nil {
 		l.Errorf("decoding activity: %+v", err)
@@ -39,7 +40,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	}
 
 	// check request validation
-	validated, instance := m.validateRequest(r, actorURI)
+	validated, instance := m.logic.ValidateRequest(r, actorURI)
 	if !validated {
 		l.Debugf("validation failed for actor: %s", actor)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
@@ -61,18 +62,21 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	}
 
 	// drop non-Follow activities from instances that don't follow our relay
-	if activityType != TypeFollow && !instance.Followed {
+	if activityType != models.TypeFollow && !instance.Followed {
+		l.Debugf("got non follow from an unfollowed instance: %s", activityType)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
 		return
 	}
 
-	// enqueue activity
-	m.inboxChan <- verifiedActivity{
-		InstanceID: instance.ID,
-		Activity:   activity,
-	}
-
 	l.Debugf("headers: %+v", r.Header)
 	l.Debugf("body: %s", activity)
+
+	// enqueue activity
+	err = m.runner.EnqueueInboxActivity(r.Context(), instance.ID, activity)
+	if err != nil {
+		nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(nethttp.StatusAccepted)
 }

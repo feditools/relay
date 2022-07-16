@@ -13,22 +13,22 @@ func (m *Module) wellknownWebFingerGetHandler(w http.ResponseWriter, r *http.Req
 	l := logger.WithField("func", "wellknownWebFingerGetHandler")
 
 	subject := r.URL.Query().Get("resource")
-	if subject != fmt.Sprintf("acct:relay@%s", m.domain) {
+	if subject != fmt.Sprintf("acct:relay@%s", m.logic.Domain()) {
 		w.Header().Set("Content-Type", mimetype.TextPlain)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
 	webfinger := rmodels.WebFinger{
-		Aliases: []string{path.GenActor(m.domain)},
+		Aliases: []string{path.GenActor(m.logic.Domain())},
 		Links: []rmodels.Link{
 			{
-				Href: path.GenActor(m.domain),
+				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",
 				Type: mimetype.ApplicationActivityJSON,
 			},
 			{
-				Href: path.GenActor(m.domain),
+				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",
 				Type: mimetype.ApplicationLDJSONActivityStreams,
 			},

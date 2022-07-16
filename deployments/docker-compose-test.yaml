@@ -10,6 +10,15 @@ services:
       - POSTGRES_USER=test
       - POSTGRES_DB=test
     restart: always
+  faktory:
+    image: contribsys/faktory:1.6.1
+    command: /faktory -b :7419 -w :7420 -e production
+    ports:
+      - 127.0.0.1:7419:7419/tcp
+      - 127.0.0.1:7420:7420/tcp
+    environment:
+      - FAKTORY_PASSWORD=test
+    restart: always
 
   influxdb:
     image: influxdb:2.1

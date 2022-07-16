@@ -4,12 +4,15 @@ go 1.18
 
 require (
 	github.com/cactus/go-statsd-client/v5 v5.0.0
+	github.com/contribsys/faktory v1.6.0
+	github.com/contribsys/faktory_worker_go v1.6.0
 	github.com/go-fed/activity v1.0.0
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/sirupsen/logrus v1.8.1

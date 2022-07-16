@@ -15,6 +15,7 @@ func (t *Transport) InstanceGet(ctx context.Context, uri *url.URL, accepts ...st
 	req, err := http.NewRequestWithContext(ctx, "GET", uri.String(), nil)
 	if err != nil {
 		l.Errorf("creating http request: %s", err.Error())
+
 		return nil, err
 	}
 
@@ -29,12 +30,14 @@ func (t *Transport) InstanceGet(ctx context.Context, uri *url.URL, accepts ...st
 	})
 	if err != nil {
 		l.Errorf("can't lock signer: %s", err.Error())
+
 		return nil, err
 	}
-	l.Tracef("doing requiest: %#v", req)
+
 	resp, err := t.client.Do(req)
 	if err != nil {
 		l.Errorf("http client do: %s", err.Error())
+
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -61,7 +64,6 @@ func (t *Transport) InstancePost(ctx context.Context, uri *url.URL, body []byte,
 	req.Header.Set("Host", uri.Host)
 	req.Header.Set("Content-Type", contentType)
 
-	l.Tracef("signing request: %#v", req)
 	t.doSign(func() {
 		err = t.postSigner.SignRequest(t.privKey, t.keyID, req, body)
 	})
@@ -69,7 +71,7 @@ func (t *Transport) InstancePost(ctx context.Context, uri *url.URL, body []byte,
 		l.Errorf("can't lock signer: %s", err.Error())
 		return nil, err
 	}
-	l.Tracef("doing request: %#v", req)
+
 	resp, err := t.client.Do(req)
 	if err != nil {
 		l.Errorf("http client do: %s", err.Error())
