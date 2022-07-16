@@ -130,10 +130,10 @@ func (l *Logic) getOrCreateSelfInstance(ctx context.Context) (*models.Instance, 
 	return instance, nil
 }
 
-func (m *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
+func (l *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
 	log := logger.WithField("func", "getInstanceWithPublicKey")
 
-	instance, err := m.db.ReadInstanceByDomain(ctx, actorURI.Host)
+	instance, err := l.db.ReadInstanceByDomain(ctx, actorURI.Host)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 		return nil, err
@@ -141,7 +141,7 @@ func (m *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL)
 
 	if instance == nil {
 		log.Debugf("creating instance %s from actor", actorURI.Host)
-		instance, err = m.makeInstanceFromActor(ctx, actorURI)
+		instance, err = l.makeInstanceFromActor(ctx, actorURI)
 		if err != nil {
 			log.Errorf("make actor: %s", err.Error())
 			return nil, err
@@ -151,7 +151,7 @@ func (m *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL)
 
 	if instance.PublicKey == nil {
 		// fetch remote actorURI
-		actor, err := m.fetchActor(ctx, actorURI)
+		actor, err := l.fetchActor(ctx, actorURI)
 		if err != nil {
 			log.Errorf("fetch actor: %s", err.Error())
 			return nil, err
@@ -170,11 +170,11 @@ func (m *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL)
 	return instance, nil
 }
 
-func (m *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
+func (l *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
 	log := logger.WithField("func", "makeInstanceFromActor")
 
 	// fetch remote actor
-	actor, err := m.fetchActor(ctx, actorURI)
+	actor, err := l.fetchActor(ctx, actorURI)
 	if err != nil {
 		log.Errorf("fetch actor: %s", err.Error())
 		return nil, err
@@ -194,7 +194,7 @@ func (m *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*
 		InboxIRI:  actor.Endpoints.SharedInbox,
 		PublicKey: pubKey,
 	}
-	err = m.db.CreateInstance(ctx, newInstance)
+	err = l.db.CreateInstance(ctx, newInstance)
 	if err != nil {
 		log.Errorf("db create: %s", err.Error())
 		return nil, err

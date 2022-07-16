@@ -3,7 +3,7 @@ package activitypub
 import (
 	"encoding/json"
 	"fmt"
-	rmodels "github.com/feditools/relay/internal/activitypub/models"
+	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/tyrm/go-util/mimetype"
 	"net/http"
@@ -19,9 +19,9 @@ func (m *Module) wellknownWebFingerGetHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	webfinger := rmodels.WebFinger{
+	webfinger := models.WebFinger{
 		Aliases: []string{path.GenActor(m.logic.Domain())},
-		Links: []rmodels.Link{
+		Links: []models.Link{
 			{
 				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",

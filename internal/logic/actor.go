@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	apmodels "github.com/feditools/relay/internal/activitypub/models"
+	"github.com/feditools/relay/internal/models"
 	"github.com/tyrm/go-util/mimetype"
 	"net/url"
 )
 
-func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*apmodels.Actor, error) {
+func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*models.Actor, error) {
 	log := logger.WithField("func", "fetchActor")
 
 	v, err, shared := l.outgoingRequestGroup.Do(fmt.Sprintf("fetchactor-%s", actorIRI.String()), func() (interface{}, error) {
@@ -27,7 +27,7 @@ func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*apmodels.Ac
 		}
 
 		// unmarshal json to object
-		var newActor apmodels.Actor
+		var newActor models.Actor
 		err = json.Unmarshal(body, &newActor)
 		if err != nil {
 			log.Errorf("unmarshal json %s: %s", actorIRI.String(), err.Error())
@@ -45,6 +45,6 @@ func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*apmodels.Ac
 		return nil, err
 	}
 
-	actor := v.(*apmodels.Actor)
+	actor := v.(*models.Actor)
 	return actor, nil
 }

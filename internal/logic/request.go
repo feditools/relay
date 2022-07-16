@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (m *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *models.Instance) {
+func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *models.Instance) {
 	log := logger.WithField("func", "validateRequest")
 
 	ctx := r.Context()
@@ -46,13 +46,13 @@ func (m *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 	}
 
 	// relay should never talk to itself
-	if strings.EqualFold(publicKeyID.Host, m.domain) {
+	if strings.EqualFold(publicKeyID.Host, l.domain) {
 		log.Warnf("received request from self")
 		return false, nil
 	}
 
 	// get instance from database
-	instance, err := m.getInstanceWithPublicKey(ctx, actorURI)
+	instance, err := l.getInstanceWithPublicKey(ctx, actorURI)
 	if err != nil {
 		log.Errorf("geting instance: %s", err.Error())
 		return false, nil
@@ -61,7 +61,7 @@ func (m *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 	// validate signature
 	if instance.PublicKey == nil {
 		// fetch remote actor
-		actor, err := m.fetchActor(ctx, actorURI)
+		actor, err := l.fetchActor(ctx, actorURI)
 		if err != nil {
 			log.Errorf("fetch actor: %s", err.Error())
 			return false, nil
@@ -78,7 +78,7 @@ func (m *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 	}
 
 	// try to verify known algos
-	for _, algo := range m.validAlgs {
+	for _, algo := range l.validAlgs {
 		err := verifier.Verify(instance.PublicKey, algo)
 		if err == nil {
 			log.Tracef("request passed %s algo", algo)
