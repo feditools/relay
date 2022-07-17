@@ -30,6 +30,8 @@ var Start action.Action = func(topCtx context.Context) error {
 	metricsCollector, err := statsd.New()
 	if err != nil {
 		l.Errorf("metrics: %s", err.Error())
+		cancel()
+
 		return err
 	}
 	defer func() {
@@ -44,6 +46,8 @@ var Start action.Action = func(topCtx context.Context) error {
 	dbClient, err := bun.New(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())
+		cancel()
+
 		return err
 	}
 	defer func() {
@@ -62,6 +66,8 @@ var Start action.Action = func(topCtx context.Context) error {
 	logicMod, err := logic.New(ctx, clockMod, dbClient)
 	if err != nil {
 		l.Errorf("logic: %s", err.Error())
+		cancel()
+
 		return err
 	}
 
@@ -69,6 +75,8 @@ var Start action.Action = func(topCtx context.Context) error {
 	runnerMod, err := faktory.New(logicMod)
 	if err != nil {
 		l.Errorf("runner: %s", err.Error())
+		cancel()
+
 		return err
 	}
 	logicMod.SetRunner(runnerMod)
@@ -79,6 +87,8 @@ var Start action.Action = func(topCtx context.Context) error {
 	server, err := http.NewServer(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("http server: %s", err.Error())
+		cancel()
+
 		return err
 	}
 
@@ -89,6 +99,8 @@ var Start action.Action = func(topCtx context.Context) error {
 		apMod, err := activitypub.New(ctx, logicMod, runnerMod)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleActivityPub, err.Error())
+			cancel()
+
 			return err
 		}
 		webModules = append(webModules, apMod)
@@ -99,6 +111,8 @@ var Start action.Action = func(topCtx context.Context) error {
 		err := mod.Route(server)
 		if err != nil {
 			l.Errorf("loading %s module: %s", mod.Name(), err.Error())
+			cancel()
+
 			return err
 		}
 	}
@@ -129,6 +143,7 @@ var Start action.Action = func(topCtx context.Context) error {
 		cancel()
 	}
 
+	<-ctx.Done()
 	l.Infof("done")
 	return nil
 }
