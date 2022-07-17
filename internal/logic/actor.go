@@ -16,7 +16,7 @@ func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*models.Acto
 		// check cache
 		cachedActor, ok := l.cacheActor.Get(actorIRI.String())
 		if ok {
-			return &cachedActor, nil
+			return cachedActor, nil
 		}
 
 		// get actor data
@@ -37,7 +37,7 @@ func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*models.Acto
 		// update cache
 		_ = l.cacheActor.Add(actorIRI.String(), newActor)
 
-		return &newActor, err
+		return newActor, err
 	})
 
 	if err != nil {
@@ -45,6 +45,6 @@ func (l *Logic) fetchActor(ctx context.Context, actorIRI *url.URL) (*models.Acto
 		return nil, err
 	}
 
-	actor := v.(*models.Actor)
-	return actor, nil
+	actor := v.(models.Actor)
+	return &actor, nil
 }

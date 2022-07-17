@@ -10,7 +10,6 @@ var (
 	digestAlgo = httpsig.DigestSha256
 	algoPrefs  = []httpsig.Algorithm{httpsig.RSA_SHA256}
 
-	getHeaders = []string{httpsig.RequestTarget, "host", "date"}
-	//postHeaders = []string{httpsig.RequestTarget, "host", "date", "digest", "content-type"}
-	postHeaders = []string{httpsig.RequestTarget, "host", "date", "digest"}
+	getHeaders  = []string{httpsig.RequestTarget, "host", "date"}
+	postHeaders = []string{httpsig.RequestTarget, "host", "date", "digest", "content-type"}
 )

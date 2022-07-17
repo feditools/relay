@@ -26,24 +26,33 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
 		return
 	}
-	actor, ok := actorI.(string)
+	actorStr, ok := actorI.(string)
 	if !ok {
 		l.Debugf("activity actor isn't string: %+v", activity)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
 		return
 	}
-	actorURI, err := url.Parse(actor)
+	actorURI, err := url.Parse(actorStr)
 	if err != nil {
-		l.Errorf("can't parts actor uri from %s", actor)
+		l.Errorf("can't parts actor uri from %s: %s", actorStr, err.Error())
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
 		return
 	}
 
 	// check request validation
-	validated, instance := m.logic.ValidateRequest(r, actorURI)
+	l.Tracef("validating actor: %s", actorStr)
+	validated, actor := m.logic.ValidateRequest(r, actorURI)
 	if !validated {
 		l.Debugf("validation failed for actor: %s", actor)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
+		return
+	}
+
+	// get instance of actor
+	instance, err := m.logic.GetInstance(r.Context(), actorURI.Host)
+	if err != nil {
+		l.Errorf("can't get instance %s: %s", actorStr, err.Error())
+		nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
 		return
 	}
 

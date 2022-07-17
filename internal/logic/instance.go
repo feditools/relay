@@ -42,6 +42,21 @@ func (l *Logic) GetPeers(ctx context.Context) (*[]string, error) {
 	return &newPeers, nil
 }
 
+func (l *Logic) GetInstance(ctx context.Context, domain string) (*models.Instance, error) {
+	log := logger.WithField("func", "GetInstance")
+
+	instance := new(models.Instance)
+	var err error
+	instance, err = l.db.ReadInstanceByDomain(ctx, domain)
+	if err != nil {
+		log.Errorf("db read: %s", err.Error())
+
+		return nil, err
+	}
+
+	return instance, nil
+}
+
 func (l *Logic) GetInstanceSelf(ctx context.Context) (*models.Instance, error) {
 	log := logger.WithField("func", "GetInstanceSelf")
 

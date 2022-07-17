@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *models.Instance) {
+func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *models.Actor) {
 	log := logger.WithField("func", "validateRequest")
 
 	ctx := r.Context()
@@ -51,38 +51,27 @@ func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 		return false, nil
 	}
 
-	// get instance from database
-	instance, err := l.getInstanceWithPublicKey(ctx, actorURI)
+	// TODO: check blocks
+
+	// fetch actor
+	actor, err := l.fetchActor(ctx, actorURI)
 	if err != nil {
-		log.Errorf("geting instance: %s", err.Error())
+		log.Errorf("fetch actor: %s", err.Error())
 		return false, nil
 	}
 
-	// validate signature
-	if instance.PublicKey == nil {
-		// fetch remote actor
-		actor, err := l.fetchActor(ctx, actorURI)
-		if err != nil {
-			log.Errorf("fetch actor: %s", err.Error())
-			return false, nil
-		}
-
-		// make public key
-		pubKey, err := actor.RSAPublicKey()
-		if err != nil {
-			log.Errorf("extracting public key: %s", err.Error())
-			return false, nil
-		}
-
-		instance.PublicKey = pubKey
+	pk, err := actor.RSAPublicKey()
+	if err != nil {
+		log.Errorf("getting actor rsa public key: %s", err.Error())
+		return false, nil
 	}
 
 	// try to verify known algos
 	for _, algo := range l.validAlgs {
-		err := verifier.Verify(instance.PublicKey, algo)
+		err := verifier.Verify(pk, algo)
 		if err == nil {
 			log.Tracef("request passed %s algo", algo)
-			return true, instance
+			return true, actor
 		}
 	}
 

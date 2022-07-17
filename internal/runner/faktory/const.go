@@ -1,7 +1,8 @@
 package faktory
 
 const (
-	JobInboxActivity = "InboxActivity"
+	JobDeliverActivity = "DeliverActivity"
+	JobInboxActivity   = "InboxActivity"
 
 	QueueDefault  = "default"
 	QueueDelivery = "delivery"
