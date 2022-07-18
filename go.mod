@@ -4,22 +4,27 @@ go 1.18
 
 require (
 	github.com/cactus/go-statsd-client/v5 v5.0.0
+	github.com/contribsys/faktory v1.6.0
+	github.com/contribsys/faktory_worker_go v1.6.0
+	github.com/go-fed/activity v1.0.0
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-playground/validator/v10 v10.11.0
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
-	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 	github.com/tyrm/go-util v0.4.2
 	github.com/uptrace/bun v1.1.6
 	github.com/uptrace/bun/dialect/pgdialect v1.1.6
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.6
 	github.com/uptrace/bun/extra/bundebug v1.1.6
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 	modernc.org/sqlite v1.17.0
 )
 
@@ -32,7 +37,6 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -58,6 +62,7 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
+	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect

@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/feditools/relay/cmd/relay/action"
 	"github.com/feditools/relay/internal/activitypub"
+	"github.com/feditools/relay/internal/clock"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/logic"
 	"github.com/feditools/relay/internal/metrics/statsd"
+	"github.com/feditools/relay/internal/runner/faktory"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
 	"os"
@@ -18,15 +20,18 @@ import (
 )
 
 // Start starts the server
-var Start action.Action = func(ctx context.Context) error {
+var Start action.Action = func(topCtx context.Context) error {
 	l := logger.WithField("func", "Start")
-
 	l.Info("starting")
+
+	ctx, cancel := context.WithCancel(topCtx)
 
 	// create metrics collector
 	metricsCollector, err := statsd.New()
 	if err != nil {
 		l.Errorf("metrics: %s", err.Error())
+		cancel()
+
 		return err
 	}
 	defer func() {
@@ -41,6 +46,8 @@ var Start action.Action = func(ctx context.Context) error {
 	dbClient, err := bun.New(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())
+		cancel()
+
 		return err
 	}
 	defer func() {
@@ -50,19 +57,38 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	// create clock module
+	l.Debug("creating clock")
+	clockMod := clock.NewClock()
+
 	// create logic module
-	l.Debug("creating database client")
-	logicMod, err := logic.New(dbClient)
+	l.Debug("creating logic module")
+	logicMod, err := logic.New(ctx, clockMod, dbClient)
 	if err != nil {
-		l.Errorf("db: %s", err.Error())
+		l.Errorf("logic: %s", err.Error())
+		cancel()
+
 		return err
 	}
+
+	// create runner
+	runnerMod, err := faktory.New(logicMod)
+	if err != nil {
+		l.Errorf("runner: %s", err.Error())
+		cancel()
+
+		return err
+	}
+	logicMod.SetRunner(runnerMod)
+	runnerMod.Start(ctx)
 
 	// create http server
 	l.Debug("creating http server")
 	server, err := http.NewServer(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("http server: %s", err.Error())
+		cancel()
+
 		return err
 	}
 
@@ -70,9 +96,11 @@ var Start action.Action = func(ctx context.Context) error {
 	var webModules []http.Module
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
 		l.Infof("adding %s module", config.ServerRoleActivityPub)
-		apMod, err := activitypub.New(ctx, dbClient, logicMod)
+		apMod, err := activitypub.New(ctx, logicMod, runnerMod)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleActivityPub, err.Error())
+			cancel()
+
 			return err
 		}
 		webModules = append(webModules, apMod)
@@ -83,6 +111,8 @@ var Start action.Action = func(ctx context.Context) error {
 		err := mod.Route(server)
 		if err != nil {
 			l.Errorf("loading %s module: %s", mod.Name(), err.Error())
+			cancel()
+
 			return err
 		}
 	}
@@ -107,10 +137,13 @@ var Start action.Action = func(ctx context.Context) error {
 	select {
 	case sig := <-stopSigChan:
 		l.Infof("got sig: %s", sig)
+		cancel()
 	case err := <-errChan:
 		l.Fatal(err.Error())
+		cancel()
 	}
 
+	<-ctx.Done()
 	l.Infof("done")
 	return nil
 }

@@ -2,7 +2,7 @@ package activitypub
 
 import (
 	"encoding/json"
-	apmodels "github.com/feditools/relay/internal/activitypub/models"
+	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/tyrm/go-util/mimetype"
 	"net/http"
@@ -20,24 +20,25 @@ func (m *Module) actorGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (m *Module) genRelayActor() *apmodels.Actor {
-	return &apmodels.Actor{
+func (m *Module) genRelayActor() *models.Actor {
+	return &models.Actor{
 		Context: ContextActivityStreams,
-		Endpoints: apmodels.Endpoints{
-			SharedInbox: path.GenInbox(m.domain),
+		Endpoints: models.Endpoints{
+			SharedInbox: path.GenInbox(m.logic.Domain()),
 		},
-		Followers: path.GenFollowers(m.domain),
-		Following: path.GenFollowing(m.domain),
+		Followers: path.GenFollowers(m.logic.Domain()),
+		Following: path.GenFollowing(m.logic.Domain()),
+		Inbox:     path.GenInbox(m.logic.Domain()),
 		Name:      m.appName,
 		Type:      "Application",
-		ID:        path.GenActor(m.domain),
-		PublicKey: apmodels.PublicKey{
-			ID:           path.GenPublicKey(m.domain),
-			Owner:        path.GenActor(m.domain),
+		ID:        path.GenActor(m.logic.Domain()),
+		PublicKey: models.PublicKey{
+			ID:           path.GenPublicKey(m.logic.Domain()),
+			Owner:        path.GenActor(m.logic.Domain()),
 			PublicKeyPEM: m.publicKeyPem,
 		},
 		Summary:           ActorSummary,
 		PreferredUsername: "relay",
-		URL:               path.GenActor(m.domain),
+		URL:               path.GenActor(m.logic.Domain()),
 	}
 }

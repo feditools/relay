@@ -3,7 +3,7 @@ package activitypub
 import (
 	"encoding/json"
 	"fmt"
-	rmodels "github.com/feditools/relay/internal/activitypub/models"
+	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/tyrm/go-util/mimetype"
 	"net/http"
@@ -13,23 +13,22 @@ func (m *Module) wellknownWebFingerGetHandler(w http.ResponseWriter, r *http.Req
 	l := logger.WithField("func", "wellknownWebFingerGetHandler")
 
 	subject := r.URL.Query().Get("resource")
-	if subject != fmt.Sprintf("acct:relay@%s", m.domain) {
+	if subject != fmt.Sprintf("acct:relay@%s", m.logic.Domain()) {
 		w.Header().Set("Content-Type", mimetype.TextPlain)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusNotFound, http.StatusText(http.StatusNotFound))))
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	webfinger := rmodels.WebFinger{
-		Aliases: []string{path.GenActor(m.domain)},
-		Links: []rmodels.Link{
+	webfinger := models.WebFinger{
+		Aliases: []string{path.GenActor(m.logic.Domain())},
+		Links: []models.Link{
 			{
-				Href: path.GenActor(m.domain),
+				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",
 				Type: mimetype.ApplicationActivityJSON,
 			},
 			{
-				Href: path.GenActor(m.domain),
+				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",
 				Type: mimetype.ApplicationLDJSONActivityStreams,
 			},

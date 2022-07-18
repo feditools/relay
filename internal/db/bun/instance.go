@@ -35,7 +35,7 @@ func (c *Client) ReadInstanceByID(ctx context.Context, id int64) (*models.Instan
 	if err == sql.ErrNoRows {
 		ended := time.Since(start)
 		go c.metrics.DBQuery(ended, "ReadInstanceByID", false)
-		return nil, nil
+		return nil, c.bun.ProcessError(err)
 	}
 	if err != nil {
 		ended := time.Since(start)
@@ -45,6 +45,29 @@ func (c *Client) ReadInstanceByID(ctx context.Context, id int64) (*models.Instan
 
 	ended := time.Since(start)
 	go c.metrics.DBQuery(ended, "ReadInstanceByID", false)
+	return instance, nil
+}
+
+// ReadInstanceByActorIRI returns one federated social instance
+func (c *Client) ReadInstanceByActorIRI(ctx context.Context, actorIRI string) (*models.Instance, db.Error) {
+	start := time.Now()
+
+	instance := new(models.Instance)
+
+	err := c.newInstanceQ(instance).Where("actor_iri = ?", actorIRI).Scan(ctx)
+	if err == sql.ErrNoRows {
+		ended := time.Since(start)
+		go c.metrics.DBQuery(ended, "ReadInstanceByActorIRI", false)
+		return nil, c.bun.ProcessError(err)
+	}
+	if err != nil {
+		ended := time.Since(start)
+		go c.metrics.DBQuery(ended, "ReadInstanceByActorIRI", true)
+		return nil, c.bun.ProcessError(err)
+	}
+
+	ended := time.Since(start)
+	go c.metrics.DBQuery(ended, "ReadInstanceByActorIRI", false)
 	return instance, nil
 }
 
@@ -58,7 +81,7 @@ func (c *Client) ReadInstanceByDomain(ctx context.Context, domain string) (*mode
 	if err == sql.ErrNoRows {
 		ended := time.Since(start)
 		go c.metrics.DBQuery(ended, "ReadInstanceByDomain", false)
-		return nil, nil
+		return nil, c.bun.ProcessError(err)
 	}
 	if err != nil {
 		ended := time.Since(start)

@@ -1,6 +1,14 @@
 # github.com/cactus/go-statsd-client/v5 v5.0.0
 ## explicit; go 1.11
 github.com/cactus/go-statsd-client/v5/statsd
+# github.com/contribsys/faktory v1.6.0
+## explicit; go 1.17
+github.com/contribsys/faktory/client
+github.com/contribsys/faktory/internal/pool
+github.com/contribsys/faktory/util
+# github.com/contribsys/faktory_worker_go v1.6.0
+## explicit; go 1.17
+github.com/contribsys/faktory_worker_go
 # github.com/fatih/color v1.13.0
 ## explicit; go 1.13
 github.com/fatih/color
@@ -20,6 +28,186 @@ github.com/gin-gonic/gin/binding
 github.com/gin-gonic/gin/internal/bytesconv
 github.com/gin-gonic/gin/internal/json
 github.com/gin-gonic/gin/render
+# github.com/go-fed/activity v1.0.0
+## explicit; go 1.12
+github.com/go-fed/activity/pub
+github.com/go-fed/activity/streams
+github.com/go-fed/activity/streams/impl/activitystreams/property_accuracy
+github.com/go-fed/activity/streams/impl/activitystreams/property_actor
+github.com/go-fed/activity/streams/impl/activitystreams/property_altitude
+github.com/go-fed/activity/streams/impl/activitystreams/property_anyof
+github.com/go-fed/activity/streams/impl/activitystreams/property_attachment
+github.com/go-fed/activity/streams/impl/activitystreams/property_attributedto
+github.com/go-fed/activity/streams/impl/activitystreams/property_audience
+github.com/go-fed/activity/streams/impl/activitystreams/property_bcc
+github.com/go-fed/activity/streams/impl/activitystreams/property_bto
+github.com/go-fed/activity/streams/impl/activitystreams/property_cc
+github.com/go-fed/activity/streams/impl/activitystreams/property_closed
+github.com/go-fed/activity/streams/impl/activitystreams/property_content
+github.com/go-fed/activity/streams/impl/activitystreams/property_context
+github.com/go-fed/activity/streams/impl/activitystreams/property_current
+github.com/go-fed/activity/streams/impl/activitystreams/property_deleted
+github.com/go-fed/activity/streams/impl/activitystreams/property_describes
+github.com/go-fed/activity/streams/impl/activitystreams/property_duration
+github.com/go-fed/activity/streams/impl/activitystreams/property_endtime
+github.com/go-fed/activity/streams/impl/activitystreams/property_first
+github.com/go-fed/activity/streams/impl/activitystreams/property_followers
+github.com/go-fed/activity/streams/impl/activitystreams/property_following
+github.com/go-fed/activity/streams/impl/activitystreams/property_formertype
+github.com/go-fed/activity/streams/impl/activitystreams/property_generator
+github.com/go-fed/activity/streams/impl/activitystreams/property_height
+github.com/go-fed/activity/streams/impl/activitystreams/property_href
+github.com/go-fed/activity/streams/impl/activitystreams/property_hreflang
+github.com/go-fed/activity/streams/impl/activitystreams/property_icon
+github.com/go-fed/activity/streams/impl/activitystreams/property_image
+github.com/go-fed/activity/streams/impl/activitystreams/property_inbox
+github.com/go-fed/activity/streams/impl/activitystreams/property_inreplyto
+github.com/go-fed/activity/streams/impl/activitystreams/property_instrument
+github.com/go-fed/activity/streams/impl/activitystreams/property_items
+github.com/go-fed/activity/streams/impl/activitystreams/property_last
+github.com/go-fed/activity/streams/impl/activitystreams/property_latitude
+github.com/go-fed/activity/streams/impl/activitystreams/property_liked
+github.com/go-fed/activity/streams/impl/activitystreams/property_likes
+github.com/go-fed/activity/streams/impl/activitystreams/property_location
+github.com/go-fed/activity/streams/impl/activitystreams/property_longitude
+github.com/go-fed/activity/streams/impl/activitystreams/property_mediatype
+github.com/go-fed/activity/streams/impl/activitystreams/property_name
+github.com/go-fed/activity/streams/impl/activitystreams/property_next
+github.com/go-fed/activity/streams/impl/activitystreams/property_object
+github.com/go-fed/activity/streams/impl/activitystreams/property_oneof
+github.com/go-fed/activity/streams/impl/activitystreams/property_ordereditems
+github.com/go-fed/activity/streams/impl/activitystreams/property_origin
+github.com/go-fed/activity/streams/impl/activitystreams/property_outbox
+github.com/go-fed/activity/streams/impl/activitystreams/property_partof
+github.com/go-fed/activity/streams/impl/activitystreams/property_preferredusername
+github.com/go-fed/activity/streams/impl/activitystreams/property_prev
+github.com/go-fed/activity/streams/impl/activitystreams/property_preview
+github.com/go-fed/activity/streams/impl/activitystreams/property_published
+github.com/go-fed/activity/streams/impl/activitystreams/property_radius
+github.com/go-fed/activity/streams/impl/activitystreams/property_rel
+github.com/go-fed/activity/streams/impl/activitystreams/property_relationship
+github.com/go-fed/activity/streams/impl/activitystreams/property_replies
+github.com/go-fed/activity/streams/impl/activitystreams/property_result
+github.com/go-fed/activity/streams/impl/activitystreams/property_shares
+github.com/go-fed/activity/streams/impl/activitystreams/property_source
+github.com/go-fed/activity/streams/impl/activitystreams/property_startindex
+github.com/go-fed/activity/streams/impl/activitystreams/property_starttime
+github.com/go-fed/activity/streams/impl/activitystreams/property_streams
+github.com/go-fed/activity/streams/impl/activitystreams/property_subject
+github.com/go-fed/activity/streams/impl/activitystreams/property_summary
+github.com/go-fed/activity/streams/impl/activitystreams/property_tag
+github.com/go-fed/activity/streams/impl/activitystreams/property_target
+github.com/go-fed/activity/streams/impl/activitystreams/property_to
+github.com/go-fed/activity/streams/impl/activitystreams/property_totalitems
+github.com/go-fed/activity/streams/impl/activitystreams/property_units
+github.com/go-fed/activity/streams/impl/activitystreams/property_updated
+github.com/go-fed/activity/streams/impl/activitystreams/property_url
+github.com/go-fed/activity/streams/impl/activitystreams/property_width
+github.com/go-fed/activity/streams/impl/activitystreams/type_accept
+github.com/go-fed/activity/streams/impl/activitystreams/type_activity
+github.com/go-fed/activity/streams/impl/activitystreams/type_add
+github.com/go-fed/activity/streams/impl/activitystreams/type_announce
+github.com/go-fed/activity/streams/impl/activitystreams/type_application
+github.com/go-fed/activity/streams/impl/activitystreams/type_arrive
+github.com/go-fed/activity/streams/impl/activitystreams/type_article
+github.com/go-fed/activity/streams/impl/activitystreams/type_audio
+github.com/go-fed/activity/streams/impl/activitystreams/type_block
+github.com/go-fed/activity/streams/impl/activitystreams/type_collection
+github.com/go-fed/activity/streams/impl/activitystreams/type_collectionpage
+github.com/go-fed/activity/streams/impl/activitystreams/type_create
+github.com/go-fed/activity/streams/impl/activitystreams/type_delete
+github.com/go-fed/activity/streams/impl/activitystreams/type_dislike
+github.com/go-fed/activity/streams/impl/activitystreams/type_document
+github.com/go-fed/activity/streams/impl/activitystreams/type_event
+github.com/go-fed/activity/streams/impl/activitystreams/type_flag
+github.com/go-fed/activity/streams/impl/activitystreams/type_follow
+github.com/go-fed/activity/streams/impl/activitystreams/type_group
+github.com/go-fed/activity/streams/impl/activitystreams/type_ignore
+github.com/go-fed/activity/streams/impl/activitystreams/type_image
+github.com/go-fed/activity/streams/impl/activitystreams/type_intransitiveactivity
+github.com/go-fed/activity/streams/impl/activitystreams/type_invite
+github.com/go-fed/activity/streams/impl/activitystreams/type_join
+github.com/go-fed/activity/streams/impl/activitystreams/type_leave
+github.com/go-fed/activity/streams/impl/activitystreams/type_like
+github.com/go-fed/activity/streams/impl/activitystreams/type_link
+github.com/go-fed/activity/streams/impl/activitystreams/type_listen
+github.com/go-fed/activity/streams/impl/activitystreams/type_mention
+github.com/go-fed/activity/streams/impl/activitystreams/type_move
+github.com/go-fed/activity/streams/impl/activitystreams/type_note
+github.com/go-fed/activity/streams/impl/activitystreams/type_object
+github.com/go-fed/activity/streams/impl/activitystreams/type_offer
+github.com/go-fed/activity/streams/impl/activitystreams/type_orderedcollection
+github.com/go-fed/activity/streams/impl/activitystreams/type_orderedcollectionpage
+github.com/go-fed/activity/streams/impl/activitystreams/type_organization
+github.com/go-fed/activity/streams/impl/activitystreams/type_page
+github.com/go-fed/activity/streams/impl/activitystreams/type_person
+github.com/go-fed/activity/streams/impl/activitystreams/type_place
+github.com/go-fed/activity/streams/impl/activitystreams/type_profile
+github.com/go-fed/activity/streams/impl/activitystreams/type_question
+github.com/go-fed/activity/streams/impl/activitystreams/type_read
+github.com/go-fed/activity/streams/impl/activitystreams/type_reject
+github.com/go-fed/activity/streams/impl/activitystreams/type_relationship
+github.com/go-fed/activity/streams/impl/activitystreams/type_remove
+github.com/go-fed/activity/streams/impl/activitystreams/type_service
+github.com/go-fed/activity/streams/impl/activitystreams/type_tentativeaccept
+github.com/go-fed/activity/streams/impl/activitystreams/type_tentativereject
+github.com/go-fed/activity/streams/impl/activitystreams/type_tombstone
+github.com/go-fed/activity/streams/impl/activitystreams/type_travel
+github.com/go-fed/activity/streams/impl/activitystreams/type_undo
+github.com/go-fed/activity/streams/impl/activitystreams/type_update
+github.com/go-fed/activity/streams/impl/activitystreams/type_video
+github.com/go-fed/activity/streams/impl/activitystreams/type_view
+github.com/go-fed/activity/streams/impl/forgefed/property_assignedto
+github.com/go-fed/activity/streams/impl/forgefed/property_committed
+github.com/go-fed/activity/streams/impl/forgefed/property_committedby
+github.com/go-fed/activity/streams/impl/forgefed/property_dependants
+github.com/go-fed/activity/streams/impl/forgefed/property_dependedby
+github.com/go-fed/activity/streams/impl/forgefed/property_dependencies
+github.com/go-fed/activity/streams/impl/forgefed/property_dependson
+github.com/go-fed/activity/streams/impl/forgefed/property_description
+github.com/go-fed/activity/streams/impl/forgefed/property_earlyitems
+github.com/go-fed/activity/streams/impl/forgefed/property_filesadded
+github.com/go-fed/activity/streams/impl/forgefed/property_filesmodified
+github.com/go-fed/activity/streams/impl/forgefed/property_filesremoved
+github.com/go-fed/activity/streams/impl/forgefed/property_forks
+github.com/go-fed/activity/streams/impl/forgefed/property_hash
+github.com/go-fed/activity/streams/impl/forgefed/property_isresolved
+github.com/go-fed/activity/streams/impl/forgefed/property_ref
+github.com/go-fed/activity/streams/impl/forgefed/property_team
+github.com/go-fed/activity/streams/impl/forgefed/property_ticketstrackedby
+github.com/go-fed/activity/streams/impl/forgefed/property_tracksticketsfor
+github.com/go-fed/activity/streams/impl/forgefed/type_branch
+github.com/go-fed/activity/streams/impl/forgefed/type_commit
+github.com/go-fed/activity/streams/impl/forgefed/type_push
+github.com/go-fed/activity/streams/impl/forgefed/type_repository
+github.com/go-fed/activity/streams/impl/forgefed/type_ticket
+github.com/go-fed/activity/streams/impl/forgefed/type_ticketdependency
+github.com/go-fed/activity/streams/impl/jsonld/property_id
+github.com/go-fed/activity/streams/impl/jsonld/property_type
+github.com/go-fed/activity/streams/impl/toot/property_blurhash
+github.com/go-fed/activity/streams/impl/toot/property_discoverable
+github.com/go-fed/activity/streams/impl/toot/property_featured
+github.com/go-fed/activity/streams/impl/toot/property_signaturealgorithm
+github.com/go-fed/activity/streams/impl/toot/property_signaturevalue
+github.com/go-fed/activity/streams/impl/toot/property_voterscount
+github.com/go-fed/activity/streams/impl/toot/type_emoji
+github.com/go-fed/activity/streams/impl/toot/type_identityproof
+github.com/go-fed/activity/streams/impl/w3idsecurityv1/property_owner
+github.com/go-fed/activity/streams/impl/w3idsecurityv1/property_publickey
+github.com/go-fed/activity/streams/impl/w3idsecurityv1/property_publickeypem
+github.com/go-fed/activity/streams/impl/w3idsecurityv1/type_publickey
+github.com/go-fed/activity/streams/values/anyURI
+github.com/go-fed/activity/streams/values/bcp47
+github.com/go-fed/activity/streams/values/boolean
+github.com/go-fed/activity/streams/values/dateTime
+github.com/go-fed/activity/streams/values/duration
+github.com/go-fed/activity/streams/values/float
+github.com/go-fed/activity/streams/values/langString
+github.com/go-fed/activity/streams/values/nonNegativeInteger
+github.com/go-fed/activity/streams/values/rfc2045
+github.com/go-fed/activity/streams/values/rfc5988
+github.com/go-fed/activity/streams/values/string
+github.com/go-fed/activity/streams/vocab
 # github.com/go-fed/httpsig v1.1.0
 ## explicit; go 1.13
 github.com/go-fed/httpsig
@@ -45,6 +233,10 @@ github.com/gorilla/handlers
 # github.com/gorilla/mux v1.8.0
 ## explicit; go 1.12
 github.com/gorilla/mux
+# github.com/hashicorp/golang-lru v0.5.4
+## explicit; go 1.12
+github.com/hashicorp/golang-lru
+github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/hcl v1.0.0
 ## explicit
 github.com/hashicorp/hcl
@@ -223,6 +415,9 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/mod v0.5.1
 ## explicit; go 1.17
 golang.org/x/mod/semver
+# golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
+## explicit
+golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20220708085239-5a0f0661e09d
 ## explicit; go 1.17
 golang.org/x/sys/cpu

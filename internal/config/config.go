@@ -9,7 +9,6 @@ import (
 
 // Init starts config collection
 func Init(flags *pflag.FlagSet) error {
-	viper.SetEnvPrefix("mb")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 

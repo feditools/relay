@@ -6,8 +6,12 @@ type Values struct {
 	LogLevel   string
 
 	// application
-	ApplicationName string
-	SoftwareVersion string
+	ActorKeySize        int
+	ApplicationName     string
+	CachedActivityLimit int
+	CachedActorLimit    int
+	CachedDigestLimit   int
+	SoftwareVersion     string
 
 	// database
 	DbType          string
@@ -20,6 +24,9 @@ type Values struct {
 	DbTLSCACert     string
 	DbLoadTestData  bool
 	DbEncryptionKey string
+
+	// running
+	RunnerConcurrency int
 
 	// server
 	ServerExternalHostname string
@@ -38,7 +45,11 @@ var Defaults = Values{
 	LogLevel:   "info",
 
 	// application
-	ApplicationName: "feditools-relay",
+	ActorKeySize:        2048,
+	ApplicationName:     "feditools-relay",
+	CachedActivityLimit: 1024,
+	CachedActorLimit:    1024,
+	CachedDigestLimit:   1024,
 
 	// database
 	DbType:         "postgres",
@@ -50,6 +61,9 @@ var Defaults = Values{
 	DbTLSMode:      "disable",
 	DbTLSCACert:    "",
 	DbLoadTestData: false,
+
+	// runner
+	RunnerConcurrency: 4,
 
 	// server
 	ServerExternalHostname: "localhost",

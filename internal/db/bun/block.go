@@ -35,7 +35,7 @@ func (c *Client) ReadBlockByID(ctx context.Context, id int64) (*models.Block, db
 	if err == sql.ErrNoRows {
 		ended := time.Since(start)
 		go c.metrics.DBQuery(ended, "ReadBlockByID", false)
-		return nil, nil
+		return nil, c.bun.ProcessError(err)
 	}
 	if err != nil {
 		ended := time.Since(start)
@@ -58,7 +58,7 @@ func (c *Client) ReadBlockByDomain(ctx context.Context, domain string) (*models.
 	if err == sql.ErrNoRows {
 		ended := time.Since(start)
 		go c.metrics.DBQuery(ended, "ReadBlockByDomain", false)
-		return nil, nil
+		return nil, c.bun.ProcessError(err)
 	}
 	if err != nil {
 		ended := time.Since(start)

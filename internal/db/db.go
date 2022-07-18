@@ -37,6 +37,8 @@ type DB interface {
 	CreateInstance(ctx context.Context, instance *models.Instance) (err Error)
 	// ReadInstanceByID returns one federated social instance
 	ReadInstanceByID(ctx context.Context, id int64) (instance *models.Instance, err Error)
+	// ReadInstanceByActorIRI returns one federated social instance
+	ReadInstanceByActorIRI(ctx context.Context, actorIRI string) (instance *models.Instance, err Error)
 	// ReadInstanceByDomain returns one federated social instance
 	ReadInstanceByDomain(ctx context.Context, domain string) (instance *models.Instance, err Error)
 	// ReadInstancesWhereFollowing returns all federated social instances which are following this relay

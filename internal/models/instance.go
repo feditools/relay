@@ -1,25 +1,31 @@
 package models
 
 import (
+	"bytes"
 	"context"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/pem"
+	"github.com/sirupsen/logrus"
 	"github.com/uptrace/bun"
+	"io"
 	"time"
 )
 
 // Instance represents a federated social instance
 type Instance struct {
-	ID         int64          `validate:"-" bun:",pk,autoincrement,nullzero,notnull,unique"`
-	CreatedAt  time.Time      `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
-	UpdatedAt  time.Time      `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
-	Domain     string         `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
-	PublicKey  *rsa.PublicKey `validate:"-"`
-	PrivateKey []byte         `validate:"-"`
-	InboxIRI   string         `validate:"required,url" bun:",nullzero,notnull,unique"`
-	Followed   bool           `validate:"-" bun:",notnull,default:false"`
-	BlockID    int64          `validate:"-" bun:",nullzero"`
-	Block      *Block         `validate:"-" bun:"rel:belongs-to"`
+	ID            int64           `validate:"-" bun:",pk,autoincrement,nullzero,notnull,unique"`
+	CreatedAt     time.Time       `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
+	UpdatedAt     time.Time       `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
+	AccountDomain string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
+	Domain        string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
+	PublicKey     *rsa.PublicKey  `validate:"-"`
+	PrivateKey    *rsa.PrivateKey `validate:"-"`
+	ActorIRI      string          `validate:"required,url" bun:",nullzero,notnull,unique"`
+	InboxIRI      string          `validate:"required,url" bun:",nullzero,notnull,unique"`
+	Followed      bool            `validate:"-" bun:",notnull"`
+	BlockID       int64           `validate:"-" bun:",nullzero"`
+	Block         *Block          `validate:"-" bun:"rel:belongs-to"`
 }
 
 var _ bun.BeforeAppendModelHook = (*Instance)(nil)
@@ -47,33 +53,35 @@ func (i *Instance) BeforeAppendModel(_ context.Context, query bun.Query) error {
 	return nil
 }
 
-// GetPrivateKey returns unencrypted private key
-func (i *Instance) GetPrivateKey() (*rsa.PrivateKey, error) {
-	// decrypt bytes
-	b, err := decrypt(i.PrivateKey)
+func (i *Instance) PublicKeyPEM() (string, error) {
+	l := logger.WithFields(logrus.Fields{
+		"func":  "PublicKeyPEM",
+		"model": "Instance",
+	})
 
-	// convert to private key
-	pk, err := x509.ParsePKCS1PrivateKey(b)
+	publicKeyBytes, err := x509.MarshalPKIXPublicKey(i.PublicKey)
 	if err != nil {
-		return nil, err
+		l.Errorf("marshaling public key: %s", err.Error())
+
+		return "", err
+	}
+	publicKeyBlock := &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: publicKeyBytes,
+	}
+	publicPem := new(bytes.Buffer)
+	err = pem.Encode(publicPem, publicKeyBlock)
+	if err != nil {
+		l.Errorf("encoding pem: %s", err.Error())
+
+		return "", err
+	}
+	publicPemBytes, err := io.ReadAll(publicPem)
+	if err != nil {
+		l.Errorf("reading pem: %s", err.Error())
+
+		return "", err
 	}
 
-	// return private key
-	return pk, err
-}
-
-// SetPrivateKey sets encrypted private key
-func (i *Instance) SetPrivateKey(pk *rsa.PrivateKey) error {
-	// convert to bytes
-	b := x509.MarshalPKCS1PrivateKey(pk)
-
-	// encrypt bytes
-	data, err := encrypt(b)
-	if err != nil {
-		return err
-	}
-
-	// store bytes
-	i.PrivateKey = data
-	return nil
+	return string(publicPemBytes), nil
 }

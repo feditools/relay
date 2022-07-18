@@ -1,6 +1,9 @@
 package path
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
 // GenActor returns a url for an actor
 func GenActor(d string) string {
@@ -30,4 +33,13 @@ func GenNodeinfo20(d string) string {
 // GenPublicKey returns a url for an actor's public key
 func GenPublicKey(d string) string {
 	return fmt.Sprintf("%s#%s", GenActor(d), PartPublicKey)
+}
+
+// GenWellKnownNodeInfoURL returns a url for well known node info url
+func GenWellKnownNodeInfoURL(d string) *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   d,
+		Path:   APWellKnownNodeInfo,
+	}
 }

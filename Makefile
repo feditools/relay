@@ -18,6 +18,14 @@ clean:
 	@rm -Rvf coverage.txt dist relay
 	@find . -name ".DS_Store" -exec rm -v {} \;
 
+docker-restart: docker-stop docker-start
+
+docker-start:
+	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml up -d
+
+docker-stop:
+	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml down
+
 fmt:
 	@echo formatting
 	@go fmt $(shell go list ./... | grep -v /vendor/)
@@ -35,14 +43,6 @@ lint:
 	@echo linting
 	@golint $(shell go list ./... | grep -v /vendor/)
 
-test-docker-restart: test-docker-stop test-docker-start
-
-test-docker-start:
-	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml up -d
-
-test-docker-stop:
-	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml down
-
 test: tidy fmt lint #gosec
 	go test -cover ./...
 
@@ -58,4 +58,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: build-snapshot bun-new-migration clean fmt lint stage-static npm-scss npm-upgrade test-docker-restart test-docker-start test-docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
+.PHONY: build-snapshot bun-new-migration clean fmt lint stage-static npm-scss npm-upgrade docker-restart docker-start docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
