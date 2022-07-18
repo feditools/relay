@@ -1,7 +1,7 @@
 # github.com/cactus/go-statsd-client/v5 v5.0.0
 ## explicit; go 1.11
 github.com/cactus/go-statsd-client/v5/statsd
-# github.com/contribsys/faktory v1.6.0
+# github.com/contribsys/faktory v1.6.1
 ## explicit; go 1.17
 github.com/contribsys/faktory/client
 github.com/contribsys/faktory/internal/pool
@@ -492,7 +492,7 @@ gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
-# gopkg.in/yaml.v3 v3.0.0
+# gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
 # lukechampine.com/uint128 v1.1.1

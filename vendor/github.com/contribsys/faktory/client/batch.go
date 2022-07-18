@@ -47,7 +47,6 @@ type Batch struct {
 //   b.Jobs(func() error {
 //     b.Push(...)
 //   })
-//   b.Commit()
 //
 func NewBatch(cl *Client) *Batch {
 	return &Batch{
@@ -69,7 +68,7 @@ func (b *Batch) Jobs(fn func() error) error {
 		}
 	}
 	if b.faktory == nil || b.committed {
-		return BatchNotOpen
+		return ErrBatchNotOpen
 	}
 
 	if err := fn(); err != nil {
@@ -81,10 +80,10 @@ func (b *Batch) Jobs(fn func() error) error {
 
 func (b *Batch) Push(job *Job) error {
 	if b.new {
-		return BatchNotOpen
+		return ErrBatchNotOpen
 	}
 	if b.faktory == nil || b.committed {
-		return BatchAlreadyCommitted
+		return ErrBatchAlreadyCommitted
 	}
 	job.SetCustom("bid", b.Bid)
 	return b.faktory.Push(job)
@@ -95,10 +94,10 @@ func (b *Batch) Push(job *Job) error {
 // You must use client.BatchOpen to get a new copy if you want to commit more jobs.
 func (b *Batch) Commit() error {
 	if b.new {
-		return BatchNotOpen
+		return ErrBatchNotOpen
 	}
 	if b.faktory == nil || b.committed {
-		return BatchAlreadyCommitted
+		return ErrBatchAlreadyCommitted
 	}
 	if err := b.faktory.BatchCommit(b.Bid); err != nil {
 		return fmt.Errorf("cannot commit %q batch: %w", b.Bid, err)
@@ -111,8 +110,8 @@ func (b *Batch) Commit() error {
 }
 
 var (
-	BatchAlreadyCommitted = fmt.Errorf("Batch has already been committed, must reopen")
-	BatchNotOpen          = fmt.Errorf("Batch must be opened before it can be used")
+	ErrBatchAlreadyCommitted = fmt.Errorf("batch has already been committed, must reopen")
+	ErrBatchNotOpen          = fmt.Errorf("batch must be opened before it can be used")
 )
 
 /////////////////////////////////////////////
