@@ -52,7 +52,7 @@ func (l *Logic) DeliverActivity(ctx context.Context, instanceID int64, activity 
 	return nil
 }
 
-func (l *Logic) ProcessActivity(ctx context.Context, instanceID int64, activity models.Activity) error {
+func (l *Logic) ProcessActivity(ctx context.Context, instanceID int64, actorIRI *url.URL, activity models.Activity) error {
 	log := logger.WithFields(logrus.Fields{
 		"func": "ProcessActivity",
 	})
@@ -63,6 +63,8 @@ func (l *Logic) ProcessActivity(ctx context.Context, instanceID int64, activity 
 
 		return errors.New("activity missing type")
 	}
+
+	log.Tracef("new %s activity from %s ", actType, actorIRI.String())
 
 	switch actType {
 	case models.TypeAnnounce, models.TypeCreate:
@@ -228,13 +230,7 @@ func (l *Logic) doRelay(ctx context.Context, instanceID int64, activity models.A
 	log.Tracef("relaying activity: %#v", activity)
 
 	// send announce
-	actorIRI, err := url.Parse(signingInstance.ActorIRI)
-	if err != nil {
-		log.Errorf("can't parse actor iri: %s", err.Error())
-
-		return fmt.Errorf("can't marshal response: %s", err.Error())
-	}
-	outgoingActivity := genActivityAnnounce(l.domain, actorIRI, objectID)
+	outgoingActivity := genActivityAnnounce(l.domain, objectID)
 	outgoingActivityID, err := outgoingActivity.ID()
 	if err != nil {
 		log.Errorf("can't get new activity id: %s", err.Error())
@@ -332,12 +328,12 @@ func genActivityID(domain string) string {
 	return fmt.Sprintf("https://%s/activities/%s", domain, uuid.New().String())
 }
 
-func genActivityAnnounce(domain string, fromActorIRI *url.URL, objectID string) models.Activity {
+func genActivityAnnounce(domain string, objectID string) models.Activity {
 	return models.Activity{
 		"@context": models.ContextActivityStreams,
 		"type":     models.TypeAnnounce,
-		"to":       []string{path.GenFollowers(fromActorIRI.Host)},
-		"actor":    fromActorIRI.String(),
+		"to":       []string{path.GenFollowers(domain)},
+		"actor":    path.GenActor(domain),
 		"object":   objectID,
 		"id":       genActivityID(domain),
 	}

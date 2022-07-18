@@ -37,7 +37,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
 		return
 	}
-	actorURI, err := url.Parse(actorStr)
+	actorIRI, err := url.Parse(actorStr)
 	if err != nil {
 		l.Errorf("can't parts actor uri from %s: %s", actorStr, err.Error())
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
@@ -47,7 +47,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 
 	// check request validation
 	l.Tracef("validating actor: %s", actorStr)
-	validated, actor := m.logic.ValidateRequest(r, actorURI)
+	validated, actor := m.logic.ValidateRequest(r, actorIRI)
 	if !validated {
 		l.Debugf("validation failed for actor: %s", actor)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
@@ -58,7 +58,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	var instance *models.Instance
 	switch actor.Type {
 	case models.TypeApplication:
-		instance, err = m.logic.GetInstanceForActor(r.Context(), actorURI)
+		instance, err = m.logic.GetInstanceForActor(r.Context(), actorIRI)
 		if err != nil {
 			if errors.Is(err, db.ErrNoEntries) {
 				nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
@@ -71,7 +71,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 			return
 		}
 	case models.TypePerson:
-		instance, err = m.logic.GetInstance(r.Context(), actorURI.Host)
+		instance, err = m.logic.GetInstance(r.Context(), actorIRI.Host)
 		if err != nil {
 			if errors.Is(err, db.ErrNoEntries) {
 				nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
@@ -118,7 +118,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	l.Debugf("body: %s", activity)
 
 	// enqueue activity
-	err = m.runner.EnqueueInboxActivity(r.Context(), instance.ID, activity)
+	err = m.runner.EnqueueInboxActivity(r.Context(), instance.ID, actorStr, activity)
 	if err != nil {
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
 
