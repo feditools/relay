@@ -13,3 +13,8 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+/dist
+/web/static/css/default.min.css
+/web/static/css/error.min.css
+/web/static/css/login.min.css
