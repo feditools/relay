@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/cactus/go-statsd-client/v5 v5.0.0
-	github.com/contribsys/faktory v1.6.0
+	github.com/contribsys/faktory v1.6.1
 	github.com/contribsys/faktory_worker_go v1.6.0
 	github.com/go-fed/activity v1.0.0
 	github.com/go-fed/httpsig v1.1.0
@@ -75,7 +75,7 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.35.26 // indirect
 	modernc.org/ccgo/v3 v3.16.2 // indirect
