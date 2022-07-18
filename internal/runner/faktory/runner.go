@@ -23,6 +23,7 @@ func New(l *logic.Logic) (*Runner, error) {
 	mgr.Concurrency = viper.GetInt(config.Keys.RunnerConcurrency)
 	mgr.ProcessWeightedPriorityQueues(map[string]int{QueueDefault: 2, QueueDelivery: 1})
 
+	mgr.Register(JobDeliverActivity, newRunner.deliverActivity)
 	mgr.Register(JobInboxActivity, newRunner.inboxActivity)
 
 	newRunner.manager = mgr

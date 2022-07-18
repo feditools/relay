@@ -2,6 +2,8 @@ package activitypub
 
 import (
 	"encoding/json"
+	"errors"
+	"github.com/feditools/relay/internal/db"
 	"github.com/feditools/relay/internal/models"
 	nethttp "net/http"
 	"net/url"
@@ -16,14 +18,17 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	if err != nil {
 		l.Errorf("decoding activity: %+v", err)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
+
 		return
 	}
+	l.Tracef("got activity: %#v", activity)
 
 	// parse actor uri
 	actorI, ok := activity["actor"]
 	if !ok {
 		l.Debugf("activity missing actor: %+v", activity)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
+
 		return
 	}
 	actorStr, ok := actorI.(string)
@@ -36,6 +41,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	if err != nil {
 		l.Errorf("can't parts actor uri from %s: %s", actorStr, err.Error())
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
+
 		return
 	}
 
@@ -45,14 +51,42 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	if !validated {
 		l.Debugf("validation failed for actor: %s", actor)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
+
 		return
 	}
 
-	// get instance of actor
-	instance, err := m.logic.GetInstance(r.Context(), actorURI.Host)
-	if err != nil {
-		l.Errorf("can't get instance %s: %s", actorStr, err.Error())
-		nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
+	var instance *models.Instance
+	switch actor.Type {
+	case models.TypeApplication:
+		instance, err = m.logic.GetInstanceForActor(r.Context(), actorURI)
+		if err != nil {
+			if errors.Is(err, db.ErrNoEntries) {
+				nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
+
+				return
+			}
+			l.Errorf("can't get instance %s: %s", actorStr, err.Error())
+			nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
+
+			return
+		}
+	case models.TypePerson:
+		instance, err = m.logic.GetInstance(r.Context(), actorURI.Host)
+		if err != nil {
+			if errors.Is(err, db.ErrNoEntries) {
+				nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
+
+				return
+			}
+			l.Errorf("can't get instance %s: %s", actorStr, err.Error())
+			nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
+
+			return
+		}
+	default:
+		l.Errorf("unknown actor type: %s", actor.Type)
+		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
+
 		return
 	}
 
@@ -61,12 +95,14 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	if !ok {
 		l.Debugf("activity missing type: %+v", activity)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
+
 		return
 	}
 	activityType, ok := activityTypeI.(string)
 	if !ok {
 		l.Debugf("activity type isn't string: %+v", activity)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
+
 		return
 	}
 
@@ -74,6 +110,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	if activityType != models.TypeFollow && !instance.Followed {
 		l.Debugf("got non follow from an unfollowed instance: %s", activityType)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
+
 		return
 	}
 
@@ -84,6 +121,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	err = m.runner.EnqueueInboxActivity(r.Context(), instance.ID, activity)
 	if err != nil {
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
+
 		return
 	}
 

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/relay/internal/path"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/tyrm/go-util/mimetype"
@@ -40,7 +41,7 @@ func (l *Logic) DeliverActivity(ctx context.Context, instanceID int64, activity 
 		return fmt.Errorf("can't parse actor iri: %s", err.Error())
 	}
 
-	log.Debugf("sending activity: %s", string(body))
+	log.Debugf("sending activity: %s to %s", string(body), inboxIRI.String())
 	resp, err := l.transport.InstancePost(ctx, inboxIRI, body, mimetype.ApplicationActivityJSON, mimetype.ApplicationActivityJSON)
 	if err != nil {
 		log.Errorf("can't post to instance: %s\n%s", err.Error(), resp)
@@ -160,12 +161,6 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 
 		return nil
 	}
-	objectIDURI, err := url.Parse(objectID)
-	if err != nil {
-		log.Errorf("parsing object id uri: %s", err.Error())
-
-		return fmt.Errorf("parsing object id uri: %s", err.Error())
-	}
 
 	// get instance
 	signingInstance, err := l.db.ReadInstanceByID(ctx, instanceID)
@@ -180,7 +175,7 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 	log.Tracef("forwarding activity: %#v", activity)
 
 	// read from db
-	followedInstances, err := l.db.ReadInstancesWhereFollowing(ctx)
+	followedInstances, err := l.GetInstancesForForwarding(ctx, signingInstance.ActorIRI, objectID)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 
@@ -190,21 +185,12 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 
 	// enqueue deliveries
 	for _, instance := range followedInstances {
-		actorIRI, err := url.Parse(instance.ActorIRI)
+		err = l.runner.EnqueueDeliverActivity(ctx, instance.ID, activity)
 		if err != nil {
-			log.Errorf("parsing object id uri: %s", err.Error())
-
-			return fmt.Errorf("parsing object id uri: %s", err.Error())
-		}
-
-		if instance.ActorIRI != signingInstance.ActorIRI && actorIRI.Host != objectIDURI.Host {
-			err = l.runner.EnqueueDeliverActivity(ctx, instance.ID, activity)
-			if err != nil {
-				log.Errorf("enqueueing delivery: %s", err.Error())
-			}
+			log.Errorf("enqueueing delivery: %s", err.Error())
 		}
 	}
-	_ = l.cacheActivity.Add(objectID, true)
+	_ = l.cacheActivity.Add(objectID, objectID)
 
 	return nil
 }
@@ -214,6 +200,65 @@ func (l *Logic) doRelay(ctx context.Context, instanceID int64, activity models.A
 		"func": "doRelay",
 	})
 	log.Trace("doRelay called")
+
+	// check if we've already forwarded
+	objectID, err := activity.ObjectID()
+	if err != nil {
+		log.Warnf("object id: %s", err.Error())
+
+		return fmt.Errorf("object id: %s", err.Error())
+	}
+	_, ok := l.cacheActivity.Get(objectID)
+	if ok {
+		log.Infof("already forwarded message: %v", objectID)
+
+		return nil
+	}
+
+	// get instance
+	signingInstance, err := l.db.ReadInstanceByID(ctx, instanceID)
+	if err != nil {
+		log.Errorf("db read: %s", err.Error())
+
+		return fmt.Errorf("db read: %s", err.Error())
+	}
+
+	// forward activity
+	log.Debugf("relaying post from %s", signingInstance.ActorIRI)
+	log.Tracef("relaying activity: %#v", activity)
+
+	// send announce
+	actorIRI, err := url.Parse(signingInstance.ActorIRI)
+	if err != nil {
+		log.Errorf("can't parse actor iri: %s", err.Error())
+
+		return fmt.Errorf("can't marshal response: %s", err.Error())
+	}
+	outgoingActivity := genActivityAnnounce(l.domain, actorIRI, objectID)
+	outgoingActivityID, err := outgoingActivity.ID()
+	if err != nil {
+		log.Errorf("can't get new activity id: %s", err.Error())
+
+		return fmt.Errorf("can't get new activity id: %s", err.Error())
+	}
+
+	// read from db
+	followedInstances, err := l.GetInstancesForForwarding(ctx, signingInstance.ActorIRI, objectID)
+	if err != nil {
+		log.Errorf("db read: %s", err.Error())
+
+		return fmt.Errorf("db read: %s", err.Error())
+	}
+	log.Debugf("got %d followed instances", len(followedInstances))
+
+	// enqueue deliveries
+	for _, instance := range followedInstances {
+		err = l.runner.EnqueueDeliverActivity(ctx, instance.ID, outgoingActivity)
+		if err != nil {
+			log.Errorf("enqueueing delivery: %s", err.Error())
+		}
+	}
+	_ = l.cacheActivity.Add(objectID, outgoingActivityID)
 
 	return nil
 }
@@ -287,8 +332,19 @@ func genActivityID(domain string) string {
 	return fmt.Sprintf("https://%s/activities/%s", domain, uuid.New().String())
 }
 
-func genActivityAccept(domain, to, activityID string) map[string]interface{} {
-	return map[string]interface{}{
+func genActivityAnnounce(domain string, fromActorIRI *url.URL, objectID string) models.Activity {
+	return models.Activity{
+		"@context": models.ContextActivityStreams,
+		"type":     models.TypeAnnounce,
+		"to":       []string{path.GenFollowers(fromActorIRI.Host)},
+		"actor":    fromActorIRI.String(),
+		"object":   objectID,
+		"id":       genActivityID(domain),
+	}
+}
+
+func genActivityAccept(domain, to, activityID string) models.Activity {
+	return models.Activity{
 		"@context": models.ContextActivityStreams,
 		"type":     models.TypeAccept,
 		"to":       []string{to},
@@ -303,8 +359,8 @@ func genActivityAccept(domain, to, activityID string) map[string]interface{} {
 	}
 }
 
-func genActivityUndo(domain, to string) map[string]interface{} {
-	return map[string]interface{}{
+func genActivityUndo(domain, to string) models.Activity {
+	return models.Activity{
 		"@context": models.ContextActivityStreams,
 		"type":     models.TypeUndo,
 		"to":       []string{to},

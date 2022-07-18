@@ -10,7 +10,7 @@ import (
 )
 
 func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *models.Actor) {
-	log := logger.WithField("func", "validateRequest")
+	log := logger.WithField("func", "ValidateRequest")
 
 	ctx := r.Context()
 
@@ -25,18 +25,6 @@ func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 		log.Warnf("can't cast verifier")
 		return false, nil
 	}
-
-	// get signature from context
-	/*signaturei := ctx.Value(http.ContextKeyHTTPSignature)
-	if signaturei == nil {
-		log.Debug("signature missing in context")
-		return false
-	}
-	signature, ok := signaturei.(string)
-	if !ok {
-		log.Debug("couldn't extract signature")
-		return false
-	}*/
 
 	// parse key uri
 	publicKeyID, err := url.Parse(verifier.KeyId())

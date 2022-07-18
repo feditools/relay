@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"net/url"
 )
 
 // Actor represents an activity pub actor
@@ -34,6 +35,24 @@ type PublicKey struct {
 	ID           string `json:"id"`
 	Owner        string `json:"owner"`
 	PublicKeyPEM string `json:"publicKeyPem"`
+}
+
+func (a *Actor) Instance() (*Instance, error) {
+	if a.Type != TypeApplication {
+		return nil, NewErrorf("actor is not type %s", TypeApplication)
+	}
+
+	actorID, err := url.Parse(a.ID)
+	if a.Type != TypeApplication {
+		return nil, NewErrorf("can't parse id: %s", err.Error())
+	}
+
+	return &Instance{
+		AccountDomain: a.PreferredUsername,
+		Domain:        actorID.Host,
+		ActorIRI:      a.ID,
+		InboxIRI:      a.Endpoints.SharedInbox,
+	}, nil
 }
 
 func (a *Actor) RSAPublicKey() (*rsa.PublicKey, error) {

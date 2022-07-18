@@ -5,27 +5,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	// ContextActivityStreams contains the context document for activity streams
-	ContextActivityStreams = "https://www.w3.org/ns/activitystreams"
-
-	// TypeAccept is the Accept activity Type
-	TypeAccept = "Accept"
-	// TypeAnnounce is the Announce activity Type
-	TypeAnnounce = "Announce"
-	// TypeCreate is the Create activity Type
-	TypeCreate = "Create"
-	// TypeDelete is the Delete activity Type
-	TypeDelete = "Delete"
-	// TypeFollow is the Follow activity Type
-	TypeFollow = "Follow"
-	// TypeUndo is the Undo activity Type
-	TypeUndo = "Undo"
-	// TypeUpdate is the Update activity Type
-	TypeUpdate = "Update"
-)
-
 type Activity map[string]interface{}
+
+func (a Activity) ID() (string, error) {
+	idi, ok := a["id"]
+	if !ok {
+		return "", errors.New("activity is missing id")
+	}
+	id, ok := idi.(string)
+	if !ok {
+		return "", errors.New("activity id is wrong type")
+	}
+
+	return id, nil
+}
 
 func (a Activity) ObjectID() (string, error) {
 	l := logger.WithFields(logrus.Fields{

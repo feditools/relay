@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"errors"
+	"github.com/feditools/relay/internal/db"
 	"strings"
 )
 
@@ -10,25 +12,27 @@ func (l *Logic) IsDomainBlocked(ctx context.Context, d string) (bool, error) {
 	log := logger.WithField("func", "IsDomainBlocked")
 
 	// check domain for block
-	block, err := l.db.ReadBlockByDomain(ctx, d)
-	if err != nil {
+	_, err := l.db.ReadBlockByDomain(ctx, d)
+	if err != nil && !errors.Is(err, db.ErrNoEntries) {
 		log.Errorf("db read %s: %s", d, err.Error())
+
 		return false, err
 	}
 
 	// this domain is blocked
-	if block != nil {
+	if err == nil {
 		return true, nil
 	}
 
 	// check top domains
 	for _, domain := range topDomains(d) {
-		block, err = l.db.ReadBlockByDomain(ctx, domain)
-		if err != nil {
+		block, err := l.db.ReadBlockByDomain(ctx, domain)
+		if err != nil && !errors.Is(err, db.ErrNoEntries) {
 			log.Errorf("db read %s: %s", domain, err.Error())
+
 			return false, err
 		}
-		if block != nil {
+		if err == nil {
 			if block.BlockSubdomains {
 				return true, nil
 			}
@@ -46,5 +50,6 @@ func topDomains(d string) []string {
 	for i := 0; i < len(tds); i++ {
 		tds[i] = strings.Join(parts[i+1:end], ".")
 	}
+
 	return tds
 }

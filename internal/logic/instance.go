@@ -2,12 +2,10 @@ package logic
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/rsa"
-	"github.com/feditools/relay/internal/config"
+	"errors"
+	"fmt"
+	"github.com/feditools/relay/internal/db"
 	"github.com/feditools/relay/internal/models"
-	"github.com/feditools/relay/internal/path"
-	"github.com/spf13/viper"
 	"net/url"
 	"time"
 )
@@ -45,11 +43,14 @@ func (l *Logic) GetPeers(ctx context.Context) (*[]string, error) {
 func (l *Logic) GetInstance(ctx context.Context, domain string) (*models.Instance, error) {
 	log := logger.WithField("func", "GetInstance")
 
+	// try to get instance from db
 	instance := new(models.Instance)
 	var err error
 	instance, err = l.db.ReadInstanceByDomain(ctx, domain)
 	if err != nil {
-		log.Errorf("db read: %s", err.Error())
+		if !errors.Is(err, db.ErrNoEntries) {
+			log.Errorf("db read: %s", err.Error())
+		}
 
 		return nil, err
 	}
@@ -57,51 +58,72 @@ func (l *Logic) GetInstance(ctx context.Context, domain string) (*models.Instanc
 	return instance, nil
 }
 
-func (l *Logic) GetInstanceSelf(ctx context.Context) (*models.Instance, error) {
-	log := logger.WithField("func", "GetInstanceSelf")
+func (l *Logic) GetInstanceForActor(ctx context.Context, actorID *url.URL) (*models.Instance, error) {
+	log := logger.WithField("func", "GetInstanceForActor")
 
+	// try to get instance from db
 	instance := new(models.Instance)
 	var err error
-	instance, err = l.db.ReadInstanceByDomain(ctx, l.domain)
-	if err != nil {
+	instance, err = l.db.ReadInstanceByActorIRI(ctx, actorID.String())
+	if err == nil {
+		return instance, nil
+	}
+	if err != nil && !errors.Is(err, db.ErrNoEntries) {
 		log.Errorf("db read: %s", err.Error())
 
 		return nil, err
 	}
 
-	return instance, nil
-}
-
-func (l *Logic) createInstanceSelf(ctx context.Context) (*models.Instance, error) {
-	log := logger.WithField("func", "createInstanceSelf")
-
-	// generate key
-	privatekey, err := rsa.GenerateKey(rand.Reader, viper.GetInt(config.Keys.ActorKeySize))
+	// not in db, fetch actor
+	actor, err := l.fetchActor(ctx, actorID)
 	if err != nil {
-		log.Errorf("genrating private key: %s", err.Error())
-		return nil, err
+		log.Errorf("fetching actor: %s", err.Error())
+
+		return nil, fmt.Errorf("fetching actor: %s", err.Error())
 	}
-
-	publickey := &privatekey.PublicKey
-
-	// create new instance
-	newInstance := &models.Instance{
-		Domain:   l.domain,
-		ActorIRI: genActorSelf(l.domain),
-		InboxIRI: path.GenInbox(l.domain),
-
-		PublicKey:  publickey,
-		PrivateKey: privatekey,
-	}
-
-	// add to database
+	newInstance, err := actor.Instance()
 	err = l.db.CreateInstance(ctx, newInstance)
 	if err != nil {
 		log.Errorf("db create: %s", err.Error())
-		return nil, err
+
+		return nil, fmt.Errorf("db create: %s", err.Error())
 	}
 
 	return newInstance, nil
+}
+
+func (l *Logic) GetInstancesForForwarding(ctx context.Context, actorIRI, objectID string) ([]*models.Instance, error) {
+	log := logger.WithField("func", "GetInstance")
+
+	objectIDURI, err := url.Parse(objectID)
+	if err != nil {
+		log.Errorf("parsing object id uri: %s", err.Error())
+
+		return nil, fmt.Errorf("parsing object id uri: %s", err.Error())
+	}
+
+	instances, err := l.db.ReadInstancesWhereFollowing(ctx)
+	if err != nil {
+		log.Errorf("db read: %s", err.Error())
+		return nil, err
+	}
+	log.Debugf("got %d instances", len(instances))
+
+	// remove sender and origin instances
+	selectedInstances := make([]*models.Instance, 0)
+	for _, instance := range instances {
+		aIRI, err := url.Parse(instance.ActorIRI)
+		if err != nil {
+			log.Errorf("parsing object id uri: %s", err.Error())
+			continue
+		}
+
+		if instance.ActorIRI != actorIRI && aIRI.Host != objectIDURI.Host {
+			selectedInstances = append(selectedInstances, instance)
+		}
+	}
+
+	return selectedInstances, nil
 }
 
 // peer list "cache" functions
@@ -123,29 +145,7 @@ func (l *Logic) setCachedPeerList(peers *[]string) {
 	l.cPeerListLock.Unlock()
 }
 
-func (l *Logic) getOrCreateSelfInstance(ctx context.Context) (*models.Instance, error) {
-	log := logger.WithField("func", "getOrCreateSelfInstance")
-
-	instance, err := l.GetInstanceSelf(ctx)
-	if err != nil {
-		log.Errorf("db read: %s", err.Error())
-
-		return nil, err
-	}
-
-	if instance == nil {
-		instance, err = l.createInstanceSelf(ctx)
-		if err != nil {
-			log.Errorf("create self: %s", err.Error())
-
-			return nil, err
-		}
-	}
-
-	return instance, nil
-}
-
-func (l *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
+/*func (l *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
 	log := logger.WithField("func", "getInstanceWithPublicKey")
 
 	instance, err := l.db.ReadInstanceByDomain(ctx, actorURI.Host)
@@ -183,9 +183,9 @@ func (l *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL)
 	}
 
 	return instance, nil
-}
+}*/
 
-func (l *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
+/*func (l *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
 	log := logger.WithField("func", "makeInstanceFromActor")
 
 	// fetch remote actor
@@ -216,4 +216,4 @@ func (l *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*
 	}
 
 	return newInstance, nil
-}
+}*/
