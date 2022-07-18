@@ -151,15 +151,15 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 	log.Trace("doForward called")
 
 	// check if we've already forwarded
-	objectID, err := activity.ObjectID()
+	activityID, err := activity.ID()
 	if err != nil {
-		log.Warnf("object id: %s", err.Error())
+		log.Warnf("missing activity id: %s", err.Error())
 
 		return fmt.Errorf("object id: %s", err.Error())
 	}
-	_, ok := l.cacheActivity.Get(objectID)
+	_, ok := l.cacheActivity.Get(activityID)
 	if ok {
-		log.Infof("already forwarded message: %v", objectID)
+		log.Infof("already forwarded message: %v", activityID)
 
 		return nil
 	}
@@ -177,7 +177,7 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 	log.Tracef("forwarding activity: %#v", activity)
 
 	// read from db
-	followedInstances, err := l.GetInstancesForForwarding(ctx, signingInstance.ActorIRI, objectID)
+	followedInstances, err := l.GetInstancesForForwarding(ctx, signingInstance.ActorIRI, activityID)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 
@@ -192,7 +192,7 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 			log.Errorf("enqueueing delivery: %s", err.Error())
 		}
 	}
-	_ = l.cacheActivity.Add(objectID, objectID)
+	_ = l.cacheActivity.Add(activityID, activityID)
 
 	return nil
 }
