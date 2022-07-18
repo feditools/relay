@@ -4,7 +4,7 @@ github.com/cactus/go-statsd-client/v5/statsd
 # github.com/cespare/xxhash/v2 v2.1.1
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/contribsys/faktory v1.6.0
+# github.com/contribsys/faktory v1.6.1
 ## explicit; go 1.17
 github.com/contribsys/faktory/client
 github.com/contribsys/faktory/internal/pool

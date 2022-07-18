@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/cactus/go-statsd-client/v5 v5.0.0
-	github.com/contribsys/faktory v1.6.0
+	github.com/contribsys/faktory v1.6.1
 	github.com/contribsys/faktory_worker_go v1.6.0
 	github.com/feditools/go-lib v0.11.2-0.20220718061620-ac916bccaba4
 	github.com/go-fed/activity v1.0.0
