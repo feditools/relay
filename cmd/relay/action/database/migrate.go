@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"github.com/feditools/go-lib/metrics/statsd"
 	"github.com/feditools/relay/cmd/relay/action"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
-	"github.com/feditools/relay/internal/metrics/statsd"
 	"github.com/spf13/viper"
 )
 
@@ -14,7 +14,10 @@ var Migrate action.Action = func(ctx context.Context) error {
 	l := logger.WithField("func", "Migrate")
 
 	// create metrics collector
-	metricsCollector, err := statsd.New()
+	metricsCollector, err := statsd.New(
+		viper.GetString(config.Keys.MetricsStatsDAddress),
+		viper.GetString(config.Keys.MetricsStatsDPrefix),
+	)
 	if err != nil {
 		l.Errorf("metrics: %s", err.Error())
 		return err
@@ -44,14 +47,6 @@ var Migrate action.Action = func(ctx context.Context) error {
 	if err != nil {
 		l.Errorf("migration: %s", err.Error())
 		return err
-	}
-
-	if viper.GetBool(config.Keys.DbLoadTestData) {
-		err = dbClient.LoadTestData(ctx)
-		if err != nil {
-			l.Errorf("migration: %s", err.Error())
-			return err
-		}
 	}
 
 	return nil

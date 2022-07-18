@@ -16,6 +16,7 @@ func Global(cmd *cobra.Command, values config.Values) {
 	cmd.PersistentFlags().Int(config.Keys.CachedActivityLimit, values.CachedActivityLimit, usage.CachedActivityLimit)
 	cmd.PersistentFlags().Int(config.Keys.CachedActorLimit, values.CachedActorLimit, usage.CachedActorLimit)
 	cmd.PersistentFlags().Int(config.Keys.CachedDigestLimit, values.CachedDigestLimit, usage.CachedDigestLimit)
+	cmd.PersistentFlags().String(config.Keys.EncryptionKey, values.EncryptionKey, usage.EncryptionKey)
 
 	// database
 	cmd.PersistentFlags().String(config.Keys.DbType, values.DbType, usage.DbType)
@@ -26,7 +27,6 @@ func Global(cmd *cobra.Command, values config.Values) {
 	cmd.PersistentFlags().String(config.Keys.DbDatabase, values.DbDatabase, usage.DbDatabase)
 	cmd.PersistentFlags().String(config.Keys.DbTLSMode, values.DbTLSMode, usage.DbTLSMode)
 	cmd.PersistentFlags().String(config.Keys.DbTLSCACert, values.DbTLSCACert, usage.DbTLSCACert)
-	cmd.PersistentFlags().String(config.Keys.DbEncryptionKey, values.DbEncryptionKey, usage.DbEncryptionKey)
 
 	// metrics
 	cmd.PersistentFlags().String(config.Keys.MetricsStatsDAddress, values.MetricsStatsDAddress, usage.MetricsStatsDAddress)

@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"context"
-	"github.com/feditools/relay/internal/http"
 	"github.com/go-fed/httpsig"
 	"github.com/tyrm/go-util/mimetype"
 	nethttp "net/http"
@@ -39,7 +38,7 @@ func (m *Module) middlewareCheckHTTPSig(next nethttp.Handler) nethttp.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), http.ContextKeyKeyVerifier, verifier)
+		ctx := context.WithValue(r.Context(), ContextKeyKeyVerifier, verifier)
 
 		// check for domain block
 		isBlocked, err := m.logic.IsDomainBlocked(ctx, KeyIDURI.Host)
@@ -59,7 +58,7 @@ func (m *Module) middlewareCheckHTTPSig(next nethttp.Handler) nethttp.Handler {
 		// get signature
 		signature := r.Header.Get("signature")
 		if signature != "" {
-			ctx = context.WithValue(ctx, http.ContextKeyHTTPSignature, signature)
+			ctx = context.WithValue(ctx, ContextKeyHTTPSignature, signature)
 		}
 
 		// do request with verifier

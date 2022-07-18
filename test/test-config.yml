@@ -69,3 +69,41 @@ db-tls-ca-cert: ""
 # String. Key used for encrypting values written to the database.
 # Default: ""
 db-crypto-key: "test1234test5678test9123test4567"
+
+###########
+## REDIS ##
+###########
+
+# String. Address and port of the redis instance
+# Default: "localhost:6379"
+#redis-address: "localhost:6379"
+
+# Int. Redis database to use
+# Examples: [0, 1, 15]
+# Default: 0
+#redis-db: 0
+
+# String. Password to use for the redis connection
+# Examples: ["","test","password"]
+# Default: ""
+redis-password: "test"
+
+#############
+## METRICS ##
+#############
+
+# String. Address and port of the statsd instance
+# Default: "localhost:8125"
+#statsd-addr: "localhost:8125"
+
+# String. Prefix to add to statsd metrics
+# Default: "democrablock"
+#statsd-prefix: ""
+
+#######
+# WEB #
+#######
+
+# String. Key used for encrypting values written to the database.
+# Default: ""
+session-key: test

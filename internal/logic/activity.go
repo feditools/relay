@@ -19,7 +19,7 @@ func (l *Logic) DeliverActivity(ctx context.Context, instanceID int64, activity 
 	})
 
 	// get instance
-	instance, err := l.db.ReadInstanceByID(ctx, instanceID)
+	instance, err := l.db.ReadInstance(ctx, instanceID)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 
@@ -103,7 +103,7 @@ func (l *Logic) doFollow(ctx context.Context, instanceID int64, activity models.
 	}
 
 	// set followed
-	instance, err := l.db.ReadInstanceByID(ctx, instanceID)
+	instance, err := l.db.ReadInstance(ctx, instanceID)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 
@@ -165,7 +165,7 @@ func (l *Logic) doForward(ctx context.Context, instanceID int64, activity models
 	}
 
 	// get instance
-	signingInstance, err := l.db.ReadInstanceByID(ctx, instanceID)
+	signingInstance, err := l.db.ReadInstance(ctx, instanceID)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 
@@ -218,7 +218,7 @@ func (l *Logic) doRelay(ctx context.Context, instanceID int64, activity models.A
 	}
 
 	// get instance
-	signingInstance, err := l.db.ReadInstanceByID(ctx, instanceID)
+	signingInstance, err := l.db.ReadInstance(ctx, instanceID)
 	if err != nil {
 		log.Errorf("db read: %s", err.Error())
 
@@ -275,7 +275,7 @@ func (l *Logic) doUndo(ctx context.Context, instanceID int64, activity models.Ac
 		return l.doForward(ctx, instanceID, activity)
 	case models.TypeFollow:
 		// get instance
-		instance, err := l.db.ReadInstanceByID(ctx, instanceID)
+		instance, err := l.db.ReadInstance(ctx, instanceID)
 		if err != nil {
 			log.Errorf("db read: %s", err.Error())
 

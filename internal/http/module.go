@@ -4,4 +4,5 @@ package http
 type Module interface {
 	Name() string
 	Route(s *Server) error
+	SetServer(s *Server)
 }

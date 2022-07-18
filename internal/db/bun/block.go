@@ -2,93 +2,92 @@ package bun
 
 import (
 	"context"
-	"database/sql"
+	"errors"
 	"github.com/feditools/relay/internal/db"
 	"github.com/feditools/relay/internal/models"
 	"github.com/uptrace/bun"
-	"time"
 )
 
 // CreateBlock stores the domain block
 func (c *Client) CreateBlock(ctx context.Context, block *models.Block) db.Error {
-	start := time.Now()
+	metric := c.metrics.NewDBQuery("CreateBlock")
 
-	err := c.Create(ctx, block)
-	if err != nil {
-		ended := time.Since(start)
-		go c.metrics.DBQuery(ended, "CreateBlock", true)
+	if err := create(ctx, c.bun, block); err != nil {
+		go metric.Done(true)
+
 		return c.bun.errProc(err)
 	}
 
-	ended := time.Since(start)
-	go c.metrics.DBQuery(ended, "CreateBlock", false)
+	go metric.Done(false)
+
 	return nil
 }
 
-// ReadBlockByID returns one domain block
-func (c *Client) ReadBlockByID(ctx context.Context, id int64) (*models.Block, db.Error) {
-	start := time.Now()
+// ReadBlock returns one domain block
+func (c *Client) ReadBlock(ctx context.Context, id int64) (*models.Block, db.Error) {
+	metric := c.metrics.NewDBQuery("ReadBlock")
 
-	block := &models.Block{}
-
-	err := c.newBlockQ(block).Where("id = ?", id).Scan(ctx)
-	if err == sql.ErrNoRows {
-		ended := time.Since(start)
-		go c.metrics.DBQuery(ended, "ReadBlockByID", false)
-		return nil, c.bun.ProcessError(err)
-	}
+	block := new(models.Block)
+	err := newBlockQ(c.bun, block).Where("id = ?", id).Scan(ctx)
 	if err != nil {
-		ended := time.Since(start)
-		go c.metrics.DBQuery(ended, "ReadBlockByID", true)
-		return nil, c.bun.ProcessError(err)
+		dbErr := c.bun.ProcessError(err)
+
+		if errors.Is(dbErr, db.ErrNoEntries) {
+			// report no entries as a non error
+			go metric.Done(false)
+		} else {
+			go metric.Done(true)
+		}
+
+		return nil, dbErr
 	}
 
-	ended := time.Since(start)
-	go c.metrics.DBQuery(ended, "ReadBlockByID", false)
+	go metric.Done(false)
+
 	return block, nil
 }
 
 // ReadBlockByDomain returns one domain block
 func (c *Client) ReadBlockByDomain(ctx context.Context, domain string) (*models.Block, db.Error) {
-	start := time.Now()
+	metric := c.metrics.NewDBQuery("ReadBlockByDomain")
 
-	block := &models.Block{}
-
-	err := c.newBlockQ(block).Where("lower(domain) = lower(?)", domain).Scan(ctx)
-	if err == sql.ErrNoRows {
-		ended := time.Since(start)
-		go c.metrics.DBQuery(ended, "ReadBlockByDomain", false)
-		return nil, c.bun.ProcessError(err)
-	}
+	block := new(models.Block)
+	err := newBlockQ(c.bun, block).Where("lower(domain) = lower(?)", domain).Scan(ctx)
 	if err != nil {
-		ended := time.Since(start)
-		go c.metrics.DBQuery(ended, "ReadBlockByDomain", true)
-		return nil, c.bun.ProcessError(err)
+		dbErr := c.bun.ProcessError(err)
+
+		if errors.Is(dbErr, db.ErrNoEntries) {
+			// report no entries as a non error
+			go metric.Done(false)
+		} else {
+			go metric.Done(true)
+		}
+
+		return nil, dbErr
 	}
 
-	ended := time.Since(start)
-	go c.metrics.DBQuery(ended, "ReadBlockByDomain", false)
+	go metric.Done(false)
+
 	return block, nil
 }
 
 // UpdateBlock updates the stored domain block
 func (c *Client) UpdateBlock(ctx context.Context, block *models.Block) db.Error {
-	start := time.Now()
+	metric := c.metrics.NewDBQuery("UpdateBlock")
 
-	err := c.Update(ctx, block)
-	if err != nil {
-		ended := time.Since(start)
-		go c.metrics.DBQuery(ended, "UpdateBlock", true)
+	if err := update(ctx, c.bun, block); err != nil {
+		go metric.Done(true)
+
 		return c.bun.errProc(err)
 	}
 
-	ended := time.Since(start)
-	go c.metrics.DBQuery(ended, "UpdateBlock", false)
+	go metric.Done(false)
+
 	return nil
 }
 
-func (c *Client) newBlockQ(block *models.Block) *bun.SelectQuery {
-	return c.bun.
+func newBlockQ(c bun.IDB, block *models.Block) *bun.SelectQuery {
+	return c.
 		NewSelect().
 		Model(block)
 }

@@ -53,6 +53,8 @@ build_all_targets:
 	GOOS=linux GOARCH=arm go test -c -o /dev/null
 	GOOS=linux GOARCH=arm64 go build -v ./...
 	GOOS=linux GOARCH=arm64 go test -c -o /dev/null
+	GOOS=linux GOARCH=ppc64le go build -v ./...
+	GOOS=linux GOARCH=ppc64le go test -c -o /dev/null
 	GOOS=linux GOARCH=riscv64 go build -v ./...
 	GOOS=linux GOARCH=riscv64 go test -c -o /dev/null
 	GOOS=linux GOARCH=s390x go build -v ./...
@@ -138,6 +140,12 @@ linux_arm64:
 	@echo "Should be executed only on linux/amd64."
 	CCGO_CPP=aarch64-linux-gnu-cpp TARGET_GOARCH=arm64 TARGET_GOOS=linux go generate 2>&1 | tee log-generate
 	GOOS=linux GOARCH=arm64 go build -v ./...
+
+# 3900x
+linux_ppc64le:
+	@echo "Should be executed only on linux/amd64."
+	CCGO_CPP=powerpc64le-linux-gnu-cpp TARGET_GOARCH=ppc64le TARGET_GOOS=linux go generate 2>&1 | tee log-generate
+	GOOS=linux GOARCH=ppc64le go build -v ./...
 
 # linux/riscv64
 linux_riscv64:

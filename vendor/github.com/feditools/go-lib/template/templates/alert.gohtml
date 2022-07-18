@@ -1,0 +1,14 @@
+{{define "alert"}}
+<div class="alert alert-{{.Level}} alert-dismissible fade show" role="alert">
+    {{if .Header}}<strong>{{.Header}}</strong> {{end}}{{.Text}}
+  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{end}}
+
+{{ define "alert_bars" -}}
+  {{- if . -}}
+    {{- range $alert := . -}}
+      {{- template "alert" $alert -}}
+    {{- end -}}
+  {{- end -}}
+{{- end }}

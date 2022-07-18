@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/models"
 	"github.com/go-fed/httpsig"
 	nethttp "net/http"
@@ -14,15 +13,11 @@ func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 
 	ctx := r.Context()
 
-	// get verifier from context
-	cVerifier := ctx.Value(http.ContextKeyKeyVerifier)
-	if cVerifier == nil {
-		log.Debug("verifier missing in context")
-		return false, nil
-	}
-	verifier, ok := cVerifier.(httpsig.Verifier)
-	if !ok {
-		log.Warnf("can't cast verifier")
+	// create verifier
+	verifier, err := httpsig.NewVerifier(r)
+	if err != nil {
+		log.Debugf("verifier error: %s", err.Error())
+
 		return false, nil
 	}
 
@@ -39,7 +34,18 @@ func (l *Logic) ValidateRequest(r *nethttp.Request, actorURI *url.URL) (bool, *m
 		return false, nil
 	}
 
-	// TODO: check blocks
+	// check for domain block
+	isBlocked, err := l.IsDomainBlocked(ctx, publicKeyID.Host)
+	if err != nil {
+		log.Debugf("can't get domain block: %s", err.Error())
+
+		return false, nil
+	}
+	if isBlocked {
+		log.Debugf("domain %s is blocked", publicKeyID.Host)
+
+		return false, nil
+	}
 
 	// fetch actor
 	actor, err := l.fetchActor(ctx, actorURI)

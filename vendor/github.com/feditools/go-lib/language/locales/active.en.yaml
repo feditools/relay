@@ -1,0 +1,59 @@
+---
+Account:
+  one: Account
+  other: Accounts
+AddOauth20Client:
+  one: Add OAuth 2.0 Client
+  other: Add OAuth 2.0 Clients
+Allow: Allow
+ApplicationToken:
+  one: Application Token
+  other: Application Tokens
+Authorize: Authorize
+AuthorizeApplicationDescription: Authorize {{.Description}}
+Client:
+  one: Client
+  other: Clients
+ClientID:
+  one: Client ID
+  other: Client IDs
+ClientSecret:
+  one: Client Secret
+  other: Client Secrets
+Create: Create
+Dashboard:
+  one: Dashboard
+  other: Dashboards
+Democrablock: Democrablock
+Description:
+  one: Description
+  other: Descriptions
+Fediverse: Fediverse
+HomeWeb: Home
+Instance:
+  one: Instance
+  other: Instances
+InvalidURI:
+  one: Invalid URI
+  other: Invalid URIs
+List:
+  one: List
+  other: Lists
+Login: Login
+LooksGood: Looks Good!
+Oauth: OAuth
+Oauth20Client:
+  one: OAuth 2.0 Client
+  other: OAuth 2.0 Clients
+Oauth20Settings: OAuth 2.0 Settings
+RedirectURI:
+  one: Redirect URI
+  other: Redirect URIs
+Required: Required
+System:
+  one: System
+  other: Systems
+Token:
+  one: Token
+  other: Tokens
+Unauthorized: Unauthorized

@@ -3,14 +3,18 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/feditools/go-lib/language"
+	"github.com/feditools/go-lib/metrics/statsd"
 	"github.com/feditools/relay/cmd/relay/action"
 	"github.com/feditools/relay/internal/clock"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
 	"github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/http/activitypub"
+	"github.com/feditools/relay/internal/http/webapp"
+	"github.com/feditools/relay/internal/kv/redis"
 	"github.com/feditools/relay/internal/logic"
-	"github.com/feditools/relay/internal/metrics/statsd"
+	statsdLegacy "github.com/feditools/relay/internal/metrics/statsd"
 	"github.com/feditools/relay/internal/runner/faktory"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
@@ -27,7 +31,10 @@ var Start action.Action = func(topCtx context.Context) error {
 	ctx, cancel := context.WithCancel(topCtx)
 
 	// create metrics collector
-	metricsCollector, err := statsd.New()
+	metricsCollector, err := statsd.New(
+		viper.GetString(config.Keys.MetricsStatsDAddress),
+		viper.GetString(config.Keys.MetricsStatsDPrefix),
+	)
 	if err != nil {
 		l.Errorf("metrics: %s", err.Error())
 		cancel()
@@ -35,9 +42,40 @@ var Start action.Action = func(topCtx context.Context) error {
 		return err
 	}
 	defer func() {
+		l.Info("closing metrics collector")
 		err := metricsCollector.Close()
 		if err != nil {
 			l.Errorf("closing metrics: %s", err.Error())
+		}
+	}()
+
+	// create metrics collector
+	metricsCollectorLegacy, err := statsdLegacy.New()
+	if err != nil {
+		l.Errorf("metrics: %s", err.Error())
+		cancel()
+
+		return err
+	}
+	defer func() {
+		err := metricsCollectorLegacy.Close()
+		if err != nil {
+			l.Errorf("closing metrics: %s", err.Error())
+		}
+	}()
+
+	// create kv client
+	kvClient, err := redis.New(ctx)
+	if err != nil {
+		l.Errorf("redis: %s", err.Error())
+		cancel()
+
+		return err
+	}
+	defer func() {
+		err := kvClient.Close(ctx)
+		if err != nil {
+			l.Errorf("closing redis: %s", err.Error())
 		}
 	}()
 
@@ -60,6 +98,15 @@ var Start action.Action = func(topCtx context.Context) error {
 	// create clock module
 	l.Debug("creating clock")
 	clockMod := clock.NewClock()
+
+	// create language module
+	languageMod, err := language.New()
+	if err != nil {
+		l.Errorf("language: %s", err.Error())
+		cancel()
+
+		return err
+	}
 
 	// create logic module
 	l.Debug("creating logic module")
@@ -84,7 +131,7 @@ var Start action.Action = func(topCtx context.Context) error {
 
 	// create http server
 	l.Debug("creating http server")
-	server, err := http.NewServer(ctx, metricsCollector)
+	server, err := http.NewServer(ctx, metricsCollectorLegacy)
 	if err != nil {
 		l.Errorf("http server: %s", err.Error())
 		cancel()
@@ -105,9 +152,21 @@ var Start action.Action = func(topCtx context.Context) error {
 		}
 		webModules = append(webModules, apMod)
 	}
+	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
+		l.Infof("adding %s module", config.ServerRoleWebapp)
+		apMod, err := webapp.New(ctx, dbClient, languageMod, logicMod, metricsCollector, kvClient.RedisClient())
+		if err != nil {
+			l.Errorf("%s: %s", config.ServerRoleWebapp, err.Error())
+			cancel()
+
+			return err
+		}
+		webModules = append(webModules, apMod)
+	}
 
 	// add modules to servers
 	for _, mod := range webModules {
+		mod.SetServer(server)
 		err := mod.Route(server)
 		if err != nil {
 			l.Errorf("loading %s module: %s", mod.Name(), err.Error())

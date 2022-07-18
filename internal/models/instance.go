@@ -19,6 +19,7 @@ type Instance struct {
 	UpdatedAt     time.Time       `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
 	AccountDomain string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
 	Domain        string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
+	Software      string          `validate:"-" bun:",nullzero"`
 	PublicKey     *rsa.PublicKey  `validate:"-"`
 	PrivateKey    *rsa.PrivateKey `validate:"-"`
 	ActorIRI      string          `validate:"required,url" bun:",nullzero,notnull,unique"`

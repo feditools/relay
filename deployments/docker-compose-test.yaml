@@ -19,6 +19,12 @@ services:
     environment:
       - FAKTORY_PASSWORD=test
     restart: always
+  redis:
+    image: redis:6
+    command: redis-server --requirepass test
+    ports:
+      - "127.0.0.1:6379:6379/tcp"
+    restart: always
 
   influxdb:
     image: influxdb:2.1

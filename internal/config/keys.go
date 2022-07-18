@@ -11,21 +11,25 @@ type KeyNames struct {
 	CachedActivityLimit string
 	CachedActorLimit    string
 	CachedDigestLimit   string
+	EncryptionKey       string
 	SoftwareVersion     string
 
 	// database
-	DbType          string
-	DbAddress       string
-	DbPort          string
-	DbUser          string
-	DbPassword      string
-	DbDatabase      string
-	DbTLSMode       string
-	DbTLSCACert     string
-	DbLoadTestData  string
-	DbEncryptionKey string
+	DbType      string
+	DbAddress   string
+	DbPort      string
+	DbUser      string
+	DbPassword  string
+	DbDatabase  string
+	DbTLSMode   string
+	DbTLSCACert string
 
-	// running
+	// redis
+	RedisAddress  string
+	RedisDB       string
+	RedisPassword string
+
+	// runner
 	RunnerConcurrency string
 
 	// server
@@ -33,6 +37,16 @@ type KeyNames struct {
 	ServerHTTPBind         string
 	ServerMinifyHTML       string
 	ServerRoles            string
+
+	// webapp
+	WebappBootstrapCSSURI         string
+	WebappBootstrapCSSIntegrity   string
+	WebappBootstrapJSURI          string
+	WebappBootstrapJSIntegrity    string
+	WebappFontAwesomeCSSURI       string
+	WebappFontAwesomeCSSIntegrity string
+	WebappLogoSrcDark             string
+	WebappLogoSrcLight            string
 
 	// metrics
 	MetricsStatsDAddress string
@@ -50,19 +64,23 @@ var Keys = KeyNames{
 	CachedActivityLimit: "cached-activity-limit",
 	CachedActorLimit:    "cached-actor-limit",
 	CachedDigestLimit:   "cached-digest-limit",
+	EncryptionKey:       "encryption-key",
 	SoftwareVersion:     "software-version", // Set at build
 
 	// database
-	DbType:          "db-type",
-	DbAddress:       "db-address",
-	DbPort:          "db-port",
-	DbUser:          "db-user",
-	DbPassword:      "db-password",
-	DbDatabase:      "db-database",
-	DbTLSMode:       "db-tls-mode",
-	DbTLSCACert:     "db-tls-ca-cert",
-	DbLoadTestData:  "test-data", // CLI only
-	DbEncryptionKey: "db-crypto-key",
+	DbType:      "db-type",
+	DbAddress:   "db-address",
+	DbPort:      "db-port",
+	DbUser:      "db-user",
+	DbPassword:  "db-password",
+	DbDatabase:  "db-database",
+	DbTLSMode:   "db-tls-mode",
+	DbTLSCACert: "db-tls-ca-cert",
+
+	// redis
+	RedisAddress:  "redis-address",
+	RedisDB:       "redis-db",
+	RedisPassword: "redis-password",
 
 	// runner
 	RunnerConcurrency: "runner-concurrency",
@@ -72,6 +90,16 @@ var Keys = KeyNames{
 	ServerHTTPBind:         "http-bind",
 	ServerMinifyHTML:       "minify-html",
 	ServerRoles:            "server-role",
+
+	// webapp
+	WebappBootstrapCSSURI:         "webapp-bootstrap-css-uri",
+	WebappBootstrapCSSIntegrity:   "webapp-bootstrap-css-integrity",
+	WebappBootstrapJSURI:          "webapp-bootstrap-js-uri",
+	WebappBootstrapJSIntegrity:    "webapp-bootstrap-js-integrity",
+	WebappFontAwesomeCSSURI:       "webapp-fontawesome-css-uri",
+	WebappFontAwesomeCSSIntegrity: "webapp-fontawesome-css-integrity",
+	WebappLogoSrcDark:             "webapp-logo-src-dark",
+	WebappLogoSrcLight:            "webapp-logo-src-light",
 
 	// metrics
 	MetricsStatsDAddress: "statsd-addr",

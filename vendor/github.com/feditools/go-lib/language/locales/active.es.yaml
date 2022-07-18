@@ -1,0 +1,39 @@
+---
+Account:
+  one: Cuenta
+  other: Cuentas
+AddOauth20Client:
+  one: Añadir Cliente OAuth 2.0
+  other: Añadir Clientes de OAuth 2.0
+Client:
+  one: Cliente
+  other: Clientes
+ClientID:
+  one: ID de Cliente
+  other: IDs de Cliente
+ClientSecret:
+  one: Secreto de Cliente
+  other: Secretos del Cliente
+Create: Crear
+Dashboard:
+  one: Tablero
+  other: Tableros
+Description:
+  one: Descripción
+  other: Descripciones
+HomeWeb: Inicio
+InvalidURI:
+  one: URI Inválidas
+  other: URIs Inválidas
+Login: Ingresar
+LooksGood: '¡Se ve bien!'
+Oauth: OAuth
+Oauth20Client:
+  one: Cliente OAuth 2.0
+  other: Clientes de OAuth 2.0
+Oauth20Settings: Configuración de OAuth 2.0
+RedirectURI:
+  one: Redirigir URI
+  other: Redirigir URIs
+Required: Requerido
+Unauthorized: No Autorizado

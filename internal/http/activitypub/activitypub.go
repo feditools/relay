@@ -3,6 +3,7 @@ package activitypub
 import (
 	"context"
 	"github.com/feditools/relay/internal/config"
+	ihttp "github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/logic"
 	"github.com/feditools/relay/internal/runner"
 	"github.com/spf13/viper"
@@ -53,3 +54,6 @@ func New(ctx context.Context, l *logic.Logic, r runner.Runner) (*Module, error) 
 func (m *Module) Name() string {
 	return config.ServerRoleActivityPub
 }
+
+// SetServer adds a reference to the server to the module.
+func (*Module) SetServer(_ *ihttp.Server) {}

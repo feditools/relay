@@ -1,0 +1,1 @@
+{{ define "script" }}<script src="{{ .Src }}"{{if .Integrity}} integrity="{{ htmlSafe .Integrity }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}></script>{{ end }}

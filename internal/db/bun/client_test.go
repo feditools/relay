@@ -5,10 +5,9 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
+	"github.com/feditools/go-lib/mock"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
-	"github.com/feditools/relay/internal/mock"
-	"github.com/feditools/relay/internal/models/testdata"
 	"github.com/jackc/pgconn"
 	"github.com/spf13/viper"
 	"testing"
@@ -377,7 +376,6 @@ func testNewSqliteClient() (db.DB, error) {
 
 	viper.Set(config.Keys.DbType, "sqlite")
 	viper.Set(config.Keys.DbAddress, ":memory:")
-	viper.Set(config.Keys.DbEncryptionKey, testdata.TestEncryptionKey)
 
 	metricsCollector, _ := mock.NewMetricsCollector()
 
@@ -391,7 +389,6 @@ func testNewSqliteClient() (db.DB, error) {
 		return nil, err
 	}
 
-	err = client.LoadTestData(context.Background())
 	if err != nil {
 		return nil, err
 	}
