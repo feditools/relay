@@ -43,6 +43,11 @@ lint:
 	@echo linting
 	@golint $(shell go list ./... | grep -v /vendor/)
 
+stage-static:
+	minify web/static-src/css/default.css > web/static/css/default.min.css
+	minify web/static-src/css/error.css > web/static/css/error.min.css
+	minify web/static-src/css/login.css > web/static/css/login.min.css
+
 test: tidy fmt lint #gosec
 	go test -cover ./...
 
@@ -58,4 +63,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: build-snapshot bun-new-migration clean fmt lint stage-static npm-scss npm-upgrade docker-restart docker-start docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
+.PHONY: build-snapshot bun-new-migration clean fmt lint stage-static npm-scss npm-upgrade docker-restart docker-start docker-stop stage-static test test-ext test-race test-race-ext test-verbose tidy vendor
