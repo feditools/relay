@@ -124,8 +124,8 @@ func (f *FediHelper) FetchActor(ctx context.Context, actorIRI *url.URL) (*Actor,
 		return nil, err
 	}
 
-	actor := v.(Actor)
-	return &actor, nil
+	actor := v.(*Actor)
+	return actor, nil
 }
 
 func unmarshalActor(body []byte) (*Actor, error) {

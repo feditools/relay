@@ -57,9 +57,9 @@ func (l *Logic) ProcessActivity(ctx context.Context, instanceID int64, actorIRI 
 		"func": "ProcessActivity",
 	})
 
-	actType, ok := activity["type"]
-	if !ok {
-		log.Debugf("activity missing type")
+	actType, err := activity.Type()
+	if err != nil {
+		log.Debugf("can't get activity type: %s", err.Error())
 
 		return errors.New("activity missing type")
 	}

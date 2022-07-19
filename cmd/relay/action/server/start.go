@@ -131,6 +131,7 @@ var Start action.Action = func(topCtx context.Context) error {
 
 		return err
 	}
+	logicMod.SetFedi(fediMod)
 
 	// create runner
 	runnerMod, err := faktory.New(logicMod)

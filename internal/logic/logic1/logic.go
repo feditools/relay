@@ -103,6 +103,10 @@ func New(ctx context.Context, c pub.Clock, d db.DB, h *ihttp.Client) (*Logic, er
 	return &l, nil
 }
 
+func (l *Logic) SetFedi(f *fedi.Module) {
+	l.fedi = f
+}
+
 func (l *Logic) SetRunner(r runner.Runner) {
 	l.runner = r
 }
