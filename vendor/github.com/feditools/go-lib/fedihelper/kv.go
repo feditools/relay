@@ -12,6 +12,12 @@ type KV interface {
 	GetAccessToken(ctx context.Context, accountID int64) (accessToken string, err error)
 	SetAccessToken(ctx context.Context, accountID int64, accessToken string) (err error)
 
+	// access token
+
+	DeleteActor(ctx context.Context, actorURI string) (err error)
+	GetActor(ctx context.Context, actorURI string) (actor []byte, err error)
+	SetActor(ctx context.Context, actorURI string, actor []byte, expire time.Duration) (err error)
+
 	// federated instance node info
 
 	DeleteHostMeta(ctx context.Context, domain string) (err error)

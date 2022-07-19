@@ -2,9 +2,9 @@ package activitypub
 
 import (
 	"encoding/json"
-	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/go-lib/fedihelper"
+	libhttp "github.com/feditools/go-lib/http"
 	"github.com/feditools/relay/internal/path"
-	"github.com/tyrm/go-util/mimetype"
 	"net/http"
 )
 
@@ -13,17 +13,17 @@ func (m *Module) actorGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	actor := m.genRelayActor()
 
-	w.Header().Set("Content-Type", mimetype.ApplicationJSON)
+	w.Header().Set("Content-Type", libhttp.MimeAppJSON.String())
 	err := json.NewEncoder(w).Encode(actor)
 	if err != nil {
 		l.Errorf("marshaling json: %s", err.Error())
 	}
 }
 
-func (m *Module) genRelayActor() *models.Actor {
-	return &models.Actor{
+func (m *Module) genRelayActor() *fedihelper.Actor {
+	return &fedihelper.Actor{
 		Context: ContextActivityStreams,
-		Endpoints: models.Endpoints{
+		Endpoints: fedihelper.Endpoints{
 			SharedInbox: path.GenInbox(m.logic.Domain()),
 		},
 		Followers: path.GenFollowers(m.logic.Domain()),
@@ -32,7 +32,7 @@ func (m *Module) genRelayActor() *models.Actor {
 		Name:      m.appName,
 		Type:      "Application",
 		ID:        path.GenActor(m.logic.Domain()),
-		PublicKey: models.PublicKey{
+		PublicKey: fedihelper.PublicKey{
 			ID:           path.GenPublicKey(m.logic.Domain()),
 			Owner:        path.GenActor(m.logic.Domain()),
 			PublicKeyPEM: m.publicKeyPem,

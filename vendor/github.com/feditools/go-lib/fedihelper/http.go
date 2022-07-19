@@ -1,14 +1,11 @@
 package fedihelper
 
 import (
-	"context"
-	"io"
+	"github.com/go-fed/activity/pub"
 	"net/http"
 )
 
-type HTTP interface {
-	Do(req *http.Request) (resp *http.Response, err error)
-	Get(ctx context.Context, url string) (resp *http.Response, err error)
-	NewRequest(ctx context.Context, method, url string, body io.Reader) (req *http.Request, err error)
+type HttpClient interface {
+	pub.HttpClient
 	Transport() (transport http.RoundTripper)
 }

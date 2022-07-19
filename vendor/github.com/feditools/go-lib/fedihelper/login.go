@@ -69,7 +69,7 @@ func (f *FediHelper) GetLoginURL(ctx context.Context, act string) (*url.URL, err
 func (f *FediHelper) loginURLForInstance(ctx context.Context, instance Instance) (*url.URL, error) {
 	l := logger.WithField("func", "loginURLForInstance")
 
-	if _, ok := f.helpers[Software(instance.GetSoftware())]; !ok {
+	if _, ok := f.helpers[SoftwareName(instance.GetSoftware())]; !ok {
 		return nil, NewErrorf("no helper for '%s'", instance.GetSoftware())
 	}
 

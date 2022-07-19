@@ -16,7 +16,7 @@ func (h *Helper) RegisterApp(ctx context.Context, instance fedihelper.Instance) 
 		instanceToken := h.fedi.GetTokenHandler(ctx, instance)
 		app, merr := mastodon.RegisterApp(ctx, &mastodon.AppConfig{
 			Client: http.Client{
-				Transport: h.fedi.HTTP().Transport(),
+				Transport: h.transport.Client().Transport(),
 			},
 			Server:       "https://" + instance.GetServerHostname(),
 			ClientName:   h.appClientName,

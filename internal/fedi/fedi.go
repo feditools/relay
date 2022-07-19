@@ -13,14 +13,14 @@ import (
 	"net/url"
 )
 
-func New(d db.DB, h fedihelper.HTTP, k kv.KV, t *token.Tokenizer) (*Module, error) {
+func New(d db.DB, t *fedihelper.Transport, k kv.KV, tok *token.Tokenizer) (*Module, error) {
 	appName := viper.GetString(config.Keys.ApplicationName)
 	appWebsite := viper.GetString(config.Keys.ApplicationWebsite)
 	externalHostname := viper.GetString(config.Keys.ServerExternalHostname)
 
 	// prep fedi helpers
 	var fediHelpers []fedihelper.Helper
-	mastoHelper, err := mastodon.New(k, appName, appWebsite, "https://"+externalHostname)
+	mastoHelper, err := mastodon.New(k, t, appName, appWebsite, "https://"+externalHostname)
 	if err != nil {
 		return nil, err
 	}
@@ -29,10 +29,10 @@ func New(d db.DB, h fedihelper.HTTP, k kv.KV, t *token.Tokenizer) (*Module, erro
 	// prep fedi
 	newModule := &Module{
 		db:   d,
-		tokz: t,
+		tokz: tok,
 	}
 
-	fedi, err := fedihelper.New(h, k, appName, fediHelpers)
+	fedi, err := fedihelper.New(k, t, appName, fediHelpers)
 	if err != nil {
 		return nil, err
 	}
@@ -58,11 +58,23 @@ type Module struct {
 	helper *fedihelper.FediHelper
 }
 
+func (m *Module) FetchActor(ctx context.Context, actorIRI *url.URL) (*fedihelper.Actor, error) {
+	return m.helper.FetchActor(ctx, actorIRI)
+}
+
+func (m *Module) FetchHostMeta(ctx context.Context, domain string) (*fedihelper.HostMeta, error) {
+	return m.helper.FetchHostMeta(ctx, domain)
+}
+
+func (m *Module) FetchWebFinger(ctx context.Context, wfURI fedihelper.WebfingerURI, username, domain string) (*fedihelper.WebFinger, error) {
+	return m.helper.FetchWebFinger(ctx, wfURI, username, domain)
+}
+
 func (m *Module) GetLoginURL(ctx context.Context, act string) (*url.URL, error) {
 	return m.helper.GetLoginURL(ctx, act)
 }
 
-func (m *Module) Helper(s fedihelper.Software) fedihelper.Helper {
+func (m *Module) Helper(s fedihelper.SoftwareName) fedihelper.Helper {
 	return m.helper.Helper(s)
 }
 

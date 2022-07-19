@@ -2,8 +2,8 @@ package activitypub
 
 import (
 	"context"
+	libhttp "github.com/feditools/go-lib/http"
 	"github.com/go-fed/httpsig"
-	"github.com/tyrm/go-util/mimetype"
 	nethttp "net/http"
 	"net/url"
 )
@@ -44,13 +44,13 @@ func (m *Module) middlewareCheckHTTPSig(next nethttp.Handler) nethttp.Handler {
 		isBlocked, err := m.logic.IsDomainBlocked(ctx, KeyIDURI.Host)
 		if err != nil {
 			l.Errorf("is domain blocked: %s", err.Error())
-			w.Header().Set("Content-Type", mimetype.TextPlain)
+			w.Header().Set("Content-Type", libhttp.MimeTextPlain.String())
 			nethttp.Error(w, nethttp.StatusText(nethttp.StatusInternalServerError), nethttp.StatusInternalServerError)
 			return
 		}
 		if isBlocked {
 			l.Debugf("domain %s is blocked", KeyIDURI.Host)
-			w.Header().Set("Content-Type", mimetype.TextPlain)
+			w.Header().Set("Content-Type", libhttp.MimeTextPlain.String())
 			nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
 			return
 		}

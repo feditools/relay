@@ -4,17 +4,17 @@ import (
 	"context"
 	worker "github.com/contribsys/faktory_worker_go"
 	"github.com/feditools/relay/internal/config"
-	"github.com/feditools/relay/internal/logic"
+	"github.com/feditools/relay/internal/logic/logic1"
 	"github.com/spf13/viper"
 )
 
 type Runner struct {
-	logic   *logic.Logic
+	logic   *logic1.Logic
 	manager *worker.Manager
 }
 
 // New created a new logic module
-func New(l *logic.Logic) (*Runner, error) {
+func New(l *logic1.Logic) (*Runner, error) {
 	newRunner := &Runner{
 		logic: l,
 	}

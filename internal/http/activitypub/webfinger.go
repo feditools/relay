@@ -3,9 +3,9 @@ package activitypub
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/go-lib/fedihelper"
+	libhttp "github.com/feditools/go-lib/http"
 	"github.com/feditools/relay/internal/path"
-	"github.com/tyrm/go-util/mimetype"
 	"net/http"
 )
 
@@ -14,29 +14,29 @@ func (m *Module) wellknownWebFingerGetHandler(w http.ResponseWriter, r *http.Req
 
 	subject := r.URL.Query().Get("resource")
 	if subject != fmt.Sprintf("acct:relay@%s", m.logic.Domain()) {
-		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.Header().Set("Content-Type", libhttp.MimeTextPlain.String())
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	webfinger := models.WebFinger{
+	webfinger := fedihelper.WebFinger{
 		Aliases: []string{path.GenActor(m.logic.Domain())},
-		Links: []models.Link{
+		Links: []fedihelper.Link{
 			{
 				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",
-				Type: mimetype.ApplicationActivityJSON,
+				Type: libhttp.MimeAppActivityJSON.String(),
 			},
 			{
 				Href: path.GenActor(m.logic.Domain()),
 				Rel:  "self",
-				Type: mimetype.ApplicationLDJSONActivityStreams,
+				Type: libhttp.MimeAppActivityLDJSON.String(),
 			},
 		},
 		Subject: subject,
 	}
 
-	w.Header().Set("Content-Type", mimetype.ApplicationJSON)
+	w.Header().Set("Content-Type", libhttp.MimeAppJSON.String())
 	err := json.NewEncoder(w).Encode(webfinger)
 	if err != nil {
 		l.Errorf("marshaling json: %s", err.Error())

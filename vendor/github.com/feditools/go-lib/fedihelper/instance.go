@@ -14,6 +14,7 @@ type Instance interface {
 
 	SetActorURI(actorURI string)
 	SetDomain(domain string)
+	SetInboxURI(inboxURI string)
 	SetServerHostname(hostname string)
 	SetSoftware(software string)
 }
@@ -23,7 +24,7 @@ func (f *FediHelper) GenerateFediInstanceFromDomain(ctx context.Context, domain 
 	l := logger.WithField("func", "GenerateFediInstanceFromDomain")
 
 	// get host meta
-	hostMeta, err := f.GetHostMeta(ctx, domain)
+	hostMeta, err := f.FetchHostMeta(ctx, domain)
 	if err != nil {
 		l.Errorf("get host meta: %s", err.Error())
 
@@ -69,14 +70,14 @@ func (f *FediHelper) GenerateFediInstanceFromDomain(ctx context.Context, domain 
 	}
 
 	// get actor uri
-	webfinger, err := f.GetWellknownWebFinger(ctx, hostMetaURI.Host, domain, domain)
+	webfinger, err := f.FetchWellknownWebFinger(ctx, hostMetaURI.Host, domain, domain)
 	if err != nil {
 		fhErr := NewErrorf("get wellknown webfinger: %s", err.Error())
 		l.Error(fhErr.Error())
 
 		return fhErr
 	}
-	actorURI, err := FindActorURI(webfinger)
+	actorURI, err := webfinger.ActorURI()
 	if err != nil {
 		fhErr := NewErrorf("find actor url: %s", err.Error())
 		l.Error(fhErr.Error())

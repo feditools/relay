@@ -57,14 +57,14 @@ func (h *Helper) GetCurrentAccount(ctx context.Context, instance fedihelper.Inst
 	}
 
 	// do webfinger
-	webFinger, err := h.fedi.GetWellknownWebFinger(ctx, instance.GetServerHostname(), retrievedAccount.Username, instance.GetDomain())
+	webFinger, err := h.fedi.FetchWellknownWebFinger(ctx, instance.GetServerHostname(), retrievedAccount.Username, instance.GetDomain())
 	if err != nil {
 		fhErr := fedihelper.NewErrorf("webfinger %s@%s: %s", retrievedAccount.Username, instance.GetDomain(), err.Error())
 		l.Debug(fhErr.Error())
 
 		return nil, fhErr
 	}
-	actorURI, err := fedihelper.FindActorURI(webFinger)
+	actorURI, err := webFinger.ActorURI()
 	if err != nil {
 		fhErr := fedihelper.NewErrorf("finding actor uri %s@%s: %s", retrievedAccount.Username, instance.GetDomain(), err.Error())
 		l.Debug(fhErr.Error())

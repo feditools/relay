@@ -20,7 +20,7 @@ type Account struct {
 	LogInCount  int64     `validate:"-" bun:",notnull"`
 	LogInLast   time.Time `validate:"-" bun:",nullzero"`
 	IsAdmin     bool      `validate:"-" bun:",notnull"`
-	IsCouncil   bool      `validate:"-" bun:",notnull"`
+	IsMod       bool      `validate:"-" bun:",notnull"`
 }
 
 var _ bun.BeforeAppendModelHook = (*Account)(nil)

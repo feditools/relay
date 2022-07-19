@@ -12,7 +12,7 @@ import (
 	ihttp "github.com/feditools/relay/internal/http"
 	itemplate "github.com/feditools/relay/internal/http/template"
 	"github.com/feditools/relay/internal/kv"
-	"github.com/feditools/relay/internal/logic"
+	"github.com/feditools/relay/internal/logic/logic1"
 	"github.com/feditools/relay/internal/path"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/sessions"
@@ -32,7 +32,7 @@ const SessionMaxAge = 30 * 24 * time.Hour // 30 days
 type Module struct {
 	db        db.DB
 	fedi      *fedi.Module
-	logic     *logic.Logic
+	logic     *logic1.Logic
 	language  *language.Module
 	metrics   metrics.Collector
 	minify    *minify.M
@@ -51,7 +51,7 @@ type Module struct {
 
 //revive:disable:argument-limit
 // New returns a new webapp module.
-func New(ctx context.Context, d db.DB, f *fedi.Module, lMod *language.Module, l *logic.Logic, mc metrics.Collector, r redis.UniversalClient) (*Module, error) {
+func New(ctx context.Context, d db.DB, f *fedi.Module, lMod *language.Module, l *logic1.Logic, mc metrics.Collector, r redis.UniversalClient) (*Module, error) {
 	log := logger.WithField("func", "New")
 
 	// create new store

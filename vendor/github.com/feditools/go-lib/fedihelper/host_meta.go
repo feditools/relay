@@ -4,37 +4,45 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"net/url"
 	"strings"
-
-	"github.com/feditools/go-lib/fedihelper/models"
 )
 
-func (f *FediHelper) GetHostMeta(ctx context.Context, domain string) (*models.HostMeta, error) {
-	l := logger.WithField("func", "GetHostMeta")
+type HostMeta struct {
+	XMLNS string `xml:"xmlns,attr"`
+	Links []Link `xml:"Link"`
+}
 
-	hostmetaURI := fmt.Sprintf("https://%s/.well-known/host-meta", domain)
-	v, err, _ := f.requestGroup.Do(hostmetaURI, func() (interface{}, error) {
+func (h *HostMeta) WebfingerURI() WebfingerURI {
+	for _, link := range h.Links {
+		if link.Rel == HostMetaWebFingerTemplateRel {
+			return WebfingerURI(link.Template)
+		}
+	}
+	return ""
+}
+
+func (f *FediHelper) FetchHostMeta(ctx context.Context, domain string) (*HostMeta, error) {
+	log := logger.WithField("func", "FetchHostMeta")
+	hostMetaURI := &url.URL{
+		Scheme: "https",
+		Host:   domain,
+		Path:   "/.well-known/host-meta",
+	}
+
+	v, err, _ := f.requestGroup.Do(fmt.Sprintf("hostmeta-%s", hostMetaURI.String()), func() (interface{}, error) {
 		// do request
-		resp, err := f.http.Get(ctx, hostmetaURI)
+		bodyBytes, err := f.http.InstanceGet(ctx, hostMetaURI)
 		if err != nil {
-			l.Errorf("http get: %s", err.Error())
+			log.Errorf("http get: %s", err.Error())
 
 			return nil, err
 		}
 
-		hostMeta := new(models.HostMeta)
-		defer resp.Body.Close()
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			l.Errorf("read body: %s", err.Error())
-
-			return nil, err
-		}
-
+		hostMeta := new(HostMeta)
 		err = xml.Unmarshal(bodyBytes, hostMeta)
 		if err != nil {
-			l.Errorf("decode xml: %s", err.Error())
+			log.Errorf("decode xml: %s", err.Error())
 
 			return nil, err
 		}
@@ -43,12 +51,12 @@ func (f *FediHelper) GetHostMeta(ctx context.Context, domain string) (*models.Ho
 	})
 
 	if err != nil {
-		l.Errorf("singleflight: %s", err.Error())
+		log.Errorf("singleflight: %s", err.Error())
 
 		return nil, err
 	}
 
-	hostMeta, ok := v.(*models.HostMeta)
+	hostMeta, ok := v.(*HostMeta)
 	if !ok {
 		return nil, NewError("invalid response type from single flight")
 	}
@@ -56,7 +64,7 @@ func (f *FediHelper) GetHostMeta(ctx context.Context, domain string) (*models.Ho
 	return hostMeta, nil
 }
 
-func (*FediHelper) WebfingerURIFromHostMeta(hostMeta *models.HostMeta) (string, error) {
+func (*FediHelper) WebfingerURIFromHostMeta(hostMeta *HostMeta) (string, error) {
 	// l := logger.WithField("func", "GetWebfingerURI")
 
 	var hostMetaURITemplate string

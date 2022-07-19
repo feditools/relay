@@ -4,14 +4,14 @@ import (
 	"context"
 	"github.com/feditools/relay/internal/config"
 	ihttp "github.com/feditools/relay/internal/http"
-	"github.com/feditools/relay/internal/logic"
+	"github.com/feditools/relay/internal/logic/logic1"
 	"github.com/feditools/relay/internal/runner"
 	"github.com/spf13/viper"
 )
 
 // Module is an http module that handles activity pub activity
 type Module struct {
-	logic  *logic.Logic
+	logic  *logic1.Logic
 	runner runner.Runner
 
 	appName      string
@@ -20,7 +20,7 @@ type Module struct {
 }
 
 // New creates a new activity pub module
-func New(ctx context.Context, l *logic.Logic, r runner.Runner) (*Module, error) {
+func New(ctx context.Context, l *logic1.Logic, r runner.Runner) (*Module, error) {
 	log := logger.WithField("func", "New")
 
 	module := &Module{

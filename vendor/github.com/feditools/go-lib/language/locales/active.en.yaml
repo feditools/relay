@@ -40,6 +40,7 @@ List:
   one: List
   other: Lists
 Login: Login
+Logout: Logout
 LooksGood: Looks Good!
 Oauth: OAuth
 Oauth20Client:
@@ -49,6 +50,9 @@ Oauth20Settings: OAuth 2.0 Settings
 RedirectURI:
   one: Redirect URI
   other: Redirect URIs
+Relay:
+  one: Relay
+  other: Relays
 Required: Required
 System:
   one: System

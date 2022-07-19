@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/feditools/go-lib"
 	"github.com/feditools/go-lib/language"
 	"github.com/feditools/go-lib/metrics/statsd"
 	"github.com/feditools/relay/cmd/relay/action"
@@ -15,11 +16,10 @@ import (
 	"github.com/feditools/relay/internal/http/static"
 	"github.com/feditools/relay/internal/http/webapp"
 	"github.com/feditools/relay/internal/kv/redis"
-	"github.com/feditools/relay/internal/logic"
+	"github.com/feditools/relay/internal/logic/logic1"
 	"github.com/feditools/relay/internal/runner/faktory"
 	"github.com/feditools/relay/internal/token"
 	"github.com/spf13/viper"
-	"github.com/tyrm/go-util"
 	"os"
 	"os/signal"
 	"syscall"
@@ -113,20 +113,20 @@ var Start action.Action = func(topCtx context.Context) error {
 		return err
 	}
 
-	// create fedi module
-	fediMod, err := fedi.New(dbClient, httpClient, kvClient, tokz)
+	// create logic module
+	l.Debug("creating logic module")
+	logicMod, err := logic1.New(ctx, clockMod, dbClient, httpClient)
 	if err != nil {
-		l.Errorf("fedi: %s", err.Error())
+		l.Errorf("logic: %s", err.Error())
 		cancel()
 
 		return err
 	}
 
-	// create logic module
-	l.Debug("creating logic module")
-	logicMod, err := logic.New(ctx, clockMod, dbClient, httpClient)
+	// create fedi module
+	fediMod, err := fedi.New(dbClient, logicMod.Transport(), kvClient, tokz)
 	if err != nil {
-		l.Errorf("logic: %s", err.Error())
+		l.Errorf("fedi: %s", err.Error())
 		cancel()
 
 		return err
@@ -155,7 +155,7 @@ var Start action.Action = func(topCtx context.Context) error {
 
 	// create web modules
 	var webModules []http.Module
-	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
+	if lib.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleActivityPub) {
 		l.Infof("adding %s module", config.ServerRoleActivityPub)
 		apMod, err := activitypub.New(ctx, logicMod, runnerMod)
 		if err != nil {
@@ -166,7 +166,7 @@ var Start action.Action = func(topCtx context.Context) error {
 		}
 		webModules = append(webModules, apMod)
 	}
-	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleStatic) {
+	if lib.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleStatic) {
 		l.Infof("adding %s module", config.ServerRoleStatic)
 		apMod, err := static.New()
 		if err != nil {
@@ -177,7 +177,7 @@ var Start action.Action = func(topCtx context.Context) error {
 		}
 		webModules = append(webModules, apMod)
 	}
-	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
+	if lib.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
 		l.Infof("adding %s module", config.ServerRoleWebapp)
 		apMod, err := webapp.New(
 			ctx,

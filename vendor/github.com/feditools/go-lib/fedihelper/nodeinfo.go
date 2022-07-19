@@ -3,19 +3,49 @@ package fedihelper
 import (
 	"context"
 	"encoding/json"
-	"io"
-	nethttp "net/http"
 	"net/url"
-
-	"github.com/feditools/go-lib/fedihelper/models"
 )
 
+// NodeInfoV2 is a federated node info 2.0 object.
+type NodeInfoV2 struct {
+	Metadata          map[string]interface{} `json:"metadata"`
+	OpenRegistrations bool                   `json:"openRegistrations"`
+	Protocols         []string               `json:"protocols"`
+	Services          Services               `json:"services"`
+	Software          Software               `json:"software"`
+	Usage             Usage                  `json:"usage"`
+	Version           string                 `json:"version"`
+}
+
+// Software contains the software and version of the node
+type Software struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
+// Services contains the supported services of the node
+type Services struct {
+	Inbound  []string `json:"inbound"`
+	Outbound []string `json:"outbound"`
+}
+
+// Usage contains usage statistics
+type Usage struct {
+	LocalPosts int64      `json:"localPosts"`
+	Users      UsageUsers `json:"users"`
+}
+
+// UsageUsers contains usage statistics about users
+type UsageUsers struct {
+	Total int64 `json:"total"`
+}
+
 // findNodeInfo20URI parses a nodeinfo document for a nodeinfo 2.0 uri.
-func findNodeInfo20URI(nodeinfo *models.NodeInfo) (*url.URL, error) {
+func findNodeInfo20URI(nodeinfo *WellKnownNodeInfo) (*url.URL, error) {
 	var nodeinfoURIstr string
 	for _, link := range nodeinfo.Links {
 		if link.Rel == NodeInfo20Schema {
-			nodeinfoURIstr = link.HRef
+			nodeinfoURIstr = link.Href
 
 			break
 		}
@@ -33,7 +63,7 @@ func findNodeInfo20URI(nodeinfo *models.NodeInfo) (*url.URL, error) {
 }
 
 // GetNodeInfo20 retrieves wellknown nodeinfo from a federated instance.
-func (f *FediHelper) GetNodeInfo20(ctx context.Context, domain string, infoURI *url.URL) (*models.NodeInfo2, error) {
+func (f *FediHelper) GetNodeInfo20(ctx context.Context, domain string, infoURI *url.URL) (*NodeInfoV2, error) {
 	l := logger.WithField("func", "GetNodeInfo20")
 	v, err, _ := f.requestGroup.Do(infoURI.String(), func() (interface{}, error) {
 		// check cache
@@ -48,24 +78,12 @@ func (f *FediHelper) GetNodeInfo20(ctx context.Context, domain string, infoURI *
 			return unmarshalNodeInfo20(cache)
 		}
 
-		// get nodeinfo
-		resp, err := f.http.Get(ctx, infoURI.String())
+		// do request
+		bodyBytes, err := f.http.InstanceGet(ctx, infoURI)
 		if err != nil {
-			fhErr := NewErrorf("http get: %s", err.Error())
-			l.Error(fhErr.Error())
+			l.Errorf("http get: %s", err.Error())
 
-			return nil, fhErr
-		}
-		if resp.StatusCode != nethttp.StatusOK {
-			return nil, NewErrorf("http status %s %d", infoURI, resp.StatusCode)
-		}
-		defer resp.Body.Close()
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fhErr := NewErrorf("read body: %s", err.Error())
-			l.Error(fhErr.Error())
-
-			return nil, fhErr
+			return nil, err
 		}
 
 		// write cache
@@ -77,16 +95,7 @@ func (f *FediHelper) GetNodeInfo20(ctx context.Context, domain string, infoURI *
 			return nil, fhErr
 		}
 
-		// marshal
-		nodeinfo, err := unmarshalNodeInfo20(bodyBytes)
-		if err != nil {
-			fhErr := NewErrorf("marshal: %s", err.Error())
-			l.Error(fhErr.Error())
-
-			return nil, fhErr
-		}
-
-		return nodeinfo, nil
+		return unmarshalNodeInfo20(bodyBytes)
 	})
 
 	if err != nil {
@@ -96,7 +105,7 @@ func (f *FediHelper) GetNodeInfo20(ctx context.Context, domain string, infoURI *
 		return nil, fhErr
 	}
 
-	nodeinfo, ok := v.(*models.NodeInfo2)
+	nodeinfo, ok := v.(*NodeInfoV2)
 	if !ok {
 		return nil, NewError("invalid response type from single flight")
 	}
@@ -104,8 +113,8 @@ func (f *FediHelper) GetNodeInfo20(ctx context.Context, domain string, infoURI *
 	return nodeinfo, nil
 }
 
-func unmarshalNodeInfo20(body []byte) (*models.NodeInfo2, error) {
-	var nodeinfo *models.NodeInfo2
+func unmarshalNodeInfo20(body []byte) (*NodeInfoV2, error) {
+	var nodeinfo *NodeInfoV2
 	if err := json.Unmarshal(body, &nodeinfo); err != nil {
 		return nil, NewErrorf("unmarshal: %s", err.Error())
 	}

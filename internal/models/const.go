@@ -1,6 +1,6 @@
 package models
 
-const (
+/*const (
 	// ContextActivityStreams contains the context document for activity streams
 	ContextActivityStreams = "https://www.w3.org/ns/activitystreams"
 
@@ -32,4 +32,4 @@ const (
 	TypeApplication = "Application"
 	// TypePerson is the Person actor type
 	TypePerson = "Person"
-)
+)*/

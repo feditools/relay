@@ -3,11 +3,11 @@ package http
 import (
 	"context"
 	"fmt"
+	libhttp "github.com/feditools/go-lib/http"
 	"github.com/feditools/go-lib/metrics"
 	"github.com/feditools/relay/internal/config"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
-	"github.com/tyrm/go-util/mimetype"
 	"net/http"
 	"time"
 )
@@ -70,7 +70,7 @@ func (s *Server) Stop(ctx context.Context) error {
 func (s *Server) methodNotAllowedHandler() http.Handler {
 	// wrap in middleware since middlware isn't run on error pages
 	return s.WrapInMiddlewares(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.Header().Set("Content-Type", libhttp.MimeTextPlain.String())
 		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))))
 	}))
 }
@@ -78,7 +78,7 @@ func (s *Server) methodNotAllowedHandler() http.Handler {
 func (s *Server) notFoundHandler() http.Handler {
 	// wrap in middleware since middlware isn't run on error pages
 	return s.WrapInMiddlewares(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", mimetype.TextPlain)
+		w.Header().Set("Content-Type", libhttp.MimeTextPlain.String())
 		w.Write([]byte(fmt.Sprintf("%d %s", http.StatusNotFound, http.StatusText(http.StatusNotFound))))
 	}))
 }

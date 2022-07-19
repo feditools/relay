@@ -1,10 +1,10 @@
 package http
 
 import (
+	libhttp "github.com/feditools/go-lib/http"
 	"github.com/go-http-utils/etag"
 	"github.com/gorilla/handlers"
 	"github.com/sirupsen/logrus"
-	"github.com/tyrm/go-util/middleware"
 	"net/http"
 )
 
@@ -32,13 +32,13 @@ func (s *Server) MiddlewareMetrics(next http.Handler) http.Handler {
 // WrapInMiddlewares wraps an http.Handler in the server's middleware.
 func (s *Server) WrapInMiddlewares(h http.Handler) http.Handler {
 	return s.MiddlewareMetrics(
-		middleware.BlockMissingUserAgentMux(
-			etag.Handler(
-				handlers.CompressHandler(
-					middleware.BlockFlocMux(
+		libhttp.BlockMissingUserAgent(
+			libhttp.BlockFloc(
+				etag.Handler(
+					handlers.CompressHandler(
 						h,
-					),
-				), false,
+					), false,
+				),
 			),
 		),
 	)

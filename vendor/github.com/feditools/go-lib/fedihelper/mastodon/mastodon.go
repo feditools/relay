@@ -10,8 +10,9 @@ import (
 
 // Helper is a mastodon helper.
 type Helper struct {
-	fedi *fedihelper.FediHelper
-	kv   fedihelper.KV
+	fedi      *fedihelper.FediHelper
+	kv        fedihelper.KV
+	transport *fedihelper.Transport
 
 	appClientName string
 	appWebsite    string
@@ -21,9 +22,10 @@ type Helper struct {
 }
 
 // New returns a new mastodon helper.
-func New(k fedihelper.KV, appClientName, appWebsite, externalURL string) (*Helper, error) {
+func New(k fedihelper.KV, t *fedihelper.Transport, appClientName, appWebsite, externalURL string) (*Helper, error) {
 	return &Helper{
-		kv: k,
+		kv:        k,
+		transport: t,
 
 		appClientName: appClientName,
 		appWebsite:    appWebsite,
@@ -52,13 +54,13 @@ func (h *Helper) newClient(ctx context.Context, instance fedihelper.Instance, ac
 	})
 
 	// apply custom transport
-	client.Transport = h.fedi.HTTP().Transport()
+	client.Transport = h.transport.Client().Transport()
 
 	return client, nil
 }
 
 // GetSoftware returns the software type of this module.
-func (*Helper) GetSoftware() fedihelper.Software { return fedihelper.SoftwareMastodon }
+func (*Helper) GetSoftware() fedihelper.SoftwareName { return fedihelper.SoftwareMastodon }
 
 // SetFedi adds the fedi module to a helper.
 func (h *Helper) SetFedi(f *fedihelper.FediHelper) {

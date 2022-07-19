@@ -3,6 +3,7 @@ package activitypub
 import (
 	"encoding/json"
 	"errors"
+	"github.com/feditools/go-lib/fedihelper"
 	"github.com/feditools/relay/internal/db"
 	"github.com/feditools/relay/internal/models"
 	nethttp "net/http"
@@ -13,7 +14,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	l := logger.WithField("func", "inboxPostHandler")
 
 	// parse activity
-	var activity models.Activity
+	var activity fedihelper.Activity
 	err := json.NewDecoder(r.Body).Decode(&activity)
 	if err != nil {
 		l.Errorf("decoding activity: %+v", err)
@@ -57,7 +58,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 
 	var instance *models.Instance
 	switch actor.Type {
-	case models.TypeApplication:
+	case fedihelper.TypeApplication:
 		instance, err = m.logic.GetInstanceForActor(r.Context(), actorIRI)
 		if err != nil {
 			if errors.Is(err, db.ErrNoEntries) {
@@ -70,7 +71,7 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 
 			return
 		}
-	case models.TypePerson:
+	case fedihelper.TypePerson:
 		instance, err = m.logic.GetInstance(r.Context(), actorIRI.Host)
 		if err != nil {
 			if errors.Is(err, db.ErrNoEntries) {
@@ -91,23 +92,16 @@ func (m *Module) inboxPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 	}
 
 	// get activity type
-	activityTypeI, ok := activity["type"]
-	if !ok {
-		l.Debugf("activity missing type: %+v", activity)
-		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
-
-		return
-	}
-	activityType, ok := activityTypeI.(string)
-	if !ok {
-		l.Debugf("activity type isn't string: %+v", activity)
+	activityType, err := activity.Type()
+	if err != nil {
+		l.Debugf("can't get type: %s", err.Error())
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusBadRequest), nethttp.StatusBadRequest)
 
 		return
 	}
 
 	// drop non-Follow activities from instances that don't follow our relay
-	if activityType != models.TypeFollow && !instance.Followed {
+	if activityType != fedihelper.TypeFollow && !instance.Followed {
 		l.Debugf("got non follow from an unfollowed instance: %s", activityType)
 		nethttp.Error(w, nethttp.StatusText(nethttp.StatusUnauthorized), nethttp.StatusUnauthorized)
 

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	faktory "github.com/contribsys/faktory/client"
 	worker "github.com/contribsys/faktory_worker_go"
-	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/go-lib/fedihelper"
 	"github.com/sirupsen/logrus"
 	"net/url"
 	"strconv"
 )
 
-func (r *Runner) EnqueueDeliverActivity(_ context.Context, instanceID int64, activity models.Activity) error {
+func (r *Runner) EnqueueDeliverActivity(_ context.Context, instanceID int64, activity fedihelper.Activity) error {
 	job := faktory.NewJob(JobDeliverActivity, strconv.FormatInt(instanceID, 10), activity)
 	job.Queue = QueueDelivery
 
@@ -58,7 +58,7 @@ func (r *Runner) deliverActivity(ctx context.Context, args ...interface{}) error
 	return r.logic.DeliverActivity(ctx, instanceID, activity)
 }
 
-func (r *Runner) EnqueueInboxActivity(_ context.Context, instanceID int64, actorIRI string, activity models.Activity) error {
+func (r *Runner) EnqueueInboxActivity(_ context.Context, instanceID int64, actorIRI string, activity fedihelper.Activity) error {
 	job := faktory.NewJob(JobInboxActivity, strconv.FormatInt(instanceID, 10), actorIRI, activity)
 	job.Queue = QueueDefault
 
