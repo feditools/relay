@@ -45,10 +45,10 @@ func (m *Module) returnErrorPage(w http.ResponseWriter, r *http.Request, code in
 	// set top button
 	switch code {
 	case http.StatusUnauthorized:
-		tmplVars.ButtonHRef = "/login"
+		tmplVars.ButtonHRef = path.AppLogin
 		tmplVars.ButtonLabel = "Login"
 	default:
-		tmplVars.ButtonHRef = "/"
+		tmplVars.ButtonHRef = path.AppHome
 		tmplVars.ButtonLabel = "Home"
 	}
 

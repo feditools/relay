@@ -9,6 +9,7 @@ const (
 	keyAccountAccessToken = keyAccount + "at:"
 
 	keyFedi         = keyBase + "fedi:"
+	keyFediActor    = keyFedi + "actor:"
 	keyFediHostMeta = keyFedi + "hm:"
 	keyFediNodeInfo = keyFedi + "ni:"
 
@@ -20,6 +21,9 @@ const (
 
 // KeyAccountAccessToken returns the kv key which holds a user's access token.
 func KeyAccountAccessToken(i int64) string { return keyAccountAccessToken + strconv.FormatInt(i, 10) }
+
+// KeyFediActor returns the kv key which holds cached actor.
+func KeyFediActor(a string) string { return keyFediActor + a }
 
 // KeyFediNodeInfo returns the kv key which holds cached nodeinfo.
 func KeyFediNodeInfo(d string) string { return keyFediNodeInfo + d }

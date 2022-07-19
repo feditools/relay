@@ -18,11 +18,12 @@ github.com/dgryski/go-rendezvous
 # github.com/fatih/color v1.13.0
 ## explicit; go 1.13
 github.com/fatih/color
-# github.com/feditools/go-lib v0.11.2-0.20220718061620-ac916bccaba4
+# github.com/feditools/go-lib v0.11.2-0.20220718232117-41e8276d3b31
 ## explicit; go 1.17
 github.com/feditools/go-lib
 github.com/feditools/go-lib/database
 github.com/feditools/go-lib/fedihelper
+github.com/feditools/go-lib/fedihelper/mastodon
 github.com/feditools/go-lib/fedihelper/models
 github.com/feditools/go-lib/http
 github.com/feditools/go-lib/language
@@ -276,6 +277,9 @@ github.com/gorilla/securecookie
 # github.com/gorilla/sessions v1.2.1
 ## explicit
 github.com/gorilla/sessions
+# github.com/gorilla/websocket v1.4.2
+## explicit; go 1.12
+github.com/gorilla/websocket
 # github.com/hashicorp/golang-lru v0.5.4
 ## explicit; go 1.12
 github.com/hashicorp/golang-lru
@@ -344,6 +348,9 @@ github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.14
 ## explicit; go 1.12
 github.com/mattn/go-isatty
+# github.com/mattn/go-mastodon v0.0.5-0.20211214115546-7745e19ff787
+## explicit; go 1.12
+github.com/mattn/go-mastodon
 # github.com/mitchellh/mapstructure v1.5.0
 ## explicit; go 1.14
 github.com/mitchellh/mapstructure
@@ -376,6 +383,9 @@ github.com/remyoudompheng/bigfft
 # github.com/sirupsen/logrus v1.8.1
 ## explicit; go 1.13
 github.com/sirupsen/logrus
+# github.com/speps/go-hashids/v2 v2.0.1
+## explicit; go 1.14
+github.com/speps/go-hashids/v2
 # github.com/spf13/afero v1.8.2
 ## explicit; go 1.13
 github.com/spf13/afero
@@ -419,6 +429,9 @@ github.com/tdewolff/parse/v2/strconv
 # github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 ## explicit
 github.com/tmthrgd/go-hex
+# github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80
+## explicit
+github.com/tomnomnom/linkheader
 # github.com/tyrm/go-util v0.4.2
 ## explicit; go 1.17
 github.com/tyrm/go-util

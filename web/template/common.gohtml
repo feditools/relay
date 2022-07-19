@@ -1,0 +1,61 @@
+{{ define "navbar" }}
+<nav class="navbar navbar-expand-lg {{ if .NavBarDark }}navbar-dark bg-primary{{ else }}bg-light{{ end }}">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="{{ if .NavBarDark }}{{.LogoSrcLight}}{{ else }}{{.LogoSrcDark}}{{ end }}" alt="robot" height="25" class="d-inline-block align-top">
+      {{ $textRelay := .Localizer.TextRelay 1 }}<span lang="{{ $textRelay.Language }}">{{ $textRelay }}</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    {{- range .NavBar -}}
+      {{- if .Children }}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          {{- range .Children}}
+            <li class="nav-itsem">
+              <a class="dropdown-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}">
+                {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
+              </a>
+            </li>
+          {{- end}}
+          </ul>
+        </li>
+      {{- else}}
+        <li class="nav-item">
+          <a class="nav-link{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}"{{if .Active}} aria-current="page"{{end}} href="{{.URL}}">
+            {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
+          </a>
+        </li>
+      {{- end -}}
+    {{- end}}
+      </ul>
+      <span class="d-flex">
+        <ul class="navbar-nav">
+        {{- if .Account }}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user"></i> {{ .Account.Username }}@{{ .Account.Instance.AccountDomain }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="{{ .LogoutLink }}"><i class="fas fa-sign-out-alt"></i> {{ $textLogout := .Localizer.TextLogout }}<span lang="{{ $textLogout.Language }}">{{ $textLogout }}</span></a></li>
+            </ul>
+          </li>
+        {{- else }}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ .LoginLink }}">
+              <i class="fas fa-user"></i> {{ $textLogin := .Localizer.TextLogin }}<span lang="{{ $textLogin.Language }}">{{ $textLogin }}</span>
+            </a>
+          </li>
+        {{- end }}
+        </ul>
+      </span>
+    </div>
+  </div>
+</nav>
+{{- end }}

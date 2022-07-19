@@ -19,8 +19,10 @@ type InitTemplate interface {
 	SetAccount(account *models.Account)
 	SetLanguage(l string)
 	SetLocalizer(l *language.Localizer)
+	SetLoginLinks(login, logout string)
 	SetLogoSrc(dark, light string)
 	SetNavbar(nodes Navbar)
+	SetNavbarDark(dark bool)
 }
 
 // New creates a new template.

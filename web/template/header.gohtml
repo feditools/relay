@@ -1,0 +1,16 @@
+{{ define "header" -}}
+<!doctype html>
+<html lang="{{ .Language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>{{ .PageTitle }}</title>
+{{ range $link := .HeadLinks }}
+  {{template "head_link" $link -}}
+{{- end }}
+</head>
+<body>
+{{- template "navbar" . -}}
+{{- template "alert_bars" .Alerts -}}
+{{- end }}

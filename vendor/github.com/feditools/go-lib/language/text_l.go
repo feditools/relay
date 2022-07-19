@@ -44,6 +44,26 @@ func (l *Localizer) TextLogin() *LocalizedString {
 	}
 }
 
+// TextLogout returns a translated phrase.
+func (l *Localizer) TextLogout() *LocalizedString {
+	lg := logger.WithField("func", "TextLogout")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Logout",
+			Other: "Logout",
+		},
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}
+
 // TextLooksGood returns a translated phrase.
 func (l *Localizer) TextLooksGood() *LocalizedString {
 	lg := logger.WithField("func", "TextLooksGood")

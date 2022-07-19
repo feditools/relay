@@ -16,9 +16,12 @@ type Common struct {
 	Alerts        *[]libtemplate.Alert
 	FooterScripts []libtemplate.Script
 	HeadLinks     []libtemplate.HeadLink
+	LoginLink     string
 	LogoSrcDark   string
 	LogoSrcLight  string
+	LogoutLink    string
 	NavBar        Navbar
+	NavBarDark    bool
 	PageTitle     string
 }
 
@@ -48,6 +51,12 @@ func (t *Common) SetLocalizer(l *language.Localizer) {
 	t.Localizer = l
 }
 
+// SetLoginLinks sets the template's login link.
+func (t *Common) SetLoginLinks(login, logout string) {
+	t.LoginLink = login
+	t.LogoutLink = logout
+}
+
 // SetLogoSrc sets the src for the logo image.
 func (t *Common) SetLogoSrc(dark, light string) {
 	t.LogoSrcDark = dark
@@ -57,6 +66,11 @@ func (t *Common) SetLogoSrc(dark, light string) {
 // SetNavbar sets the top level navbar used by the template.
 func (t *Common) SetNavbar(nodes Navbar) {
 	t.NavBar = nodes
+}
+
+// SetNavbarDark sets the navbar theme.
+func (t *Common) SetNavbarDark(dark bool) {
+	t.NavBarDark = dark
 }
 
 // SetAccount sets the currently logged-in account.

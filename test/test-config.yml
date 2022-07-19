@@ -106,4 +106,8 @@ redis-password: "test"
 
 # String. Key used for encrypting values written to the database.
 # Default: ""
-session-key: test
+encryption-key: test
+
+# String. Key used for generating tokens.
+# Default: ""
+token-salt: test

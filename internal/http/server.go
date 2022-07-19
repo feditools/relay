@@ -3,8 +3,8 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/feditools/go-lib/metrics"
 	"github.com/feditools/relay/internal/config"
-	"github.com/feditools/relay/internal/metrics"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util/mimetype"

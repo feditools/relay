@@ -28,6 +28,10 @@ func (i *Instance) SetDomain(domain string) {
 	i.AccountDomain = domain
 }
 
+func (i *Instance) SetInboxURI(inboxURI string) {
+	i.InboxIRI = inboxURI
+}
+
 func (i *Instance) SetServerHostname(hostname string) {
 	i.Domain = hostname
 }

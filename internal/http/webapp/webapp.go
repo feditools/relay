@@ -8,6 +8,7 @@ import (
 	libtemplate "github.com/feditools/go-lib/template"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
+	"github.com/feditools/relay/internal/fedi"
 	ihttp "github.com/feditools/relay/internal/http"
 	itemplate "github.com/feditools/relay/internal/http/template"
 	"github.com/feditools/relay/internal/kv"
@@ -15,7 +16,7 @@ import (
 	"github.com/feditools/relay/internal/path"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/sessions"
-	redisstore "github.com/rbcervilla/redisstore/v8"
+	"github.com/rbcervilla/redisstore/v8"
 	"github.com/spf13/viper"
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/html"
@@ -30,6 +31,7 @@ const SessionMaxAge = 30 * 24 * time.Hour // 30 days
 // Module contains a webapp module for the web server. Implements web.Module.
 type Module struct {
 	db        db.DB
+	fedi      *fedi.Module
 	logic     *logic.Logic
 	language  *language.Module
 	metrics   metrics.Collector
@@ -49,7 +51,7 @@ type Module struct {
 
 //revive:disable:argument-limit
 // New returns a new webapp module.
-func New(ctx context.Context, d db.DB, lMod *language.Module, l *logic.Logic, mc metrics.Collector, r redis.UniversalClient) (*Module, error) {
+func New(ctx context.Context, d db.DB, f *fedi.Module, lMod *language.Module, l *logic.Logic, mc metrics.Collector, r redis.UniversalClient) (*Module, error) {
 	log := logger.WithField("func", "New")
 
 	// create new store
@@ -128,6 +130,7 @@ func New(ctx context.Context, d db.DB, lMod *language.Module, l *logic.Logic, mc
 
 	return &Module{
 		db:        d,
+		fedi:      f,
 		language:  lMod,
 		logic:     l,
 		metrics:   mc,

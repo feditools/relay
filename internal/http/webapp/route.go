@@ -18,12 +18,18 @@ func (m *Module) Route(s *http.Server) error {
 	// Static Files
 	s.PathPrefix(path.Static).Handler(nethttp.StripPrefix(path.Static, nethttp.FileServer(nethttp.FS(staticFS))))
 
-	webapp := s.PathPrefix("/").Subrouter()
+	webapp := s.PathPrefix(path.App).Subrouter()
 	webapp.Use(m.Middleware)
 	webapp.NotFoundHandler = m.notFoundHandler()
 	webapp.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
-	webapp.HandleFunc(path.Home, m.HomeGetHandler).Methods(nethttp.MethodGet)
+	webapp.HandleFunc(path.AppSubHome, m.HomeGetHandler).Methods(nethttp.MethodGet)
+	webapp.HandleFunc(path.AppSubLogin, m.LoginGetHandler).Methods(nethttp.MethodGet)
+	webapp.HandleFunc(path.AppSubLogin, m.LoginPostHandler).Methods(nethttp.MethodPost)
+
+	admin := s.PathPrefix(path.AppAdmin).Subrouter()
+	admin.NotFoundHandler = m.notFoundHandler()
+	admin.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
 	return nil
 }

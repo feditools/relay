@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	// ReAdmin matches the admin page.
-	ReAdmin = regexp.MustCompile(fmt.Sprintf(`^?/%s$`, PartAdmin))
+	// ReAppAdminHome matches the admin page.
+	ReAppAdminHome = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppAdminHome))
 
-	// ReHome matches the Home page.
-	ReHome = regexp.MustCompile(fmt.Sprintf(`^%s$`, Home))
+	// ReAppHome matches the Home page.
+	ReAppHome = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppHome))
 )

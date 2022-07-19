@@ -9,13 +9,15 @@ import (
 	"github.com/feditools/relay/internal/clock"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db/bun"
+	"github.com/feditools/relay/internal/fedi"
 	"github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/http/activitypub"
+	"github.com/feditools/relay/internal/http/static"
 	"github.com/feditools/relay/internal/http/webapp"
 	"github.com/feditools/relay/internal/kv/redis"
 	"github.com/feditools/relay/internal/logic"
-	statsdLegacy "github.com/feditools/relay/internal/metrics/statsd"
 	"github.com/feditools/relay/internal/runner/faktory"
+	"github.com/feditools/relay/internal/token"
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
 	"os"
@@ -49,35 +51,9 @@ var Start action.Action = func(topCtx context.Context) error {
 		}
 	}()
 
-	// create metrics collector
-	metricsCollectorLegacy, err := statsdLegacy.New()
-	if err != nil {
-		l.Errorf("metrics: %s", err.Error())
-		cancel()
-
-		return err
-	}
-	defer func() {
-		err := metricsCollectorLegacy.Close()
-		if err != nil {
-			l.Errorf("closing metrics: %s", err.Error())
-		}
-	}()
-
-	// create kv client
-	kvClient, err := redis.New(ctx)
-	if err != nil {
-		l.Errorf("redis: %s", err.Error())
-		cancel()
-
-		return err
-	}
-	defer func() {
-		err := kvClient.Close(ctx)
-		if err != nil {
-			l.Errorf("closing redis: %s", err.Error())
-		}
-	}()
+	// create clock module
+	l.Debug("creating clock")
+	clockMod := clock.NewClock()
 
 	// create database client
 	l.Debug("creating database client")
@@ -95,9 +71,29 @@ var Start action.Action = func(topCtx context.Context) error {
 		}
 	}()
 
-	// create clock module
-	l.Debug("creating clock")
-	clockMod := clock.NewClock()
+	// create http client
+	httpClient, err := http.NewClient(ctx)
+	if err != nil {
+		l.Errorf("http client: %s", err.Error())
+		cancel()
+
+		return err
+	}
+
+	// create kv client
+	kvClient, err := redis.New(ctx)
+	if err != nil {
+		l.Errorf("redis: %s", err.Error())
+		cancel()
+
+		return err
+	}
+	defer func() {
+		err := kvClient.Close(ctx)
+		if err != nil {
+			l.Errorf("closing redis: %s", err.Error())
+		}
+	}()
 
 	// create language module
 	languageMod, err := language.New()
@@ -108,9 +104,27 @@ var Start action.Action = func(topCtx context.Context) error {
 		return err
 	}
 
+	// create tokenizer
+	tokz, err := token.New()
+	if err != nil {
+		l.Errorf("create tokenizer: %s", err.Error())
+		cancel()
+
+		return err
+	}
+
+	// create fedi module
+	fediMod, err := fedi.New(dbClient, httpClient, kvClient, tokz)
+	if err != nil {
+		l.Errorf("fedi: %s", err.Error())
+		cancel()
+
+		return err
+	}
+
 	// create logic module
 	l.Debug("creating logic module")
-	logicMod, err := logic.New(ctx, clockMod, dbClient)
+	logicMod, err := logic.New(ctx, clockMod, dbClient, httpClient)
 	if err != nil {
 		l.Errorf("logic: %s", err.Error())
 		cancel()
@@ -131,7 +145,7 @@ var Start action.Action = func(topCtx context.Context) error {
 
 	// create http server
 	l.Debug("creating http server")
-	server, err := http.NewServer(ctx, metricsCollectorLegacy)
+	server, err := http.NewServer(ctx, metricsCollector)
 	if err != nil {
 		l.Errorf("http server: %s", err.Error())
 		cancel()
@@ -152,9 +166,28 @@ var Start action.Action = func(topCtx context.Context) error {
 		}
 		webModules = append(webModules, apMod)
 	}
+	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleStatic) {
+		l.Infof("adding %s module", config.ServerRoleStatic)
+		apMod, err := static.New()
+		if err != nil {
+			l.Errorf("%s: %s", config.ServerRoleStatic, err.Error())
+			cancel()
+
+			return err
+		}
+		webModules = append(webModules, apMod)
+	}
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
 		l.Infof("adding %s module", config.ServerRoleWebapp)
-		apMod, err := webapp.New(ctx, dbClient, languageMod, logicMod, metricsCollector, kvClient.RedisClient())
+		apMod, err := webapp.New(
+			ctx,
+			dbClient,
+			fediMod,
+			languageMod,
+			logicMod,
+			metricsCollector,
+			kvClient.RedisClient(),
+		)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleWebapp, err.Error())
 			cancel()

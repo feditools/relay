@@ -15,9 +15,9 @@ func makeAdminNavbar(r *nethttp.Request) template.Navbar {
 	newNavbar := template.Navbar{
 		{
 			Text:     l.TextHomeWeb().String(),
-			MatchStr: path.ReAdmin,
+			MatchStr: path.ReAppAdminHome,
 			FAIcon:   "home",
-			URL:      path.Admin,
+			URL:      path.AppAdmin,
 		},
 	}
 

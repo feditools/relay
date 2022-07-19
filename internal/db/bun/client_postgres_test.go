@@ -4,10 +4,9 @@ package bun
 
 import (
 	"context"
+	"github.com/feditools/go-lib/mock"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
-	"github.com/feditools/relay/internal/mock"
-	"github.com/feditools/relay/internal/models/testdata"
 	"github.com/spf13/viper"
 	"testing"
 )
@@ -84,7 +83,6 @@ func testNewPostresClient() (db.DB, error) {
 	viper.Set(config.Keys.DbPassword, "test")
 	viper.Set(config.Keys.DbPort, 5432)
 	viper.Set(config.Keys.DbUser, "test")
-	viper.Set(config.Keys.DbEncryptionKey, testdata.TestEncryptionKey)
 
 	metricsCollector, _ := mock.NewMetricsCollector()
 
@@ -94,11 +92,6 @@ func testNewPostresClient() (db.DB, error) {
 	}
 
 	err = client.DoMigration(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	err = client.LoadTestData(context.Background())
 	if err != nil {
 		return nil, err
 	}

@@ -8,11 +8,13 @@ type KeyNames struct {
 	// application
 	ActorKeySize        string
 	ApplicationName     string
+	ApplicationWebsite  string
 	CachedActivityLimit string
 	CachedActorLimit    string
 	CachedDigestLimit   string
 	EncryptionKey       string
 	SoftwareVersion     string
+	TokenSalt           string
 
 	// database
 	DbType      string
@@ -61,11 +63,13 @@ var Keys = KeyNames{
 	// application
 	ActorKeySize:        "actor-key-size",
 	ApplicationName:     "application-name",
+	ApplicationWebsite:  "application-website",
 	CachedActivityLimit: "cached-activity-limit",
 	CachedActorLimit:    "cached-actor-limit",
 	CachedDigestLimit:   "cached-digest-limit",
 	EncryptionKey:       "encryption-key",
 	SoftwareVersion:     "software-version", // Set at build
+	TokenSalt:           "token-salt",
 
 	// database
 	DbType:      "db-type",

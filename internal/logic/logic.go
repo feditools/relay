@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/db"
+	ihttp "github.com/feditools/relay/internal/http"
 	"github.com/feditools/relay/internal/path"
 	"github.com/feditools/relay/internal/runner"
 	"github.com/feditools/relay/internal/transport"
@@ -41,7 +42,7 @@ type Logic struct {
 }
 
 // New created a new logic module
-func New(ctx context.Context, c pub.Clock, d db.DB) (*Logic, error) {
+func New(ctx context.Context, c pub.Clock, d db.DB, h *ihttp.Client) (*Logic, error) {
 	log := logger.WithFields(logrus.Fields{
 		"func": "New",
 	})
@@ -70,7 +71,7 @@ func New(ctx context.Context, c pub.Clock, d db.DB) (*Logic, error) {
 	}
 
 	// generate transport
-	l.transport, err = transport.New(c, path.GenPublicKey(l.domain), instanceSelf.PrivateKey)
+	l.transport, err = transport.New(c, h, path.GenPublicKey(l.domain), instanceSelf.PrivateKey)
 	if err != nil {
 		log.Errorf("creating transport: %s", err.Error())
 

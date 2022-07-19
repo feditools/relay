@@ -5,6 +5,7 @@ import (
 	"github.com/feditools/go-lib/language"
 	"github.com/feditools/relay/internal/http/template"
 	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/relay/internal/path"
 	"net/http"
 )
 
@@ -37,6 +38,7 @@ func (m *Module) initTemplate(_ http.ResponseWriter, r *http.Request, tmpl templ
 
 	// set logo image src
 	tmpl.SetLogoSrc(m.logoSrcDark, m.logoSrcLight)
+	tmpl.SetLoginLinks(path.AppLogin, path.AppLogout)
 
 	// add css
 	for _, link := range m.headLinks {

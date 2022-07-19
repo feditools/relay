@@ -1,0 +1,28 @@
+{{ define "error" -}}
+<!doctype html>
+<html lang="{{ .Language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>{{.PageTitle}}</title>
+{{ range $link := .HeadLinks }}
+  {{template "head_link" $link -}}
+{{- end }}
+</head>
+<body class="text-center">
+  <div class="centerbox" style="max-width: 330px">
+    <img class="mb-4" src="{{.Image}}" alt="" width="100" height="100">
+    <h1 class="h3 mb-3 font-weight-normal">{{.Header}}</h1>
+    <h2 class="h4 mb-3 font-weight-normal">{{.SubHeader}}</h2>
+    <p class="mb-5">{{.Paragraph}}</p>
+
+    <a class="btn btn-lg btn-primary btn-block" href="{{.ButtonHRef}}">{{.ButtonLabel}}</a>
+    <a class="btn btn-lg btn-primary btn-block" href="javascript:history.back();">Back</a>
+  </div>
+{{- range $link := .FooterScripts}}
+  {{template "script" $link }}
+{{- end}}
+</body>
+</html>
+{{ end }}

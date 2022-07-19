@@ -1,0 +1,7 @@
+{{ define "footer" }}
+{{- range $link := .FooterScripts}}
+  {{template "script" $link }}
+{{- end}}
+</body>
+</html>
+{{ end }}

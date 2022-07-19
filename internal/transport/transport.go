@@ -2,10 +2,10 @@ package transport
 
 import (
 	"crypto"
-	"github.com/feditools/relay/internal/http"
+	ihttp "github.com/feditools/relay/internal/http"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/httpsig"
-	nethttp "net/http"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -25,16 +25,12 @@ type Transport struct {
 }
 
 // New creates a new Transport module
-func New(clock pub.Clock, pubKeyID string, privkey crypto.PrivateKey) (*Transport, error) {
-	//l := logger.WithField("func", "New")
-
-	httpClient := &nethttp.Client{
-		Transport: &http.Transport{},
-	}
-
+func New(clock pub.Clock, h *ihttp.Client, pubKeyID string, privkey crypto.PrivateKey) (*Transport, error) {
 	return &Transport{
-		client: httpClient,
-		clock:  clock,
+		client: &http.Client{
+			Transport: h.Transport(),
+		},
+		clock: clock,
 
 		keyID:   pubKeyID,
 		privKey: privkey,
@@ -46,7 +42,7 @@ func (t *Transport) doSign(do func()) {
 	t.signerMu.Lock()
 	defer t.signerMu.Unlock()
 
-	if now := time.Now(); now.After(t.signerExp) {
+	if now := t.clock.Now(); now.After(t.signerExp) {
 		const expiry = 120
 
 		// Signers have expired and require renewal
