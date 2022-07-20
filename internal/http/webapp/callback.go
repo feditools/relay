@@ -85,7 +85,7 @@ func (m *Module) CallbackOauthGetHandler(w http.ResponseWriter, r *http.Request)
 		}
 		account, ok := accountI.(*models.Account)
 		if !ok {
-			msg := "can't cast account to FediAccount"
+			msg := "can't cast account to Account"
 			l.Error(msg)
 			m.returnErrorPage(w, r, http.StatusInternalServerError, msg)
 
