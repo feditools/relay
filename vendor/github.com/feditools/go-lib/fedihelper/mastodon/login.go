@@ -39,7 +39,7 @@ func (h *Helper) MakeLoginURI(ctx context.Context, instance fedihelper.Instance)
 	instanceToken := h.fedi.GetTokenHandler(ctx, instance)
 	u := &url.URL{
 		Scheme: "https",
-		Host:   instance.GetDomain(),
+		Host:   instance.GetServerHostname(),
 		Path:   "/oauth/authorize",
 	}
 	q := u.Query()

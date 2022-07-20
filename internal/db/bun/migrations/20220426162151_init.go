@@ -13,6 +13,7 @@ func init() {
 		return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 			modelList := []interface{}{
 				&models.Instance{},
+				&models.Account{},
 				&models.Block{},
 			}
 			for _, i := range modelList {

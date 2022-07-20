@@ -11,6 +11,12 @@ ApplicationToken:
   other: Application Tokens
 Authorize: Authorize
 AuthorizeApplicationDescription: Authorize {{.Description}}
+Block:
+  one: Block
+  other: Blocks
+BlockedInstance:
+  one: Blocked Instance
+  other: Blocked Instances
 Client:
   one: Client
   other: Clients
@@ -30,6 +36,7 @@ Description:
   other: Descriptions
 Fediverse: Fediverse
 HomeWeb: Home
+HowToJoin: How to Join
 Instance:
   one: Instance
   other: Instances

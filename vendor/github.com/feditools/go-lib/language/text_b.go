@@ -2,15 +2,17 @@ package language
 
 import "github.com/nicksnyder/go-i18n/v2/i18n"
 
-// TextHomeWeb returns a translated phrase.
-func (l *Localizer) TextHomeWeb() *LocalizedString {
-	lg := logger.WithField("func", "TextHomeWeb")
+// TextBlock returns a translated phrase.
+func (l *Localizer) TextBlock(count int) *LocalizedString {
+	lg := logger.WithField("func", "TextBlock")
 
 	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
-			ID:    "HomeWeb",
-			Other: "Home",
+			ID:    "Block",
+			One:   "Block",
+			Other: "Blocks",
 		},
+		PluralCount: count,
 	})
 	if err != nil {
 		lg.Warningf(missingTranslationWarning, err.Error())
@@ -22,15 +24,17 @@ func (l *Localizer) TextHomeWeb() *LocalizedString {
 	}
 }
 
-// TextHowToJoin returns a translated phrase.
-func (l *Localizer) TextHowToJoin() *LocalizedString {
-	lg := logger.WithField("func", "TextHowToJoin")
+// TextBlockedInstance returns a translated phrase.
+func (l *Localizer) TextBlockedInstance(count int) *LocalizedString {
+	lg := logger.WithField("func", "TextBlockedInstance")
 
 	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
-			ID:    "HowToJoin",
-			Other: "How to Join",
+			ID:    "BlockedInstance",
+			One:   "Blocked Instance",
+			Other: "Blocked Instances",
 		},
+		PluralCount: count,
 	})
 	if err != nil {
 		lg.Warningf(missingTranslationWarning, err.Error())

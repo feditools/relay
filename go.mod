@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/contribsys/faktory v1.6.1
 	github.com/contribsys/faktory_worker_go v1.6.0
-	github.com/feditools/go-lib v0.11.2-0.20220719050827-30d7ba18df1c
+	github.com/feditools/go-lib v0.11.2-0.20220719233912-e63863df3ca9
 	github.com/go-fed/activity v1.0.0
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-http-utils/etag v0.0.0-20161124023236-513ea8f21eb1

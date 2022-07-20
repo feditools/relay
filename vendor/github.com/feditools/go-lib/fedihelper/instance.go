@@ -88,7 +88,16 @@ func (f *FediHelper) GenerateFediInstanceFromDomain(ctx context.Context, domain 
 		return NewError("missing actor uri")
 	}
 
+	actor, err := f.FetchActor(ctx, actorURI)
+	if err != nil {
+		fhErr := NewErrorf("can't fetch actor: %s", err.Error())
+		l.Error(fhErr.Error())
+
+		return fhErr
+	}
+
 	instance.SetActorURI(actorURI.String())
+	instance.SetInboxURI(actor.Endpoints.SharedInbox)
 	instance.SetDomain(domain)
 	instance.SetServerHostname(hostMetaURI.Host)
 	instance.SetSoftware(nodeinfo.Software.Name)

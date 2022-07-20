@@ -87,8 +87,8 @@ github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.m
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fatih/color v1.13.0 h1:8LOYc1KYPPmyKMuN8QV2DNRWNbLo6LZ0iLs8+mlH53w=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=
-github.com/feditools/go-lib v0.11.2-0.20220719050827-30d7ba18df1c h1:l+VfTfYJRRdX4W24JE1rePj/6C6oteYDWiRH/qk7D3E=
-github.com/feditools/go-lib v0.11.2-0.20220719050827-30d7ba18df1c/go.mod h1:LtdLBvApYAhdblS6rTGQ12ZzySI9/6PyTiZlxw5uX10=
+github.com/feditools/go-lib v0.11.2-0.20220719233912-e63863df3ca9 h1:58yCWvw7NjgvurHntYfx3pJ3a/syDO3G422x/Ect2LA=
+github.com/feditools/go-lib v0.11.2-0.20220719233912-e63863df3ca9/go.mod h1:LtdLBvApYAhdblS6rTGQ12ZzySI9/6PyTiZlxw5uX10=
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/felixge/httpsnoop v1.0.2 h1:+nS9g82KMXccJ/wp0zyRW9ZBHFETmMGtkk+2CTTrW4o=
 github.com/felixge/httpsnoop v1.0.2/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=

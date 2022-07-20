@@ -5,7 +5,51 @@
     <div class="col d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       {{ $textRelay := .Localizer.TextRelay 1 }}<h1 lang="{{ $textRelay.Language }}"><i class="fa-solid fa-arrows-turn-to-dots"></i> {{ $textRelay }}</h1>
     </div>
+    <p>This is another Activity Relay for fediverse instances.</p>
   </div>
+  <div class="row">
+    <div class="col mt-4">
+      {{ $textHowToJoin := .Localizer.TextHowToJoin }}<h2 lang="{{ $textHowToJoin.Language }}"><i class="fa-solid fa-person-circle-plus"></i> {{ $textHowToJoin }}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li>For Mastodon and Misskey instances, you may subscribe to this relay with the address: <a href="{{ .InboxHref }}">{{ .InboxHref }}</a></li>
+        <li>For Pleroma and other instances, you may subscribe to this relay with the address: <a href="{{ .ActorHref }}">{{ .ActorHref }}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col mt-4">
+      {{ $textInstances := .Localizer.TextInstance 2 }}<h2 lang="{{ $textInstances.Language }}"><i class="fa-solid fa-users-line"></i> {{ $textInstances }}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul>
+      {{- range $instance := .FollowingInstances }}
+        <li>{{ $instance.Domain }}</li>
+      {{- end }}
+      </ul>
+    </div>
+  </div>
+{{- if .Blocks }}
+  <div class="row">
+    <div class="col mt-4">
+      {{ $textBlockedInstance := .Localizer.TextBlockedInstance 2 }}<h2 lang="{{ $textBlockedInstance.Language }}"><i class="fa-solid fa-user-slash"></i> {{ $textBlockedInstance }}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul>
+      {{- range $block := .Blocks }}
+        <li>{{ $block.Domain }}</li>
+      {{- end }}
+      </ul>
+    </div>
+  </div>
+{{- end }}
 </div><!-- /.container -->
-{{ template "footer" . }}
+{{- template "footer" . }}
 {{ end }}

@@ -40,6 +40,7 @@ type Module struct {
 	srv       *ihttp.Server
 	templates *template.Template
 
+	domain        string
 	logoSrcDark   string
 	logoSrcLight  string
 	headLinks     []libtemplate.HeadLink
@@ -138,6 +139,7 @@ func New(ctx context.Context, d db.DB, f *fedi.Module, lMod *language.Module, l 
 		store:     store,
 		templates: tmpl,
 
+		domain:        viper.GetString(config.Keys.ServerExternalHostname),
 		logoSrcDark:   viper.GetString(config.Keys.WebappLogoSrcDark),
 		logoSrcLight:  viper.GetString(config.Keys.WebappLogoSrcLight),
 		headLinks:     hl,
