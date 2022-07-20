@@ -1,8 +1,10 @@
 package webapp
 
 import (
+	"errors"
 	"fmt"
 	"github.com/feditools/go-lib/fedihelper"
+	"github.com/feditools/relay/internal/db"
 	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
 	"github.com/feditools/relay/internal/token"
@@ -13,7 +15,7 @@ import (
 
 // CallbackOauthGetHandler handles an oauth callback.
 func (m *Module) CallbackOauthGetHandler(w http.ResponseWriter, r *http.Request) {
-	l := logger.WithField("func", "CallbackMastodonGetHandler")
+	l := logger.WithField("func", "CallbackOauthGetHandler")
 
 	// lookup instance
 	vars := mux.Vars(r)
@@ -31,14 +33,14 @@ func (m *Module) CallbackOauthGetHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	instance, err := m.db.ReadInstance(r.Context(), id)
-	if err != nil {
+	if err != nil && !errors.Is(err, db.ErrNoEntries) {
 		l.Errorf("db read instance: %s", err.Error())
 		m.returnErrorPage(w, r, http.StatusInternalServerError, err.Error())
 
 		return
 	}
-	if instance == nil {
-		m.returnErrorPage(w, r, http.StatusNotFound, vars["token"])
+	if errors.Is(err, db.ErrNoEntries) {
+		m.returnErrorPage(w, r, http.StatusNotFound, vars[path.VarInstanceID])
 
 		return
 	}

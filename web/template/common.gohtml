@@ -40,10 +40,14 @@
         {{- if .Account }}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user"></i> {{ .Account.Username }}@{{ .Account.Instance.AccountDomain }}
+              <i class="fas fa-user"></i> {{ .Account.Username }}@{{ .Account.Instance.Domain }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-              <li><a class="dropdown-item" href="{{ .LogoutLink }}"><i class="fas fa-sign-out-alt"></i> {{ $textLogout := .Localizer.TextLogout }}<span lang="{{ $textLogout.Language }}">{{ $textLogout }}</span></a></li>
+            {{- if .Account.IsAdmin }}
+              <li>{{ $textAdmin := .Localizer.TextAdmin }}<a class="dropdown-item" href="{{ .AdminLink }}" lang="{{ $textAdmin.Language }}"><i class="fas fa-screwdriver-wrench"></i> {{ $textAdmin }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+            {{- end }}
+              <li>{{ $textLogout := .Localizer.TextLogout }}<a class="dropdown-item" href="{{ .LogoutLink }}" lang="{{ $textLogout.Language }}"><i class="fas fa-sign-out-alt"></i> {{ $textLogout }}</a></li>
             </ul>
           </li>
         {{- else }}

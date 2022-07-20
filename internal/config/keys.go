@@ -50,6 +50,10 @@ type KeyNames struct {
 	WebappLogoSrcDark             string
 	WebappLogoSrcLight            string
 
+	// account
+	Account         string
+	AccountAddGroup string
+
 	// metrics
 	MetricsStatsDAddress string
 	MetricsStatsDPrefix  string
@@ -104,6 +108,10 @@ var Keys = KeyNames{
 	WebappFontAwesomeCSSIntegrity: "webapp-fontawesome-css-integrity",
 	WebappLogoSrcDark:             "webapp-logo-src-dark",
 	WebappLogoSrcLight:            "webapp-logo-src-light",
+
+	// account
+	Account:         "account",
+	AccountAddGroup: "add-group",
 
 	// metrics
 	MetricsStatsDAddress: "statsd-addr",

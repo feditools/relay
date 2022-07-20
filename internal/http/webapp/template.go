@@ -38,7 +38,7 @@ func (m *Module) initTemplate(_ http.ResponseWriter, r *http.Request, tmpl templ
 
 	// set logo image src
 	tmpl.SetLogoSrc(m.logoSrcDark, m.logoSrcLight)
-	tmpl.SetLoginLinks(path.AppLogin, path.AppLogout)
+	tmpl.SetLinks(path.AppAdminHome, path.AppLogin, path.AppLogout)
 
 	// add css
 	for _, link := range m.headLinks {
@@ -82,6 +82,7 @@ func (m *Module) initTemplateAdmin(w http.ResponseWriter, r *http.Request, tmpl 
 
 	// make admin navbar
 	navbar := makeAdminNavbar(r)
+	tmpl.SetNavbarDark(true)
 	tmpl.SetNavbar(navbar)
 
 	return nil
@@ -95,6 +96,7 @@ func (m *Module) initTemplatePublic(w http.ResponseWriter, r *http.Request, tmpl
 
 	// make admin navbar
 	navbar := makePublicNavbar(r)
+	tmpl.SetNavbarDark(false)
 	tmpl.SetNavbar(navbar)
 
 	return nil

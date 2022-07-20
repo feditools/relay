@@ -1,0 +1,12 @@
+{{ define "admin_home" -}}
+{{- template "header" . }}
+<div class="container">
+  <div class="row">
+    <div class="col d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      {{ $textRelay := .Localizer.TextRelay 1 }}<h1 lang="{{ $textRelay.Language }}"><i class="fa-solid fa-arrows-turn-to-dots"></i> {{ $textRelay }}</h1>
+    </div>
+    <p>This is another Activity Relay for fediverse instances.</p>
+  </div>
+</div><!-- /.container -->
+{{- template "footer" . }}
+{{ end }}

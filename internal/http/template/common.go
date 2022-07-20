@@ -16,6 +16,7 @@ type Common struct {
 	Alerts        *[]libtemplate.Alert
 	FooterScripts []libtemplate.Script
 	HeadLinks     []libtemplate.HeadLink
+	AdminLink     string
 	LoginLink     string
 	LogoSrcDark   string
 	LogoSrcLight  string
@@ -51,8 +52,9 @@ func (t *Common) SetLocalizer(l *language.Localizer) {
 	t.Localizer = l
 }
 
-// SetLoginLinks sets the template's login link.
-func (t *Common) SetLoginLinks(login, logout string) {
+// SetLinks sets the template's links.
+func (t *Common) SetLinks(admin, login, logout string) {
+	t.AdminLink = admin
 	t.LoginLink = login
 	t.LogoutLink = logout
 }

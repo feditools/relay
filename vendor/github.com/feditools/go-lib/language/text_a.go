@@ -46,6 +46,26 @@ func (l *Localizer) TextAddOauth20Client(count int) *LocalizedString {
 	}
 }
 
+// TextAdmin returns a translated phrase.
+func (l *Localizer) TextAdmin() *LocalizedString {
+	lg := logger.WithField("func", "TextAdmin")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Admin",
+			Other: "Admin",
+		},
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}
+
 // TextAllow returns a translated phrase.
 func (l *Localizer) TextAllow() *LocalizedString {
 	lg := logger.WithField("func", "TextAllow")

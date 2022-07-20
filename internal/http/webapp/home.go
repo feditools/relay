@@ -23,7 +23,7 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmplVars.PageTitle = localizer.TextDemocrablock().String()
+	tmplVars.PageTitle = localizer.TextRelay(1).String()
 	tmplVars.InboxHref = path.GenInbox(m.domain)
 	tmplVars.ActorHref = path.GenActor(m.domain)
 

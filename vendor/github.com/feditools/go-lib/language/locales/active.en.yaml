@@ -5,6 +5,7 @@ Account:
 AddOauth20Client:
   one: Add OAuth 2.0 Client
   other: Add OAuth 2.0 Clients
+Admin: Admin
 Allow: Allow
 ApplicationToken:
   one: Application Token
@@ -49,6 +50,7 @@ List:
 Login: Login
 Logout: Logout
 LooksGood: Looks Good!
+Moderation: Moderation
 Oauth: OAuth
 Oauth20Client:
   one: OAuth 2.0 Client

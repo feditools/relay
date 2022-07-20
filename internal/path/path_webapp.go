@@ -31,6 +31,10 @@ const (
 	AppAdmin = "/" + PartAdmin
 	// AppAdminHome is the path for the home page.
 	AppAdminHome = App + AppAdmin + AppAdminSubHome
-	// AppAdminSubHome is the path for the home page.
+	// AppAdminSubHome is the sub path for the home page.
 	AppAdminSubHome = "/"
+	// AppAdminInstances is the path for the admin instances page.
+	AppAdminInstances = App + AppAdmin + AppAdminSubInstances
+	// AppAdminSubInstances is the sub path for the admin instances page.
+	AppAdminSubInstances = "/" + PartInstance
 )

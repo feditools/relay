@@ -11,8 +11,10 @@ const (
 )
 
 var (
-	// ReAppAdminHome matches the admin page.
+	// ReAppAdminHome matches the admin home page.
 	ReAppAdminHome = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppAdminHome))
+	// ReAppAdminInstances matches the admin instances page.
+	ReAppAdminInstances = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppAdminInstances))
 
 	// ReAppHome matches the Home page.
 	ReAppHome = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppHome))

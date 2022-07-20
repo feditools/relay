@@ -47,7 +47,7 @@ func (h *Helper) newClient(ctx context.Context, instance fedihelper.Instance, ac
 
 	// create client
 	client := mastodon.NewClient(&mastodon.Config{
-		Server:       "https://" + instance.GetDomain(),
+		Server:       "https://" + instance.GetServerHostname(),
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		AccessToken:  accessToken,

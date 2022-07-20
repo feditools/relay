@@ -50,6 +50,10 @@ type Values struct {
 	WebappLogoSrcDark             string
 	WebappLogoSrcLight            string
 
+	// account
+	Account         string
+	AccountAddGroup []string
+
 	// metrics
 	MetricsStatsDAddress string
 	MetricsStatsDPrefix  string

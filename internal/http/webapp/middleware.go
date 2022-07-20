@@ -3,6 +3,7 @@ package webapp
 import (
 	"context"
 	libhttp "github.com/feditools/go-lib/http"
+	"github.com/feditools/go-lib/language"
 	"net/http"
 )
 
@@ -65,5 +66,25 @@ func (m *Module) Middleware(next http.Handler) http.Handler {
 
 		// Do Request
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// MiddlewareRequireAdmin will redirect a user to login page if user not in context and will return unauthorized for
+// a non admin user.
+func (m *Module) MiddlewareRequireAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		account, shouldReturn := m.authRequireLoggedIn(w, r)
+		if shouldReturn {
+			return
+		}
+
+		if !account.IsAdmin {
+			localizer := r.Context().Value(ContextKeyLocalizer).(*language.Localizer) // nolint
+			m.returnErrorPage(w, r, http.StatusUnauthorized, localizer.TextUnauthorized().String())
+
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }

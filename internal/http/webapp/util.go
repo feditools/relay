@@ -4,9 +4,42 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"fmt"
+	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/relay/internal/path"
 	"github.com/feditools/relay/web"
+	"github.com/gorilla/sessions"
 	"io/ioutil"
+	nethttp "net/http"
 )
+
+// auth helpers
+
+func (m *Module) authRequireLoggedIn(w nethttp.ResponseWriter, r *nethttp.Request) (*models.Account, bool) {
+	us := r.Context().Value(ContextKeySession).(*sessions.Session) // nolint
+
+	account, ok := r.Context().Value(ContextKeyAccount).(*models.Account)
+	if !ok {
+		// Save current page
+		if r.URL.Query().Encode() == "" {
+			us.Values[SessionKeyLoginRedirect] = r.URL.Path
+		} else {
+			us.Values[SessionKeyLoginRedirect] = r.URL.Path + "?" + r.URL.Query().Encode()
+		}
+		err := us.Save(r, w)
+		if err != nil {
+			m.returnErrorPage(w, r, nethttp.StatusInternalServerError, err.Error())
+
+			return nil, true
+		}
+
+		// redirect to login
+		nethttp.Redirect(w, r, path.AppLogin, nethttp.StatusFound)
+
+		return nil, true
+	}
+
+	return account, false
+}
 
 // signature caching
 

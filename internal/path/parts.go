@@ -15,6 +15,8 @@ const (
 	PartFollowing = "following"
 	// PartInbox is the noun used in a path for an actor's inbox
 	PartInbox = "inbox"
+	// PartInstance is used in a path for instances.
+	PartInstance = "instance"
 	// PartLogin is used in a path for login.
 	PartLogin = "login"
 	// PartLogout is used in a path for logout.

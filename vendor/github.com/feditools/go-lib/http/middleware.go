@@ -14,6 +14,7 @@ func BlockFloc(next http.Handler) http.Handler {
 func BlockMissingUserAgent(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if ua := r.UserAgent(); ua == "" {
+			logger.WithField("func", "BlockMissingUserAgent").Debug("blocked request with missing user agent.")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}

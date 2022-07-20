@@ -120,11 +120,11 @@ func (c *Client) ReadAccountByUsername(ctx context.Context, instanceID int64, us
 
 	account := new(models.Account)
 	err := newAccountQ(c.bun, account).
-		ColumnExpr("fedi_account.*").
-		Join("RIGHT JOIN fedi_instances").
-		JoinOn("fedi_account.instance_id = fedi_instances.id").
-		Where("fedi_instances.id = ?", instanceID).
-		Where("lower(fedi_account.username) = lower(?)", username).
+		ColumnExpr("account.*").
+		Join("RIGHT JOIN instances").
+		JoinOn("account.instance_id = instances.id").
+		Where("instances.id = ?", instanceID).
+		Where("lower(account.username) = lower(?)", username).
 		Scan(ctx)
 	if err != nil {
 		dbErr := c.bun.ProcessError(err)
