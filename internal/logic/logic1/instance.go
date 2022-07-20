@@ -31,7 +31,7 @@ func (l *Logic) GetPeers(ctx context.Context) (*[]string, error) {
 	// populate peer list
 	newPeers := make([]string, len(instances))
 	for i, instance := range instances {
-		newPeers[i] = instance.Domain
+		newPeers[i] = instance.ServerHostname
 	}
 
 	// update cache
@@ -152,76 +152,3 @@ func (l *Logic) setCachedPeerList(peers *[]string) {
 	l.cPeerListExpires = time.Now().Add(l.cPeerListValidity)
 	l.cPeerListLock.Unlock()
 }
-
-/*func (l *Logic) getInstanceWithPublicKey(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
-	log := logger.WithField("func", "getInstanceWithPublicKey")
-
-	instance, err := l.db.ReadInstanceByDomain(ctx, actorURI.Host)
-	if err != nil {
-		log.Errorf("db read: %s", err.Error())
-		return nil, err
-	}
-
-	if instance == nil {
-		log.Debugf("creating instance %s from actor", actorURI.Host)
-		instance, err = l.makeInstanceFromActor(ctx, actorURI)
-		if err != nil {
-			log.Errorf("make actor: %s", err.Error())
-			return nil, err
-		}
-		return instance, nil
-	}
-
-	if instance.PublicKey == nil {
-		// fetch remote actorURI
-		actor, err := l.fetchActor(ctx, actorURI)
-		if err != nil {
-			log.Errorf("fetch actor: %s", err.Error())
-			return nil, err
-		}
-
-		// make public key
-		pubKey, err := actor.RSAPublicKey()
-		if err != nil {
-			log.Errorf("extracting public key: %s", err.Error())
-			return nil, err
-		}
-
-		instance.PublicKey = pubKey
-	}
-
-	return instance, nil
-}*/
-
-/*func (l *Logic) makeInstanceFromActor(ctx context.Context, actorURI *url.URL) (*models.Instance, error) {
-	log := logger.WithField("func", "makeInstanceFromActor")
-
-	// fetch remote actor
-	actor, err := l.fetchActor(ctx, actorURI)
-	if err != nil {
-		log.Errorf("fetch actor: %s", err.Error())
-		return nil, err
-	}
-
-	// make public key
-	pubKey, err := actor.RSAPublicKey()
-	if err != nil {
-		log.Errorf("extracting public key: %s", err.Error())
-		return nil, err
-	}
-
-	// create new instance
-	newInstance := &models.Instance{
-		Domain:    actorURI.Host,
-		ActorIRI:  actorURI.String(),
-		InboxIRI:  actor.Endpoints.SharedInbox,
-		PublicKey: pubKey,
-	}
-	err = l.db.CreateInstance(ctx, newInstance)
-	if err != nil {
-		log.Errorf("db create: %s", err.Error())
-		return nil, err
-	}
-
-	return newInstance, nil
-}*/

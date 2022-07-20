@@ -13,7 +13,7 @@ func (i *Instance) GetID() (instanceID int64) {
 }
 
 func (i *Instance) GetServerHostname() (hostname string) {
-	return i.Domain
+	return i.ServerHostname
 }
 
 func (i *Instance) GetSoftware() (software string) {
@@ -33,7 +33,7 @@ func (i *Instance) SetInboxURI(inboxURI string) {
 }
 
 func (i *Instance) SetServerHostname(hostname string) {
-	i.Domain = hostname
+	i.ServerHostname = hostname
 }
 
 func (i *Instance) SetSoftware(software string) {

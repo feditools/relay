@@ -24,10 +24,10 @@ func (l *Logic) createInstanceSelf(ctx context.Context) (*models.Instance, error
 
 	// create new instance
 	newInstance := &models.Instance{
-		AccountDomain: l.domain,
-		Domain:        l.domain,
-		ActorIRI:      genActorSelf(l.domain),
-		InboxIRI:      path.GenInbox(l.domain),
+		AccountDomain:  l.domain,
+		ServerHostname: l.domain,
+		ActorIRI:       genActorSelf(l.domain),
+		InboxIRI:       path.GenInbox(l.domain),
 
 		PublicKey:  &privatekey.PublicKey,
 		PrivateKey: privatekey,
