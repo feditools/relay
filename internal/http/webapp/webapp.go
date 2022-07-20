@@ -14,6 +14,7 @@ import (
 	"github.com/feditools/relay/internal/kv"
 	"github.com/feditools/relay/internal/logic/logic1"
 	"github.com/feditools/relay/internal/path"
+	"github.com/feditools/relay/internal/token"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/sessions"
 	"github.com/rbcervilla/redisstore/v8"
@@ -39,6 +40,7 @@ type Module struct {
 	store     sessions.Store
 	srv       *ihttp.Server
 	templates *template.Template
+	tokz      *token.Tokenizer
 
 	domain        string
 	logoSrcDark   string
@@ -52,7 +54,16 @@ type Module struct {
 
 //revive:disable:argument-limit
 // New returns a new webapp module.
-func New(ctx context.Context, d db.DB, f *fedi.Module, lMod *language.Module, l *logic1.Logic, mc metrics.Collector, r redis.UniversalClient) (*Module, error) {
+func New(
+	ctx context.Context,
+	d db.DB,
+	f *fedi.Module,
+	lMod *language.Module,
+	l *logic1.Logic,
+	mc metrics.Collector,
+	r redis.UniversalClient,
+	tokz *token.Tokenizer,
+) (*Module, error) {
 	log := logger.WithField("func", "New")
 
 	// create new store
@@ -138,6 +149,7 @@ func New(ctx context.Context, d db.DB, f *fedi.Module, lMod *language.Module, l 
 		minify:    m,
 		store:     store,
 		templates: tmpl,
+		tokz:      tokz,
 
 		domain:        viper.GetString(config.Keys.ServerExternalHostname),
 		logoSrcDark:   viper.GetString(config.Keys.WebappLogoSrcDark),

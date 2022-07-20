@@ -188,6 +188,7 @@ var Start action.Action = func(topCtx context.Context) error {
 			logicMod,
 			metricsCollector,
 			kvClient.RedisClient(),
+			tokz,
 		)
 		if err != nil {
 			l.Errorf("%s: %s", config.ServerRoleWebapp, err.Error())

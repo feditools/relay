@@ -5,7 +5,7 @@ func (i *Instance) GetActorURI() (actorURI string) {
 }
 
 func (i *Instance) GetDomain() (domain string) {
-	return i.AccountDomain
+	return i.Domain
 }
 
 func (i *Instance) GetID() (instanceID int64) {
@@ -25,7 +25,7 @@ func (i *Instance) SetActorURI(actorURI string) {
 }
 
 func (i *Instance) SetDomain(domain string) {
-	i.AccountDomain = domain
+	i.Domain = domain
 }
 
 func (i *Instance) SetInboxURI(inboxURI string) {

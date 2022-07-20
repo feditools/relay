@@ -8,7 +8,7 @@ import (
 )
 
 // GetAccessToken gets an access token for a account from a returned code.
-func (h *Helper) GetAccessToken(ctx context.Context, instance fedihelper.Instance, code string) (accessToken string, err error) {
+func (h *Helper) GetAccessToken(ctx context.Context, redirectURI *url.URL, instance fedihelper.Instance, code string) (accessToken string, err error) {
 	// decrypt secret
 	c, err := h.newClient(ctx, instance, "")
 	if err != nil {
@@ -16,8 +16,7 @@ func (h *Helper) GetAccessToken(ctx context.Context, instance fedihelper.Instanc
 	}
 
 	// authenticate
-	instanceToken := h.fedi.GetTokenHandler(ctx, instance)
-	err = c.AuthenticateToken(ctx, code, h.externalURL+"/callback/oauth/"+instanceToken)
+	err = c.AuthenticateToken(ctx, code, redirectURI.String())
 	if err != nil {
 		return "", err
 	}
@@ -26,7 +25,7 @@ func (h *Helper) GetAccessToken(ctx context.Context, instance fedihelper.Instanc
 }
 
 // MakeLoginURI creates a login redirect url for mastodon.
-func (h *Helper) MakeLoginURI(ctx context.Context, instance fedihelper.Instance) (*url.URL, error) {
+func (h *Helper) MakeLoginURI(ctx context.Context, redirectURI *url.URL, instance fedihelper.Instance) (*url.URL, error) {
 	l := logger.WithField("func", "MakeLoginURI")
 
 	clientID, _, err := h.kv.GetInstanceOAuth(ctx, instance.GetID())
@@ -36,7 +35,6 @@ func (h *Helper) MakeLoginURI(ctx context.Context, instance fedihelper.Instance)
 		return nil, err
 	}
 
-	instanceToken := h.fedi.GetTokenHandler(ctx, instance)
 	u := &url.URL{
 		Scheme: "https",
 		Host:   instance.GetServerHostname(),
@@ -44,7 +42,7 @@ func (h *Helper) MakeLoginURI(ctx context.Context, instance fedihelper.Instance)
 	}
 	q := u.Query()
 	q.Set("client_id", clientID)
-	q.Set("redirect_uri", h.externalURL+"/callback/oauth/"+instanceToken)
+	q.Set("redirect_uri", redirectURI.String())
 	q.Set("response_type", "code")
 	q.Set("scope", "read:accounts")
 	u.RawQuery = q.Encode()

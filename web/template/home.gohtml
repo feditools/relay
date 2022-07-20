@@ -29,7 +29,7 @@
     <div class="col">
       <ul>
       {{- range $instance := .FollowingInstances }}
-        <li>{{ $instance.Domain }}</li>
+        <li>{{ $instance.ServerHostname }}</li>
       {{- end }}
       </ul>
     </div>

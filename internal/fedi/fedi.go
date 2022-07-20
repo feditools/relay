@@ -38,13 +38,8 @@ func New(d db.DB, t *fedihelper.Transport, k kv.KV, tok *token.Tokenizer) (*Modu
 	}
 
 	fedi.SetCreateAccountHandler(newModule.CreateAccountHandler)
-	fedi.SetCreateInstanceHandler(newModule.CreateInstanceHandler)
 	fedi.SetGetAccountHandler(newModule.GetAccountHandler)
-	fedi.SetGetInstanceHandler(newModule.GetInstanceHandler)
-	fedi.SetGetTokenHandler(newModule.GetTokenHandler)
 	fedi.SetNewAccountHandler(newModule.NewAccountHandler)
-	fedi.SetNewInstanceHandler(newModule.NewInstanceHandler)
-	fedi.SetUpdateInstanceHandler(newModule.UpdateInstanceHandler)
 
 	newModule.helper = fedi
 
@@ -70,8 +65,19 @@ func (m *Module) FetchWebFinger(ctx context.Context, wfURI fedihelper.WebfingerU
 	return m.helper.FetchWebFinger(ctx, wfURI, username, domain)
 }
 
-func (m *Module) GetLoginURL(ctx context.Context, act string) (*url.URL, error) {
-	return m.helper.GetLoginURL(ctx, act)
+func (m *Module) GetLoginURL(ctx context.Context, redirectURI *url.URL, instance *models.Instance) (*url.URL, error) {
+	return m.helper.GetLoginURL(ctx, redirectURI, instance)
+}
+
+func (m *Module) GenInstanceFromDomain(ctx context.Context, domain string) (*models.Instance, error) {
+	instance := new(models.Instance)
+
+	err := m.helper.GenerateFediInstanceFromDomain(ctx, domain, instance)
+	if err != nil {
+		return nil, err
+	}
+
+	return instance, nil
 }
 
 func (m *Module) Helper(s fedihelper.SoftwareName) fedihelper.Helper {

@@ -30,6 +30,15 @@ func GenNodeinfo20(d string) string {
 	return fmt.Sprintf("https://%s/%s/2.0", d, PartNodeinfo)
 }
 
+// GenCallbackOauth returns a url for a callback oauth
+func GenCallbackOauth(domain, instanceToken string) *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   domain,
+		Path:   AppPreCallbackOauth + instanceToken,
+	}
+}
+
 // GenPublicKey returns a url for an actor's public key
 func GenPublicKey(d string) string {
 	return fmt.Sprintf("%s#%s", GenActor(d), PartPublicKey)

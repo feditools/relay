@@ -17,7 +17,7 @@ type Instance struct {
 	ID             int64           `validate:"-" bun:",pk,autoincrement,nullzero,notnull,unique"`
 	CreatedAt      time.Time       `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
 	UpdatedAt      time.Time       `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
-	AccountDomain  string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
+	Domain         string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
 	ServerHostname string          `validate:"required,fqdn" bun:",nullzero,notnull,unique"`
 	Software       string          `validate:"-" bun:",nullzero"`
 	PublicKey      *rsa.PublicKey  `validate:"-"`

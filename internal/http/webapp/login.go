@@ -1,9 +1,13 @@
 package webapp
 
 import (
+	"errors"
+	"github.com/feditools/go-lib"
 	"github.com/feditools/go-lib/language"
 	libtemplate "github.com/feditools/go-lib/template"
+	"github.com/feditools/relay/internal/db"
 	"github.com/feditools/relay/internal/http/template"
+	"github.com/feditools/relay/internal/models"
 	"github.com/feditools/relay/internal/path"
 	nethttp "net/http"
 	"strings"
@@ -25,9 +29,46 @@ func (m *Module) LoginPostHandler(w nethttp.ResponseWriter, r *nethttp.Request) 
 		return
 	}
 
-	// check if account exists
+	// split account
 	formAccount := r.Form.Get("account")
-	loginURL, err := m.fedi.GetLoginURL(r.Context(), formAccount)
+	_, domain, err := lib.SplitAccount(formAccount)
+	if err != nil {
+		m.returnErrorPage(w, r, nethttp.StatusBadRequest, err.Error())
+
+		return
+	}
+
+	// get instance
+	var instance *models.Instance
+	instance, err = m.db.ReadInstanceByDomain(r.Context(), domain)
+	if err != nil && !errors.Is(err, db.ErrNoEntries) {
+		// actual db error
+		m.returnErrorPage(w, r, nethttp.StatusInternalServerError, err.Error())
+
+		return
+	}
+	if errors.Is(err, db.ErrNoEntries) {
+		instance, err = m.fedi.GenInstanceFromDomain(r.Context(), domain)
+		if err != nil {
+			m.returnErrorPage(w, r, nethttp.StatusInternalServerError, err.Error())
+
+			return
+		}
+
+		err = m.db.CreateInstance(r.Context(), instance)
+		if err != nil {
+			m.returnErrorPage(w, r, nethttp.StatusInternalServerError, err.Error())
+
+			return
+		}
+	}
+
+	// check if account exists
+	loginURL, err := m.fedi.GetLoginURL(
+		r.Context(),
+		path.GenCallbackOauth(m.domain, m.tokz.GetToken(instance)),
+		instance,
+	)
 	if err != nil {
 		l.Errorf("get login url: %s", err.Error())
 		m.returnErrorPage(w, r, nethttp.StatusInternalServerError, err.Error())
