@@ -18,6 +18,7 @@ pipeline {
         script {
           sh """#!/bin/bash
           make clean
+          make stage-static
           """
         }
       }
