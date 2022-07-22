@@ -2,19 +2,23 @@ package template
 
 import liblanguage "github.com/feditools/go-lib/language"
 
+type FormInputType string
+
 const (
+	// FormInputTypeCheckbox is a checkbox html input field.
+	FormInputTypeCheckbox FormInputType = "checkbox"
 	// FormInputTypeHidden is a hidden html input field.
-	FormInputTypeHidden = "hidden"
+	FormInputTypeHidden FormInputType = "hidden"
 	// FormInputTypePassword is a password html input field.
-	FormInputTypePassword = "password"
+	FormInputTypePassword FormInputType = "password"
 	// FormInputTypeText is a text html input field.
-	FormInputTypeText = "text"
+	FormInputTypeText FormInputType = "text"
 )
 
 // FormInput is a templated form input.
 type FormInput struct {
 	ID           string
-	Type         string
+	Type         FormInputType
 	Name         string
 	Placeholder  string
 	Label        *liblanguage.LocalizedString
@@ -23,6 +27,7 @@ type FormInput struct {
 	WrappedClass string
 	Disabled     bool
 	Required     bool
+	Checked      bool
 	Validation   *FormValidation
 }
 

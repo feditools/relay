@@ -2,6 +2,10 @@
 {{- range $link := .FooterScripts}}
   {{template "script" $link }}
 {{- end}}
+{{- if .FooterExtraScript }}
+<script>{{ jsSafe .FooterExtraScript }}
+</script>
+{{- end }}
 </body>
 </html>
 {{ end }}

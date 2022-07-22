@@ -63,3 +63,25 @@ func (l *Localizer) TextOauth20Settings() *LocalizedString {
 		string:   text,
 	}
 }
+
+// TextObfuscatedDomain returns a translated phrase.
+func (l *Localizer) TextObfuscatedDomain(count int) *LocalizedString {
+	lg := logger.WithField("func", "TextObfuscatedDomain")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "ObfuscatedDomain",
+			One:   "Obfuscated Domain",
+			Other: "Obfuscated Domains",
+		},
+		PluralCount: count,
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}

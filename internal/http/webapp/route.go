@@ -27,6 +27,8 @@ func (m *Module) Route(s *http.Server) error {
 	admin.NotFoundHandler = m.notFoundHandler()
 	admin.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
+	admin.HandleFunc(path.AppAdminSubBlockList, m.AdminBlockListGetHandler).Methods(nethttp.MethodGet)
+	admin.HandleFunc(path.AppAdminSubBlockList, m.AdminBlockListPostHandler).Methods(nethttp.MethodPost)
 	admin.HandleFunc(path.AppAdminSubHome, m.AdminHomeGetHandler).Methods(nethttp.MethodGet)
 
 	return nil

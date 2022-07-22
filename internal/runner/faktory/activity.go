@@ -55,7 +55,7 @@ func (r *Runner) deliverActivity(ctx context.Context, args ...interface{}) error
 		return fmt.Errorf("argument 1 is not an activity")
 	}
 
-	return r.logic.DeliverActivity(ctx, instanceID, activity)
+	return r.logic.DeliverActivity(ctx, help.Jid(), instanceID, activity)
 }
 
 func (r *Runner) EnqueueInboxActivity(_ context.Context, instanceID int64, actorIRI string, activity fedihelper.Activity) error {
@@ -116,5 +116,5 @@ func (r *Runner) inboxActivity(ctx context.Context, args ...interface{}) error {
 	}
 
 	// process activity
-	return r.logic.ProcessActivity(ctx, instanceID, actorIRI, activity)
+	return r.logic.ProcessActivity(ctx, help.Jid(), instanceID, actorIRI, activity)
 }

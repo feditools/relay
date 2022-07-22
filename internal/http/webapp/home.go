@@ -18,7 +18,7 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 	tmplVars := &template.Home{}
 	err := m.initTemplatePublic(w, r, tmplVars)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		m.returnErrorPage(w, r, http.StatusInternalServerError, err.Error())
 
 		return
 	}
@@ -29,12 +29,21 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	followingInstance, err := m.db.ReadInstancesWhereFollowing(r.Context())
 	if err != nil {
-		l.Errorf("db read: %s", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		l.Errorf("db read instances: %s", err.Error())
+		m.returnErrorPage(w, r, http.StatusInternalServerError, ErrorResponseDBError)
 
 		return
 	}
 	tmplVars.FollowingInstances = followingInstance
+
+	blocks, err := m.db.ReadBlocks(r.Context())
+	if err != nil {
+		l.Errorf("db read blocks: %s", err.Error())
+		m.returnErrorPage(w, r, http.StatusInternalServerError, ErrorResponseDBError)
+
+		return
+	}
+	tmplVars.Blocks = blocks
 
 	err = m.executeTemplate(w, template.HomeName, tmplVars)
 	if err != nil {

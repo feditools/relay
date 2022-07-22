@@ -68,6 +68,26 @@ func (l *Localizer) TextClientSecret(count int) *LocalizedString {
 	}
 }
 
+// TextClose returns a translated phrase.
+func (l *Localizer) TextClose() *LocalizedString {
+	lg := logger.WithField("func", "TextClose")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Close",
+			Other: "Close",
+		},
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}
+
 // TextCreate returns a translated phrase.
 func (l *Localizer) TextCreate() *LocalizedString {
 	lg := logger.WithField("func", "TextCreate")

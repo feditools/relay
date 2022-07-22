@@ -48,8 +48,6 @@ type Client struct {
 	metrics metrics.Collector
 }
 
-var _ db.DB = (*Client)(nil)
-
 // New creates a new bun database client
 func New(ctx context.Context, m metrics.Collector) (*Client, error) {
 	var newBun *Bun

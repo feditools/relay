@@ -24,6 +24,51 @@ func (l *Localizer) TextBlock(count int) *LocalizedString {
 	}
 }
 
+// TextBlockExists returns a translated phrase.
+func (l *Localizer) TextBlockExists(domain string) *LocalizedString {
+	lg := logger.WithField("func", "TextBlockExists")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "BlockExists",
+			Other: "Block for domain {{.Domain}} already exists.",
+		},
+		TemplateData: map[string]interface{}{
+			"Domain": domain,
+		},
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}
+
+// TextBlockSubdomain returns a translated phrase.
+func (l *Localizer) TextBlockSubdomain(count int) *LocalizedString {
+	lg := logger.WithField("func", "TextBlockSubdomain")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "BlockSubdomain",
+			One:   "Block Subdomain",
+			Other: "Block Subdomains",
+		},
+		PluralCount: count,
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}
+
 // TextBlockedInstance returns a translated phrase.
 func (l *Localizer) TextBlockedInstance(count int) *LocalizedString {
 	lg := logger.WithField("func", "TextBlockedInstance")

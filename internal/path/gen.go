@@ -10,6 +10,24 @@ func GenActor(d string) string {
 	return fmt.Sprintf("https://%s/%s", d, PartActor)
 }
 
+// GenAppAdminInstanceView returns a url for the admin instance view page.
+func GenAppAdminInstanceView(domain, token string) *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   domain,
+		Path:   AppAdminPreInstanceView + token,
+	}
+}
+
+// GenAppAdminBlockView returns a url for the admin block view page.
+func GenAppAdminBlockView(domain, token string) *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   domain,
+		Path:   AppAdminPreBlockView + token,
+	}
+}
+
 // GenFollowers returns a url for an actor's followers
 func GenFollowers(d string) string {
 	return fmt.Sprintf("https://%s/%s", d, PartFollowers)

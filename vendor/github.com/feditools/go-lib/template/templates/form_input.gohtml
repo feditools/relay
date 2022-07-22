@@ -1,11 +1,14 @@
 {{ define "form_input" -}}
-<label class="{{ .LabelClass }}" for="{{ .ID }}"{{ if ne .LabelClass "" }}{{ end }} lang="{{ .Label.Language }}">{{ .Label }}</label>
-{{ if ne .WrappedClass "" }}<div class="{{ .WrappedClass }}">{{ end }}
-{{ if ne .WrappedClass "" }}  {{ end }}<input class="form-control{{ if .Validation}}{{ if .Validation.Valid}} is-valid{{ else }} is-invalid{{ end }}{{ end }}" id="{{ .ID }}" name="{{ .Name }}"{{ if ne .Placeholder "" }} placeholder="{{ .Placeholder }}"{{ end }} type="{{ .Type }}"{{ if ne .Value "" }} value="{{ .Value }}"{{ end }}{{ if .Disabled }} disabled{{ end }}{{ if .Required }} required{{ end }}>
+{{ if ne .Type "checkbox" }}{{ template "form_input_label" . }}{{ end }}
+{{ if .WrappedClass }}<div class="{{ .WrappedClass }}">{{ end }}
+{{ if .WrappedClass }}  {{ end }}<input type="{{ .Type }}" class="{{ if eq .Type "checkbox" }}form-check-input{{ else }}form-control{{ end }}{{ if .Validation}}{{ if .Validation.Valid}} is-valid{{ else }} is-invalid{{ end }}{{ end }}" id="{{ .ID }}" name="{{ .Name }}"{{ if ne .Placeholder "" }} placeholder="{{ .Placeholder }}"{{ end }}{{ if ne .Value "" }} value="{{ .Value }}"{{ end }}{{ if .Checked }} checked{{ end }}{{ if .Disabled }} disabled{{ end }}{{ if .Required }} required{{ end }}>
+{{ if eq .Type "checkbox" }}{{ template "form_input_label" . }}{{ end }}
 {{- if .Validation}}
-{{ if ne .WrappedClass "" }}  {{ end }}<div class="{{ if .Validation.Valid}}valid-feedback{{ else }}invalid-feedback{{ end }}">
-{{ if ne .WrappedClass "" }}  {{ end }}  {{ .Validation.Response }}
-{{ if ne .WrappedClass "" }}  {{ end }}</div>
+{{ if .WrappedClass }}  {{ end }}<div class="{{ if .Validation.Valid}}valid-feedback{{ else }}invalid-feedback{{ end }}">
+{{ if .WrappedClass }}  {{ end }}  {{ .Validation.Response }}
+{{ if .WrappedClass }}  {{ end }}</div>
 {{- end }}
-{{ if ne .WrappedClass "" }}</div>{{ end }}
+{{ if .WrappedClass }}</div>{{ end }}
 {{- end }}
+
+{{ define "form_input_label" }}<label class="{{ .LabelClass }}" for="{{ .ID }}" lang="{{ .Label.Language }}">{{ .Label }}</label>{{- end }}

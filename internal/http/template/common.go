@@ -13,17 +13,18 @@ type Common struct {
 
 	Account *models.Account
 
-	Alerts        *[]libtemplate.Alert
-	FooterScripts []libtemplate.Script
-	HeadLinks     []libtemplate.HeadLink
-	AdminLink     string
-	LoginLink     string
-	LogoSrcDark   string
-	LogoSrcLight  string
-	LogoutLink    string
-	NavBar        Navbar
-	NavBarDark    bool
-	PageTitle     string
+	Alerts            *[]libtemplate.Alert
+	FooterScripts     []libtemplate.Script
+	FooterExtraScript string
+	HeadLinks         []libtemplate.HeadLink
+	AdminLink         string
+	LoginLink         string
+	LogoSrcDark       string
+	LogoSrcLight      string
+	LogoutLink        string
+	NavBar            Navbar
+	NavBarDark        bool
+	PageTitle         string
 }
 
 // AddHeadLink adds a headder link to the template.

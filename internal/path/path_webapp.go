@@ -29,12 +29,28 @@ const (
 
 	// AppAdmin is the path for the admin page.
 	AppAdmin = "/" + PartAdmin
+	// AppAdminBlockList is the path for the admin Blocks page.
+	AppAdminBlockList = App + AppAdmin + AppAdminSubBlockList
+	// AppAdminSubBlockList is the sub path for the admin Blocks page.
+	AppAdminSubBlockList = "/" + PartBlock
+	// AppAdminBlockView is the path for the admin Block view page.
+	AppAdminBlockView = App + AppAdmin + AppAdminSubBlockView
+	// AppAdminPreBlockView is the prefix path for for the admin Block view page.
+	AppAdminPreBlockView = App + AppAdmin + "/" + PartBlock + "/"
+	// AppAdminSubBlockView is the sub path for the admin Block view page.
+	AppAdminSubBlockView = "/" + PartBlock + "/" + VarBlock
 	// AppAdminHome is the path for the home page.
 	AppAdminHome = App + AppAdmin + AppAdminSubHome
 	// AppAdminSubHome is the sub path for the home page.
 	AppAdminSubHome = "/"
-	// AppAdminInstances is the path for the admin instances page.
-	AppAdminInstances = App + AppAdmin + AppAdminSubInstances
-	// AppAdminSubInstances is the sub path for the admin instances page.
-	AppAdminSubInstances = "/" + PartInstance
+	// AppAdminInstanceList is the path for the admin instances page.
+	AppAdminInstanceList = App + AppAdmin + AppAdminSubInstanceList
+	// AppAdminSubInstanceList is the sub path for the admin instances page.
+	AppAdminSubInstanceList = "/" + PartInstance
+	// AppAdminInstanceView is the path for the admin instance view page.
+	AppAdminInstanceView = App + AppAdmin + AppAdminSubInstanceView
+	// AppAdminPreInstanceView is the prefix path for for the admin instance view page.
+	AppAdminPreInstanceView = App + AppAdmin + "/" + PartInstance + "/"
+	// AppAdminSubInstanceView is the sub path for the admin instance view page.
+	AppAdminSubInstanceView = "/" + PartInstance + "/" + VarInstance
 )

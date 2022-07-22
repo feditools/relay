@@ -14,10 +14,16 @@ func makeAdminNavbar(r *nethttp.Request) template.Navbar {
 	// create navbar
 	newNavbar := template.Navbar{
 		{
-			Text:     l.TextModeration().String(),
-			MatchStr: path.ReAppAdminHome,
-			FAIcon:   "arrows-turn-to-dots",
-			URL:      path.AppAdminHome,
+			Text:     l.TextInstance(2).String(),
+			MatchStr: path.ReAppAdminInstancesPre,
+			FAIcon:   "server",
+			URL:      path.AppAdminInstanceList,
+		},
+		{
+			Text:     l.TextBlock(2).String(),
+			MatchStr: path.ReAppAdminBlockPre,
+			FAIcon:   "user-slash",
+			URL:      path.AppAdminBlockList,
 		},
 	}
 

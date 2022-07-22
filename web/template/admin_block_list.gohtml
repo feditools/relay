@@ -1,0 +1,75 @@
+{{ define "admin_block_list" -}}
+{{- template "header" . }}
+<div class="container">
+  <div class="row">
+    <div class="col d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      {{ $textBlock := .Localizer.TextBlock 2 }}<h1 lang="{{ $textBlock.Language }}"><i class="fa-solid fa-arrows-turn-to-dots"></i> {{ $textBlock }}</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group">
+          <a href="/responder/add" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i></a>
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+    {{- if .Blocks }}
+      <table class="table">
+        <thead>
+        <tr>
+          {{ $textDomain := .Localizer.TextDomain 1 }}<th scope="col" lang="{{ $textDomain.Language }}">{{ $textDomain }}</th>
+          {{ $textObfuscatedDomain := .Localizer.TextObfuscatedDomain 1 }}<th scope="col" lang="{{ $textObfuscatedDomain.Language }}">{{ $textObfuscatedDomain }}</th>
+          {{ $textBlockSubdomain := .Localizer.TextBlockSubdomain 2 }}<th scope="col" lang="{{ $textBlockSubdomain.Language }}">{{ $textBlockSubdomain }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{- range $block := .Blocks }}
+          <tr>
+            <th scope="row"><a href="{{ urlAppAdminBlockView token $block }}">{{ $block.Domain }}</a></th>
+            <td>{{ $block.ObfuscatedDomain }}</td>
+            <td>{{ if $block.BlockSubdomains }}<i class="fa-solid fa-check text-success"></i>{{ else }}<i class="fa-solid fa-xmark text-danger"></i>{{ end }}</td>
+          </tr>
+        {{- end }}
+        </tbody>
+      </table>
+    {{- else }}
+      No Data
+    {{- end }}
+    </div>
+  </div>
+</div><!-- /.container -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        <div class="modal-header">
+          {{ $textAddBlock := .Localizer.TextAddBlock 1 }}<h5 class="modal-title" id="addModalLabel" lang="{{ $textAddBlock.Language }}">{{ $textAddBlock }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+{{- if .FormError }}
+{{ template "alert" .FormError}}
+{{- end }}
+          <div class="mb-3">
+{{ template "form_input" .FormDomainValue }}
+          </div>
+          <div class="mb-3">
+{{ template "form_input" .FormObfuscatedDomainValue }}
+          </div>
+          <div class="mb-3">
+{{ template "form_input" .FormBlockSubdomainsValue }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          {{ $textClose := .Localizer.TextClose }}<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" lang="{{ $textClose.Language }}">{{ $textClose }}</button>
+          {{ $textCreate := .Localizer.TextCreate }}<button type="submit" class="btn btn-primary" lang="{{ $textCreate.Language }}">{{ $textCreate }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div><!-- /#addModal -->
+{{- template "footer" . }}
+{{ end }}

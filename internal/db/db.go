@@ -35,10 +35,16 @@ type DB interface {
 
 	// CreateBlock stores the domain block
 	CreateBlock(ctx context.Context, block *models.Block) (err Error)
+	// DeleteBlock deletes a domain block
+	DeleteBlock(ctx context.Context, block *models.Block) (err Error)
 	// ReadBlock returns one domain block
 	ReadBlock(ctx context.Context, id int64) (block *models.Block, err Error)
 	// ReadBlockByDomain returns one domain block by domain name
 	ReadBlockByDomain(ctx context.Context, domain string) (block *models.Block, err Error)
+	// ReadBlocks returns all domain block
+	ReadBlocks(ctx context.Context) (block []*models.Block, err Error)
+	// ReadBlocksPage returns a page of domain blocks
+	ReadBlocksPage(ctx context.Context, index, count int) (instances []*models.Block, err Error)
 	// UpdateBlock updates the stored domain block
 	UpdateBlock(ctx context.Context, block *models.Block) (err Error)
 

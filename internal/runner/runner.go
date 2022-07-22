@@ -8,4 +8,5 @@ import (
 type Runner interface {
 	EnqueueInboxActivity(ctx context.Context, instanceID int64, actorIRI string, activity fedihelper.Activity) (err error)
 	EnqueueDeliverActivity(ctx context.Context, instanceID int64, activity fedihelper.Activity) (err error)
+	EnqueueProcessBlock(ctx context.Context, blockID int64) (err error)
 }

@@ -45,7 +45,16 @@ func (c *Client) DoMigration(ctx context.Context) db.Error {
 func create(ctx context.Context, c bun.IDB, i interface{}) error {
 	_, err := c.NewInsert().Model(i).Exec(ctx)
 	if err != nil {
-		logger.WithField("func", "create").Errorf("db: %s", err.Error())
+		logger.WithField("func", "create").Error(err.Error())
+	}
+
+	return err
+}
+
+func delete(ctx context.Context, c bun.IDB, i interface{}) error {
+	_, err := c.NewDelete().Model(i).Exec(ctx)
+	if err != nil {
+		logger.WithField("func", "delete").Error(err.Error())
 	}
 
 	return err
@@ -55,6 +64,9 @@ func update(ctx context.Context, c bun.IDB, i interface{}) error {
 	q := c.NewUpdate().Model(i).WherePK()
 
 	_, err := q.Exec(ctx)
+	if err != nil {
+		logger.WithField("func", "update").Error(err.Error())
+	}
 
 	return err
 }

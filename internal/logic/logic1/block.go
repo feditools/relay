@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/feditools/relay/internal/db"
-	"strings"
 )
 
 // IsDomainBlocked returns true if a domain matches a block in the database
@@ -42,14 +41,6 @@ func (l *Logic) IsDomainBlocked(ctx context.Context, d string) (bool, error) {
 	return false, nil
 }
 
-func topDomains(d string) []string {
-	parts := strings.Split(d, ".")
-	end := len(parts)
-
-	tds := make([]string, len(parts)-1)
-	for i := 0; i < len(tds); i++ {
-		tds[i] = strings.Join(parts[i+1:end], ".")
-	}
-
-	return tds
+func (l *Logic) ProcessBlock(ctx context.Context, jid string, blockID int64) error {
+	return nil
 }

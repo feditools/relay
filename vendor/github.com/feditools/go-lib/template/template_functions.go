@@ -5,6 +5,7 @@ import "html/template"
 const (
 	funcNameDec      = "dec"
 	funcNameHTMLSafe = "htmlSafe"
+	funcNameJSSafe   = "jsSafe"
 	funcNameInc      = "inc"
 )
 
@@ -18,6 +19,10 @@ var (
 		/* #nosec G203 */
 		return template.HTML(html)
 	}
+	funcJSSafe = func(javascript string) template.JS {
+		/* #nosec G203 */
+		return template.JS(javascript)
+	}
 	funcInc = func(i int) int {
 		i++
 
@@ -27,6 +32,7 @@ var (
 	defaultFunctions = template.FuncMap{
 		funcNameDec:      funcDec,
 		funcNameHTMLSafe: funcHTMLSafe,
+		funcNameJSSafe:   funcJSSafe,
 		funcNameInc:      funcInc,
 	}
 )

@@ -188,6 +188,7 @@ var Start action.Action = func(topCtx context.Context) error {
 			logicMod,
 			metricsCollector,
 			kvClient.RedisClient(),
+			runnerMod,
 			tokz,
 		)
 		if err != nil {

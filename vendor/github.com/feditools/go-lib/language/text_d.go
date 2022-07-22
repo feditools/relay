@@ -65,3 +65,25 @@ func (l *Localizer) TextDescription(count int) *LocalizedString {
 		string:   text,
 	}
 }
+
+// TextDomain returns a translated phrase.
+func (l *Localizer) TextDomain(count int) *LocalizedString {
+	lg := logger.WithField("func", "TextDomain")
+
+	text, tag, err := l.localizer.LocalizeWithTag(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain",
+			One:   "Domain",
+			Other: "Domains",
+		},
+		PluralCount: count,
+	})
+	if err != nil {
+		lg.Warningf(missingTranslationWarning, err.Error())
+	}
+
+	return &LocalizedString{
+		language: tag,
+		string:   text,
+	}
+}

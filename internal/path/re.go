@@ -13,8 +13,10 @@ const (
 var (
 	// ReAppAdminHome matches the admin home page.
 	ReAppAdminHome = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppAdminHome))
-	// ReAppAdminInstances matches the admin instances page.
-	ReAppAdminInstances = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppAdminInstances))
+	// ReAppAdminBlockPre matches the admin block page.
+	ReAppAdminBlockPre = regexp.MustCompile(fmt.Sprintf(`^?%s`, AppAdminBlockList))
+	// ReAppAdminInstancesPre matches the admin instances page.
+	ReAppAdminInstancesPre = regexp.MustCompile(fmt.Sprintf(`^?%s`, AppAdminInstanceList))
 
 	// ReAppHome matches the Home page.
 	ReAppHome = regexp.MustCompile(fmt.Sprintf(`^?%s$`, AppHome))

@@ -13,9 +13,10 @@ import (
 	"net/url"
 )
 
-func (l *Logic) DeliverActivity(ctx context.Context, instanceID int64, activity fedihelper.Activity) error {
+func (l *Logic) DeliverActivity(ctx context.Context, jid string, instanceID int64, activity fedihelper.Activity) error {
 	log := logger.WithFields(logrus.Fields{
 		"func": "DeliverActivity",
+		"jid":  jid,
 	})
 
 	// get instance
@@ -52,9 +53,10 @@ func (l *Logic) DeliverActivity(ctx context.Context, instanceID int64, activity 
 	return nil
 }
 
-func (l *Logic) ProcessActivity(ctx context.Context, instanceID int64, actorIRI *url.URL, activity fedihelper.Activity) error {
+func (l *Logic) ProcessActivity(ctx context.Context, jid string, instanceID int64, actorIRI *url.URL, activity fedihelper.Activity) error {
 	log := logger.WithFields(logrus.Fields{
 		"func": "ProcessActivity",
+		"jid":  jid,
 	})
 
 	actType, err := activity.Type()

@@ -7,6 +7,8 @@ const (
 	PartAdmin = "admin"
 	// PartApp is the noun used in a path for a web app
 	PartApp = "app"
+	// PartBlock is used in a path for block.
+	PartBlock = "block"
 	// PartCallback is used in a path for callback.
 	PartCallback = "callback"
 	// PartFollowers is the noun used in a path for an actor's followers

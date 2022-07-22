@@ -14,6 +14,7 @@ import (
 	"github.com/feditools/relay/internal/kv"
 	"github.com/feditools/relay/internal/logic/logic1"
 	"github.com/feditools/relay/internal/path"
+	"github.com/feditools/relay/internal/runner"
 	"github.com/feditools/relay/internal/token"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/sessions"
@@ -37,6 +38,7 @@ type Module struct {
 	language  *language.Module
 	metrics   metrics.Collector
 	minify    *minify.M
+	runner    runner.Runner
 	store     sessions.Store
 	srv       *ihttp.Server
 	templates *template.Template
@@ -62,6 +64,7 @@ func New(
 	l *logic1.Logic,
 	mc metrics.Collector,
 	r redis.UniversalClient,
+	run runner.Runner,
 	tokz *token.Tokenizer,
 ) (*Module, error) {
 	log := logger.WithField("func", "New")
@@ -92,7 +95,7 @@ func New(
 	}
 
 	// get templates
-	tmpl, err := itemplate.New()
+	tmpl, err := itemplate.New(tokz)
 	if err != nil {
 		log.Errorf("create temates: %s", err.Error())
 
@@ -147,6 +150,7 @@ func New(
 		logic:     l,
 		metrics:   mc,
 		minify:    m,
+		runner:    run,
 		store:     store,
 		templates: tmpl,
 		tokz:      tokz,
