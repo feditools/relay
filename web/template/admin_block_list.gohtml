@@ -6,7 +6,6 @@
       {{ $textBlock := .Localizer.TextBlock 2 }}<h1 lang="{{ $textBlock.Language }}"><i class="fa-solid fa-arrows-turn-to-dots"></i> {{ $textBlock }}</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group">
-          <a href="/responder/add" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i></a>
           <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
             <i class="fa-solid fa-plus"></i>
           </button>
@@ -28,7 +27,7 @@
         <tbody>
         {{- range $block := .Blocks }}
           <tr>
-            <th scope="row"><a href="{{ urlAppAdminBlockView token $block }}">{{ $block.Domain }}</a></th>
+            {{ $token := token $block }}<th scope="row"><a href="{{ pathAppAdminBlockView $token }}">{{ $block.Domain }}</a></th>
             <td>{{ $block.ObfuscatedDomain }}</td>
             <td>{{ if $block.BlockSubdomains }}<i class="fa-solid fa-check text-success"></i>{{ else }}<i class="fa-solid fa-xmark text-danger"></i>{{ end }}</td>
           </tr>

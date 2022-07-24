@@ -11,6 +11,8 @@ const (
 	PartBlock = "block"
 	// PartCallback is used in a path for callback.
 	PartCallback = "callback"
+	// PartDelete is used in a path for delete.
+	PartDelete = "delete"
 	// PartFollowers is the noun used in a path for an actor's followers
 	PartFollowers = "followers"
 	// PartFollowing is the noun used in a path for actors following an actor

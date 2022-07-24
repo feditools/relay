@@ -23,7 +23,7 @@ func (m *Module) Route(s *http.Server) error {
 	webapp.HandleFunc(path.AppSubLogout, m.LogoutGetHandler).Methods(nethttp.MethodGet)
 
 	admin := webapp.PathPrefix(path.AppAdmin).Subrouter()
-	webapp.Use(m.MiddlewareRequireAdmin)
+	admin.Use(m.MiddlewareRequireAdmin)
 	admin.NotFoundHandler = m.notFoundHandler()
 	admin.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 

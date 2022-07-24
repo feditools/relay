@@ -3,11 +3,10 @@ package template
 import (
 	"github.com/feditools/go-lib/language"
 	libtemplate "github.com/feditools/go-lib/template"
-	"github.com/feditools/relay/internal/config"
 	"github.com/feditools/relay/internal/models"
+	"github.com/feditools/relay/internal/path"
 	"github.com/feditools/relay/internal/token"
 	"github.com/feditools/relay/web"
-	"github.com/spf13/viper"
 	"html/template"
 	"io/ioutil"
 	"strings"
@@ -30,12 +29,10 @@ type InitTemplate interface {
 
 // New creates a new template.
 func New(tokz *token.Tokenizer) (*template.Template, error) {
-	domain := viper.GetString(config.Keys.ServerExternalHostname)
-
 	funMap := template.FuncMap{
-		"token":                   tokz.GetToken,
-		"urlAppAdminBlockView":    genAppAdminBlockView(domain),
-		"urlAppAdminInstanceView": genAppAdminInstanceView(domain),
+		"token":                    tokz.GetToken,
+		"pathAppAdminBlockView":    path.GenAppAdminBlockViewPath,
+		"pathAppAdminInstanceView": path.GenAppAdminInstanceViewPath,
 	}
 
 	tpl, err := libtemplate.New(funMap)

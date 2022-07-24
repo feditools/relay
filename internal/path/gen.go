@@ -5,27 +5,38 @@ import (
 	"net/url"
 )
 
+// paths
+
+// GenAppAdminInstanceViewPath returns a path for the admin instance view page.
+func GenAppAdminInstanceViewPath(token string) string {
+	return AppAdminPreInstanceView + token
+}
+
+// GenAppAdminBlockViewPath returns a path for the admin block view page.
+func GenAppAdminBlockViewPath(token string) string {
+	return AppAdminPreBlockView + token
+}
+
+// GenAppAdminBlockDeletePath returns a path for the admin block delete action.
+func GenAppAdminBlockDeletePath(token string) string {
+	return AppAdminPreBlockView + token
+}
+
+// GenAppLoginPath returns a path for the login page.
+func GenAppLoginPath() string {
+	return AppLogin
+}
+
+// GenAppLogoutPath returns a path for the login page.
+func GenAppLogoutPath() string {
+	return AppLogout
+}
+
+// urls
+
 // GenActor returns a url for an actor
 func GenActor(d string) string {
 	return fmt.Sprintf("https://%s/%s", d, PartActor)
-}
-
-// GenAppAdminInstanceView returns a url for the admin instance view page.
-func GenAppAdminInstanceView(domain, token string) *url.URL {
-	return &url.URL{
-		Scheme: "https",
-		Host:   domain,
-		Path:   AppAdminPreInstanceView + token,
-	}
-}
-
-// GenAppAdminBlockView returns a url for the admin block view page.
-func GenAppAdminBlockView(domain, token string) *url.URL {
-	return &url.URL{
-		Scheme: "https",
-		Host:   domain,
-		Path:   AppAdminPreBlockView + token,
-	}
 }
 
 // GenFollowers returns a url for an actor's followers

@@ -43,6 +43,10 @@ const (
 	AppAdminHome = App + AppAdmin + AppAdminSubHome
 	// AppAdminSubHome is the sub path for the home page.
 	AppAdminSubHome = "/"
+	// AppAdminInstanceDeleteFTmpl is the sub path for the admin instance delete action.
+	AppAdminInstanceDeleteFTmpl = "/" + PartInstance + "/" + VarInstance + "/" + PartDelete
+	// AppAdminSubInstanceDelete is the sub path for the admin instance delete action.
+	AppAdminSubInstanceDelete = "/" + PartInstance + "/" + VarInstance + "/" + PartDelete
 	// AppAdminInstanceList is the path for the admin instances page.
 	AppAdminInstanceList = App + AppAdmin + AppAdminSubInstanceList
 	// AppAdminSubInstanceList is the sub path for the admin instances page.

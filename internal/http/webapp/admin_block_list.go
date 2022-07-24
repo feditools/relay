@@ -99,7 +99,8 @@ func (m *Module) AdminBlockListPostHandler(w http.ResponseWriter, r *http.Reques
 			DisplayAddModal: true,
 
 			FormError: &libtemplate.Alert{
-				Text: localizer.TextBlockExists(domain).String(),
+				Level: "danger",
+				Text:  localizer.TextBlockExists(domain).String(),
 			},
 
 			FormDomainValue:                domain,
@@ -108,6 +109,8 @@ func (m *Module) AdminBlockListPostHandler(w http.ResponseWriter, r *http.Reques
 			FormObfuscatedDomainValidation: formObfuscatedDomainValidation,
 			FormBlockSubdomainsValue:       blockSubdomains,
 		})
+
+		return
 	}
 
 	// create new block
@@ -116,30 +119,29 @@ func (m *Module) AdminBlockListPostHandler(w http.ResponseWriter, r *http.Reques
 		ObfuscatedDomain: obfuscatedDomain,
 		BlockSubdomains:  blockSubdomains,
 	}
-	err = m.db.CreateBlock(r.Context(), newBlock)
+	err = m.logic.AddBlock(r.Context(), newBlock)
 	if err != nil {
-		l.Errorf("db create: %s", err.Error())
+		l.Errorf("adding : %s", err.Error())
 		m.returnErrorPage(w, r, http.StatusInternalServerError, ErrorResponseDBError)
 
 		return
 	}
 
-	// enqueue block update
-	err = m.runner.EnqueueProcessBlock(r.Context(), newBlock.ID)
-	if err != nil {
-		l.Errorf("enqueueing job: %s", err.Error())
-		m.returnErrorPage(w, r, http.StatusInternalServerError, err.Error())
-
-		return
-	}
-
 	// display page
-	m.displayAdminBlockList(w, r, displayAdminBlockListConfig{})
+	m.displayAdminBlockList(w, r, displayAdminBlockListConfig{
+		Alerts: &[]libtemplate.Alert{
+			{
+				Level: "success",
+				Text:  "Block created.",
+			},
+		},
+	})
 }
 
 type displayAdminBlockListConfig struct {
 	DisplayAddModal bool
 
+	Alerts    *[]libtemplate.Alert
 	FormError *libtemplate.Alert
 
 	FormDomainValue                string
@@ -204,9 +206,21 @@ func (m *Module) displayAdminBlockList(w http.ResponseWriter, r *http.Request, c
 		Required:   false,
 	}
 
+	// alerts
+	tmplVars.Alerts = config.Alerts
+	tmplVars.FormError = config.FormError
 	if config.DisplayAddModal {
 		tmplVars.FooterExtraScript = JSOpenModal("addModal")
 	}
+
+	// get blocks
+	blocks, err := m.db.ReadBlocks(r.Context())
+	if err != nil {
+		m.returnErrorPage(w, r, http.StatusInternalServerError, ErrorResponseDBError)
+
+		return
+	}
+	tmplVars.Blocks = blocks
 
 	err = m.executeTemplate(w, template.AdminBlockListName, tmplVars)
 	if err != nil {
